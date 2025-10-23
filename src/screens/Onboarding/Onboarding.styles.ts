@@ -1,0 +1,213 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    gap:23,
+    paddingHorizontal:23
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 16,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F3F4F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  helpButton: {
+    borderRadius: 1000,
+    backgroundColor: '#FEEDD6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical:10,
+    paddingHorizontal:16
+  },
+  helpButtonText: {
+    fontSize: 16,
+    color: '#983614',
+    fontWeight: '600',
+  },
+  content: {
+  },
+  scrollView: {
+    flex: 1,
+  },
+  inputsContainer: {
+    gap: 16,
+  },
+  inputContainer: {
+    gap: 6,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    lineHeight: 20,
+    fontFamily: 'Saans TRIAL',
+  },
+  textInput: {
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+  },
+  textInputFocused: {
+    borderWidth: 1.5,
+    borderColor: '#414651',
+  },
+  phoneInputContainer: {
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    gap: 6,
+  },
+  phoneInputContainerFocused: {
+    borderWidth: 1.5,
+    borderColor: '#414651',
+  },
+  phonePrefix: {
+    backgroundColor: '#F0F4F8',
+    borderRadius: 5,
+    paddingVertical:4,
+    paddingHorizontal:8,
+  },
+  phonePrefixText: {
+    fontSize: 16,
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '600',
+  },
+  phoneTextInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+    paddingVertical: 0,
+  },
+  dropdownButton: {
+    height: 48,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+    flex: 1,
+  },
+  placeholderText: {
+    color: '#9CA3AF',
+  },
+  dropdownArrow: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginLeft: 8,
+  },
+  dropdownList: {
+    position: 'absolute',
+    top: 54,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    maxHeight: 200,
+    zIndex: 1000,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  dropdownItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  dropdownItemText: {
+    fontSize: 16,
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#111827',
+    lineHeight: 32,
+    fontFamily: 'Saans TRIAL',
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 21,
+    paddingTop: 20,
+    paddingHorizontal: 23,
+    gap:14
+  },
+  verifyButtonTouchable: {
+    borderRadius: 100,
+  },
+  verifyButton: {
+    borderRadius: 100,
+    paddingTop: 10,
+    paddingRight: 20,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
+  },
+  verifyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  verifyButtonDisabled: {
+    opacity: 0.5,
+  },
+  verifyButtonTextDisabled: {
+    color: '#FFFFFF',
+  },
+  helpText: {
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20,
+    textAlign: 'center',
+    fontFamily: 'Saans TRIAL',
+  },
+  facingIssueText: {
+    color: '#414651',
+  },
+  changeNumberText: {
+    color: '#B7410E',
+  },
+});
