@@ -4,3 +4,4 @@ export { default as OtpScreen} from './OtpScreen';
 export { default as RegisterScreen} from './RegisterScreen';
 export { default as CityScreen} from './CityScreen';
 export { default as ApplicationStatusScreen} from './ApplicationStatusScreen';
+export { default as HomeScreen} from './HomeScreen'
