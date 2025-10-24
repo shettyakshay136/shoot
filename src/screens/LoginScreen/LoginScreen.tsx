@@ -6,6 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -13,6 +15,7 @@ import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
+import { requestOtp } from '@/services';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'LoginScreen'>;
 
@@ -20,11 +23,25 @@ const LoginScreen = (): JSX.Element => {
   const { width, height } = Dimensions.get('window');
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignIn = () => {
-    // if (phoneNumber.length === 10) {
-      navigation.navigate('OnboardingScreen');
-    // }
+  const handleSignIn = async () => {
+    if (phoneNumber.length !== 10) {
+      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await requestOtp(phoneNumber);
+      navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
+    } catch (error) {
+      console.error('Login Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,22 +82,25 @@ const LoginScreen = (): JSX.Element => {
           onPress={handleSignIn}
           style={[
             styles.signInButton,
-            phoneNumber.length !== 10 ? { opacity: 0.5 } : {}
+            (phoneNumber.length !== 10 || loading) ? { opacity: 0.5 } : {}
           ]}
-          disabled={phoneNumber.length !== 10}
+          disabled={phoneNumber.length !== 10 || loading}
         >
-          <Text
-            allowFontScaling={false}
-            style={[styles.signInText]}
-          >
-            Sign in
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text
+              allowFontScaling={false}
+              style={[styles.signInText]}
+            >
+              Sign in
+            </Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            // TODO: Add Signup screen to navigation types
-            console.log('Navigate to Signup screen');
+            navigation.navigate('OnboardingScreen');
           }}
           style={styles.registerButtonContainer}
         >

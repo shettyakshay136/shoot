@@ -1,12 +1,13 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './Onboarding.styles';
 import { IPHONE_MODELS, GENDER_OPTIONS } from './Onboarding.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import BackButton from '@/assets/svg/back.svg'
+import BackButton from '@/assets/svg/back.svg';
+import { initiateSignup } from '@/services';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OnboardingScreen'>;
 
@@ -20,6 +21,7 @@ const OnboardingScreen = (): JSX.Element => {
   const [selectedGender, setSelectedGender] = useState('');
   const [location, setLocation] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
 
   // Validation logic
@@ -34,10 +36,31 @@ const OnboardingScreen = (): JSX.Element => {
     );
   };
 
-  const handleVerify = () => {
-    if (isFormValid()) {
+  const handleVerify = async () => {
+    if (!isFormValid()) {
+      Alert.alert('Error', 'Please fill all required fields');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await initiateSignup({
+        creatorName: name,
+        contactNumber: phoneNumber,
+        email: email,
+        portfolio: portfolioLink,
+        iphoneModel: selectedIphoneModel,
+        gender: selectedGender,
+        location: location,
+      });
       // Navigate to OTP screen with phone number
-      navigation.navigate('OtpScreen', { phoneNumber });
+      navigation.navigate('OtpScreen', { phoneNumber, flow: 'signup' });
+    } catch (error) {
+      console.error('Initiate Signup Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to initiate signup. Please try again.';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -237,7 +260,7 @@ const OnboardingScreen = (): JSX.Element => {
         <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={handleVerify}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || loading}
             style={styles.verifyButtonTouchable}
           >
             <LinearGradient
@@ -246,13 +269,17 @@ const OnboardingScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                !isFormValid() && styles.verifyButtonDisabled
+                (!isFormValid() || loading) && styles.verifyButtonDisabled
               ]}
             >
-              <Text style={[
-                styles.verifyButtonText,
-                !isFormValid() && styles.verifyButtonTextDisabled
-              ]}>Continue</Text>
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={[
+                  styles.verifyButtonText,
+                  !isFormValid() && styles.verifyButtonTextDisabled
+                ]}>Continue</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>

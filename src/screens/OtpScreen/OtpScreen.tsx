@@ -1,12 +1,13 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, TextInput, Alert, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './OtpScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import BackButton from '@/assets/svg/back.svg'
+import BackButton from '@/assets/svg/back.svg';
+import { completeLogin, completeSignup, resendOtp } from '@/services';
 
 type OtpScreenRouteProp = RouteProp<AuthStackParamList, 'OtpScreen'>;
 type OtpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OtpScreen'>;
@@ -15,7 +16,9 @@ const OtpScreen = (): JSX.Element => {
   const route = useRoute<OtpScreenRouteProp>();
   const navigation = useNavigation<OtpScreenNavigationProp>();
   const [otp, setOtp] = useState(['', '', '', '']);
-  const { phoneNumber } = route.params;
+  const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
+  const { phoneNumber, flow = 'login' } = route.params;
 
   // Mask phone number like 9******987
   const maskedPhone = phoneNumber.replace(/(\d)\d{6}(\d{3})/, '$1******$2');
@@ -28,17 +31,52 @@ const OtpScreen = (): JSX.Element => {
     }
   };
 
-  const handleResend = () => {
-    // Handle resend OTP logic
-    console.log('Resend OTP');
+  const handleResend = async () => {
+    setResending(true);
+    try {
+      await resendOtp(phoneNumber);
+      Alert.alert('Success', 'OTP has been resent');
+      setOtp(['', '', '', '']);
+    } catch (error) {
+      console.error('Resend OTP Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to resend OTP. Please try again.';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setResending(false);
+    }
   };
 
-  const handleVerify = () => {
-    // Handle OTP verification logic
+  const handleVerify = async () => {
     const otpCode = otp.join('');
-    console.log('Verify OTP:', otpCode);
-    // Navigate to Register screen
-    navigation.navigate('RegisterScreen');
+    if (otpCode.length !== 4) {
+      Alert.alert('Error', 'Please enter a valid 4-digit OTP');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (flow === 'login') {
+        await completeLogin(phoneNumber, otpCode);
+        // TODO: Navigate based on redirectTo field or handle successful login
+        Alert.alert('Success', 'Login successful!');
+        // navigation.navigate(result.redirectTo);
+      } else {
+        // For signup, you need to pass additional data
+        // This will need to be updated based on the signup flow requirements
+        await completeSignup({
+          contactNumber: phoneNumber,
+          otp: otpCode,
+        });
+        Alert.alert('Success', 'Signup successful!');
+        // TODO: Navigate based on result.redirectTo
+      }
+    } catch (error) {
+      console.error('Verify OTP Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Invalid OTP. Please try again.';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBack = () => {
@@ -81,15 +119,23 @@ const OtpScreen = (): JSX.Element => {
             />
           ))}
         </View>
-        <TouchableOpacity onPress={handleResend} style={styles.resendContainer}>
-          <Text style={styles.resendText}>Resend OTP</Text>
+        <TouchableOpacity 
+          onPress={handleResend} 
+          style={styles.resendContainer}
+          disabled={resending}
+        >
+          {resending ? (
+            <ActivityIndicator size="small" color="#61240E" />
+          ) : (
+            <Text style={styles.resendText}>Resend OTP</Text>
+          )}
         </TouchableOpacity>
       </View>
 
         <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={handleVerify}
-            disabled={!otp.every(digit => digit !== '')}
+            disabled={!otp.every(digit => digit !== '') || loading}
             style={styles.verifyButtonTouchable}
           >
             <LinearGradient
@@ -98,10 +144,14 @@ const OtpScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                !otp.every(digit => digit !== '') && styles.verifyButtonDisabled
+                (!otp.every(digit => digit !== '') || loading) && styles.verifyButtonDisabled
               ]}
             >
-              <Text style={styles.verifyButtonText}>Continue</Text>
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text style={styles.verifyButtonText}>Continue</Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
           <Text style={styles.helpText}>

@@ -3,6 +3,7 @@ export type AuthStackParamList = {
     OnboardingScreen: undefined;
     OtpScreen: {
       phoneNumber: string;
+      flow?: 'login' | 'signup';
     };
     RegisterScreen: undefined;
     CityScreen: undefined;

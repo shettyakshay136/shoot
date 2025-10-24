@@ -18,8 +18,8 @@ import {
       <View style={styles.container}>
         <NavigationContainer>
             <Stack.Navigator screenOptions={COMMON_SCREEN_OPTIONS}>
-              {/* <Stack.Screen name='Auth' component={AuthNavigator} /> */}
-              <Stack.Screen name='App' component={AppNavigator} />
+              <Stack.Screen name='Auth' component={AuthNavigator} />
+              {/* <Stack.Screen name='App' component={AppNavigator} /> */}
             </Stack.Navigator>
         </NavigationContainer>
       </View>
