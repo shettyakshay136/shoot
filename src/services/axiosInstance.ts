@@ -1,7 +1,7 @@
 import { ROG_API_BASE_URL } from '@env';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AUTH_TOKEN_KEY } from './constants';
+import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
 
 const rogApi = axios.create({
   baseURL: ROG_API_BASE_URL,

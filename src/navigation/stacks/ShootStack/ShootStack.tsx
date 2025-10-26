@@ -1,14 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { type JSX } from 'react';
-import { COMMON_SCREEN_OPTIONS } from '../Constants';
+import { COMMON_SCREEN_OPTIONS } from '../../Constants';
+import { ShootsScreen } from '@/screens';
+import { ShootStackParamList } from './ShootStack.types';
 
 // Import your shoot screens here
 // import ShootScreen from '../../screens/ShootScreen';
-
-export type ShootStackParamList = {
-  Shoot: undefined;
-  // Add other shoot-related screens here
-};
 
 const Stack = createNativeStackNavigator<ShootStackParamList>();
 
@@ -17,7 +14,7 @@ const ShootStack = (): JSX.Element => {
     <Stack.Navigator screenOptions={COMMON_SCREEN_OPTIONS}>
       <Stack.Screen 
         name="Shoot" 
-        component={() => null} // Replace with actual ShootScreen component
+        component={ShootsScreen}
         options={{ title: 'Shoot' }}
       />
     </Stack.Navigator>
@@ -25,3 +22,4 @@ const ShootStack = (): JSX.Element => {
 };
 
 export default ShootStack;
+

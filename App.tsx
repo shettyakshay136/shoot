@@ -2,12 +2,19 @@ import React, { type JSX } from 'react';
 import { StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RootNavigator from '@/navigation/Rootnavigator';
+import { AuthProvider, ToastProvider } from '@/contexts';
+import { ToastContainer } from '@/components/layout';
 
 const App = (): JSX.Element => {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <RootNavigator/>
+        <ToastProvider>
+          <AuthProvider>
+            <RootNavigator/>
+            <ToastContainer />
+          </AuthProvider>
+        </ToastProvider>
       </SafeAreaView>
     </SafeAreaProvider>
   );

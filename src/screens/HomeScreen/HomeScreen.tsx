@@ -13,8 +13,8 @@ import {
   PERFORMANCE_DATA,
   FOOTER_CONTENT
 } from './HomeScreen.constants';
+import { TabSwitcher } from '../../components';
 
-// Import SVG icons
 import BanknoteArrowUpIcon from '../../assets/svg/banknote-arrow-up.svg';
 import CurrencyIcon from '../../assets/svg/indian-rupee.svg';
 import MoreIcon from '../../assets/svg/more.svg';
@@ -178,27 +178,12 @@ const HomeScreen = (): JSX.Element => {
            <Text style={styles.sectionTitle}>Shoot</Text>
            <Text style={styles.sectionall}>See all</Text>
          </View>
-         <View style={styles.tabsContainer}>
-           {TABS.map((tab) => (
-             <TouchableOpacity
-               key={tab}
-               style={[
-                 styles.tabButton,
-                 activeTab === tab ? styles.activeTabButton : styles.inactiveTabButton
-               ]}
-               onPress={() => setActiveTab(tab)}
-             >
-               <Text style={[
-                 styles.tabButtonText,
-                 activeTab === tab ? styles.activeTabButtonText : styles.inactiveTabButtonText
-               ]}>
-                 {tab}
-               </Text>
-             </TouchableOpacity>
-           ))}
-         </View>
-         
-         {/* Tab Content */}
+         <TabSwitcher 
+           tabs={TABS} 
+           activeTab={activeTab} 
+           onTabChange={setActiveTab}
+         />
+
          {renderTabContent()}
            <View>
              <View style={[styles.sectionHeader, styles.performanceSection]}>

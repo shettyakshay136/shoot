@@ -6,7 +6,6 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +14,8 @@ import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import { requestOtp } from '@/services';
+import { loginOtp } from '@/services';
+import { useToast } from '@/contexts';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'LoginScreen'>;
 
@@ -24,24 +24,27 @@ const LoginScreen = (): JSX.Element => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
     if (phoneNumber.length !== 10) {
-      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      showToast('Error', 'error', 'Please enter a valid 10-digit phone number');
       return;
     }
 
     setLoading(true);
-    try {
-      await requestOtp(phoneNumber);
-      navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
-    } catch (error) {
-      console.error('Login Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
-      Alert.alert('Error', errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    loginOtp(phoneNumber)
+      .then((data) => {
+        showToast('Success', 'success', 'The OTP is' + " " + data.data );
+        navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Login Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+        showToast('Error', 'error', errorMessage);
+        setLoading(false);
+      });
   };
 
   return (
@@ -76,13 +79,13 @@ const LoginScreen = (): JSX.Element => {
             maxLength={10}
           />
         </View>
-        <View style={{gap:24}}>
+        <View style={styles.buttonContainer}>
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={handleSignIn}
           style={[
             styles.signInButton,
-            (phoneNumber.length !== 10 || loading) ? { opacity: 0.5 } : {}
+            (phoneNumber.length !== 10 || loading) && styles.signInButtonDisabled
           ]}
           disabled={phoneNumber.length !== 10 || loading}
         >

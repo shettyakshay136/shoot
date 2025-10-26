@@ -1,5 +1,4 @@
 // Layout Components
 export * from './layout';
-
-// Contexts
+export { default as TabSwitcher} from './TabSwitcher';
 export * from '../contexts/BottomSheetContext';

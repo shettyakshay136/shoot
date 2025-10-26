@@ -7,8 +7,16 @@ export interface SendOtpResponse {
 }
 
 export interface CompleteLoginResponse {
-  redirectTo: string;
-  token: string;
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  redirectTo?: string;
+  token?: string;
+  data?: {
+    redirectTo: string;
+    token: string;
+  };
+  user?: any;
 }
 
 export interface ResendOtpResponse {
@@ -53,9 +61,16 @@ export interface CompleteSignupRequest {
 }
 
 export interface CompleteSignupResponse {
-  redirectTo: string;
-  token: string;
-  creator: any;
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  redirectTo?: string;
+  token?: string;
+  data?: {
+    redirectTo: string;
+    token: string;
+  };
+  creator?: any;
 }
 
 /**
@@ -67,15 +82,19 @@ export const apiRequestOtp = async (
 ): Promise<SendOtpResponse> => {
   try {
     const response = await rogApi.post<SendOtpResponse>(
-      '/creator/auth/otp/request',
+      '/creator/auth/login/initiate',
       { phone_number: phoneNumber }
     );
+    console.log(response.data,'repsoe')
     return response.data;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('requestOtp error:', error);
-    throw new Error('Request OTP Failed');
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to send OTP';
+    throw new Error(errorMessage);
   }
 };
+
+
 
 /**
  * Login Flow - Complete Login
@@ -90,10 +109,12 @@ export const apiCompleteLogin = async (
       '/creator/auth/login/complete',
       { phone_number: phoneNumber, otp }
     );
+    console.log(response.data,'resposedatda')
     return response.data;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('completeLogin error:', error);
-    throw new Error('Complete Login Failed');
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to complete login';
+    throw new Error(errorMessage);
   }
 };
 
@@ -110,9 +131,10 @@ export const apiResendOtp = async (
       { contactNumber }
     );
     return response.data;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('resendOtp error:', error);
-    throw new Error('Resend OTP Failed');
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to resend OTP';
+    throw new Error(errorMessage);
   }
 };
 
@@ -126,10 +148,12 @@ export const apiInitiateSignup = async (
 ): Promise<any> => {
   try {
     const response = await rogApi.post('/creator/auth/signup/initiate', data);
+    console.log(response.data,'cehckdata')
     return response.data;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('initiateSignup error:', error);
-    throw new Error('Initiate Signup Failed');
+    const errorMessage = error?.response?.data?.message || error?.message || 'Initiate Signup Failed';
+    throw new Error(errorMessage);
   }
 };
 
@@ -146,9 +170,10 @@ export const apiCompleteSignup = async (
       data
     );
     return response.data;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('completeSignup error:', error);
-    throw new Error('Complete Signup Failed');
+    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to complete signup';
+    throw new Error(errorMessage);
   }
 };
 

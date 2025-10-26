@@ -1,14 +1,10 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { type JSX } from 'react';
-import { COMMON_SCREEN_OPTIONS } from '../Constants';
+import { COMMON_SCREEN_OPTIONS } from '../../Constants';
+import { WalletStackParamList } from './WalletStack.types';
 
 // Import your wallet screens here
 // import WalletScreen from '../../screens/WalletScreen';
-
-export type WalletStackParamList = {
-  Wallet: undefined;
-  // Add other wallet-related screens here
-};
 
 const Stack = createNativeStackNavigator<WalletStackParamList>();
 
@@ -25,3 +21,4 @@ const WalletStack = (): JSX.Element => {
 };
 
 export default WalletStack;
+

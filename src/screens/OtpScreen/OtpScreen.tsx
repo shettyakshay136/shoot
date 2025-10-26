@@ -1,5 +1,5 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, TextInput, ActivityIndicator } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -8,6 +8,7 @@ import { styles } from './OtpScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import { completeLogin, completeSignup, resendOtp } from '@/services';
+import { useAuth, useToast } from '@/contexts';
 
 type OtpScreenRouteProp = RouteProp<AuthStackParamList, 'OtpScreen'>;
 type OtpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OtpScreen'>;
@@ -19,6 +20,8 @@ const OtpScreen = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const { phoneNumber, flow = 'login' } = route.params;
+  const { login } = useAuth();
+  const { showToast } = useToast();
 
   // Mask phone number like 9******987
   const maskedPhone = phoneNumber.replace(/(\d)\d{6}(\d{3})/, '$1******$2');
@@ -35,12 +38,12 @@ const OtpScreen = (): JSX.Element => {
     setResending(true);
     try {
       await resendOtp(phoneNumber);
-      Alert.alert('Success', 'OTP has been resent');
+      showToast('Success', 'success', 'OTP has been resent');
       setOtp(['', '', '', '']);
     } catch (error) {
       console.error('Resend OTP Error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to resend OTP. Please try again.';
-      Alert.alert('Error', errorMessage);
+      showToast('Error', 'error', errorMessage);
     } finally {
       setResending(false);
     }
@@ -49,31 +52,40 @@ const OtpScreen = (): JSX.Element => {
   const handleVerify = async () => {
     const otpCode = otp.join('');
     if (otpCode.length !== 4) {
-      Alert.alert('Error', 'Please enter a valid 4-digit OTP');
+      showToast('Error', 'error', 'Please enter a valid 4-digit OTP');
       return;
     }
 
     setLoading(true);
     try {
       if (flow === 'login') {
-        await completeLogin(phoneNumber, otpCode);
-        // TODO: Navigate based on redirectTo field or handle successful login
-        Alert.alert('Success', 'Login successful!');
-        // navigation.navigate(result.redirectTo);
+        const result = await completeLogin(phoneNumber, otpCode);
+        console.log(result,'result')
+
+        // Handle the case where token is in result.data
+        const token = result.token || result.data?.token;
+        const redirectTo = result.redirectTo || result.data?.redirectTo;
+
+        if (!token) {
+          throw new Error('No token received from server');
+        }
+
+        // If there's a redirectTo, the user needs to complete onboarding
+        if (redirectTo && redirectTo !== '/home') {
+          console.log('User needs to complete onboarding:', redirectTo);
+          showToast('Notice', 'info', result.message || 'Please complete your profile to continue');
+        }
+
+        await login(token, result.user || undefined);
+
       } else {
-        // For signup, you need to pass additional data
-        // This will need to be updated based on the signup flow requirements
-        await completeSignup({
-          contactNumber: phoneNumber,
-          otp: otpCode,
-        });
-        Alert.alert('Success', 'Signup successful!');
-        // TODO: Navigate based on result.redirectTo
+        navigation.navigate('RegisterScreen')
+        // Navigation will automatically happen due to auth state change
       }
     } catch (error) {
       console.error('Verify OTP Error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Invalid OTP. Please try again.';
-      Alert.alert('Error', errorMessage);
+      showToast('Error', 'error', errorMessage);
     } finally {
       setLoading(false);
     }
