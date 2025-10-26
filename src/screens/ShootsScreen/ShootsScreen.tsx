@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, PanResponder, Dimensions } from 'react-native';
 import { type JSX } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from './ShootsScreen.styles';
 import { 
   TABS, 
@@ -11,17 +13,25 @@ import {
   REJECTED_SHOOTS,
 } from './ShootsScreen.constants';
 import { TabSwitcher } from '@/components';
-import { BaseModal } from '@/components/layout';
+import { BaseModal, UpcomingShootModal, ROGDressModal } from '@/components';
 import MagnifyingGlassIcon from '@/assets/svg/magnifyingglass.svg';
-import RightArrow from '@/assets/svg/backButtonPdp.svg'
+import RightArrow from '@/assets/svg/backButtonPdp.svg';
+import type { ShootStackParamList } from '@/navigation/stacks/ShootStack/ShootStack.types';
+
+type ShootsScreenNavigationProp = NativeStackNavigationProp<ShootStackParamList, 'Shoot'>;
 
 const ShootsScreen = (): JSX.Element => {
+  const navigation = useNavigation<ShootsScreenNavigationProp>();
   const [isOnline, setIsOnline] = useState(false);
   const [activeTab, setActiveTab] = useState('Available');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
   const [shootHours, setShootHours] = useState<string>('');
   const [showHoursDropdown, setShowHoursDropdown] = useState(false);
   const [selectedRadius, setSelectedRadius] = useState<number>(15);
+  const [isUpcomingModalVisible, setIsUpcomingModalVisible] = useState(false);
+  const [selectedShoot, setSelectedShoot] = useState<any>(null);
+  const [isROGDressModalVisible, setIsROGDressModalVisible] = useState(false);
+  const [selectedShootDetails, setSelectedShootDetails] = useState<any>(null);
   const sliderWidth = Dimensions.get('window').width - 76; // Subtracting modal padding
   const { current: position } = useRef({ x: 0 });
 
@@ -71,15 +81,69 @@ const ShootsScreen = (): JSX.Element => {
     })
   ).current;
 
+  const handleStartButtonPress = () => {
+    setIsUpcomingModalVisible(false);
+    setIsROGDressModalVisible(true);
+  };
+
+  const handleROGDressConfirm = () => {
+    // Handle "Yes" confirmation - navigate to ShootDetailsScreen
+    if (selectedShootDetails) {
+      // Wait for modal to close before navigating
+      setTimeout(() => {
+        navigation.navigate('ShootDetails', {
+          shootData: selectedShootDetails,
+        });
+      }, 300); // Small delay to allow modal to close smoothly
+    }
+  };
+
+  const handleROGDressDecline = () => {
+    // Handle "Not today" decline
+    console.log('User declined wearing ROG apparel');
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Available':
         return (
           <View style={styles.tabContent}>
             {AVAILABLE_SHOOTS.map((shoot) => (
-              <View key={shoot.id} style={[styles.upcomingContent,{    flexDirection:'row',
-                justifyContent:'space-between',
-                alignItems:'center'}]}>
+              <TouchableOpacity
+                key={shoot.id}
+                style={[styles.upcomingContent,{    flexDirection:'row',
+                  justifyContent:'space-between',
+                  alignItems:'center'}]}
+                onPress={() => navigation.navigate('ShootDetails', {
+                  shootData: {
+                    title: shoot.title,
+                    location: shoot.location,
+                    date: shoot.date,
+                    time: '7:00 PM',
+                    category: shoot.type,
+                    earnings: shoot.pay,
+                    distance: '1.5 km',
+                    eta: '32 mins',
+                    shootHours: `${shoot.duration}`,
+                    reelsRequired: '2 reels',
+                    instantDelivery: 'Within 30 minutes',
+                    addons: ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
+                    description: `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
+                    songs: [
+                      {
+                        title: 'Boujee',
+                        artist: 'Wowashwow (via Soundstripe)',
+                        thumbnail: '#FF6E9C',
+                      },
+                      {
+                        title: 'L\'amour Au Café',
+                        artist: 'Rêves Français (via Soundstripe)',
+                        thumbnail: '#FFD700',
+                      },
+                    ],
+                  }
+                })}
+              >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
                   <Text style={styles.contentSubtext}>{shoot.location}</Text>
@@ -90,7 +154,7 @@ const ShootsScreen = (): JSX.Element => {
                 <View style={{    transform: [{ rotate: '180deg' }],}}>
                   <RightArrow />
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         );
@@ -98,7 +162,52 @@ const ShootsScreen = (): JSX.Element => {
         return (
           <View style={styles.tabContent}>
             {UPCOMING_SHOOTS.map((shoot) => (
-              <View key={shoot.id} style={styles.upcomingContent}>
+              <TouchableOpacity
+                key={shoot.id}
+                style={styles.upcomingContent}
+                onPress={() => {
+                  setSelectedShoot({
+                    title: shoot.title,
+                    client: 'Keshav Dubey',
+                    location: shoot.location,
+                    date: shoot.date,
+                    time: '7:00 PM',
+                    niche: 'Niche',
+                    distance: '1.5 km',
+                    eta: '32 mins',
+                  });
+                  // Store full details for navigation to ShootDetailsScreen
+                  setSelectedShootDetails({
+                    title: shoot.title,
+                    location: shoot.location,
+                    date: shoot.date,
+                    time: '7:00 PM',
+                    category: shoot.type,
+                    earnings: shoot.pay,
+                    distance: '1.5 km',
+                    eta: '32 mins',
+                    shootHours: shoot.duration,
+                    reelsRequired: '2 reels',
+                    instantDelivery: 'Within 30 minutes',
+                    addons: ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
+                    description: `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
+                    songs: [
+                      {
+                        title: 'Boujee',
+                        artist: 'Wowashwow (via Soundstripe)',
+                        thumbnail: '#FF6E9C',
+                      },
+                      {
+                        title: 'L\'amour Au Café',
+                        artist: 'Rêves Français (via Soundstripe)',
+                        thumbnail: '#FFD700',
+                      },
+                    ],
+                    isFromUpcoming: true,
+                  });
+                  setIsUpcomingModalVisible(true);
+                }}
+              >
                 <Text style={styles.contentText}>{shoot.title}</Text>
                 <Text style={styles.contentSubtext}>{shoot.location}</Text>
                 <View style={styles.cardFooter}>
@@ -107,7 +216,7 @@ const ShootsScreen = (): JSX.Element => {
                     <Text style={{color:'#E75B0F' , fontWeight:600 , fontSize:14}}>{shoot.daysLeft} days</Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         );
@@ -331,6 +440,20 @@ const ShootsScreen = (): JSX.Element => {
           </TouchableOpacity>
         </View>
       </BaseModal>
+
+      <UpcomingShootModal
+        isVisible={isUpcomingModalVisible}
+        onClose={() => setIsUpcomingModalVisible(false)}
+        shoot={selectedShoot}
+        onStartButtonPress={handleStartButtonPress}
+      />
+
+      <ROGDressModal
+        isVisible={isROGDressModalVisible}
+        onClose={() => setIsROGDressModalVisible(false)}
+        onConfirm={handleROGDressConfirm}
+        onDecline={handleROGDressDecline}
+      />
     </ScrollView>
   );
 };

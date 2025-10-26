@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { type JSX } from 'react';
 import { StyleSheet } from 'react-native';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { PRIMARY_COLORS } from '../../theme/colors';
 
 // Import stack navigators
@@ -62,7 +63,6 @@ const AppNavigator = (): JSX.Element => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: PRIMARY_COLORS[900],
         tabBarInactiveTintColor: 'rgba(0, 0, 0, 0.6)',
         tabBarLabelStyle: styles.tabBarLabel,
@@ -75,14 +75,19 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: HomeIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
       <Tab.Screen
         name="ShootStack"
         component={ShootStack}
-        options={{
-          tabBarLabel: 'Shoot',
-          tabBarIcon: ShootIcon,
+        options={({ route }) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? 'Shoot';
+          return {
+            tabBarLabel: 'Shoot',
+            tabBarIcon: ShootIcon,
+            tabBarStyle: routeName === 'ShootDetails' ? styles.hiddenTabBar : styles.tabBar,
+          };
         }}
       />
       <Tab.Screen
@@ -91,6 +96,7 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Wallet',
           tabBarIcon: WalletIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
       <Tab.Screen
@@ -99,6 +105,7 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ProfileIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
     </Tab.Navigator>
@@ -118,6 +125,9 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
     paddingLeft: 16,
     justifyContent: 'space-between',
+  },
+  hiddenTabBar: {
+    display: 'none',
   },
   tabBarLabel: {
     fontSize: 12,

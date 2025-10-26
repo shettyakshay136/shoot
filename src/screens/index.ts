@@ -7,3 +7,4 @@ export { default as ApplicationStatusScreen} from './ApplicationStatusScreen';
 export { default as ProfileScreen } from './ProfileScreen';
 export { default as HomeScreen} from './HomeScreen';
 export { default as ShootsScreen} from './ShootsScreen';
+export { default as ShootDetailsScreen} from './ShootDetailsScreen';

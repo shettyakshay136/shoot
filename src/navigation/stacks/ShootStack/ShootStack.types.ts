@@ -1,5 +1,9 @@
+import type { ShootDetailsData } from '@/screens/ShootDetailsScreen/ShootDetailsScreen.types';
+
 export type ShootStackParamList = {
   Shoot: undefined;
-  // Add other shoot-related screens here
+  ShootDetails: {
+    shootData?: ShootDetailsData;
+  };
 };
 
