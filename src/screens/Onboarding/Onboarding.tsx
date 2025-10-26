@@ -1,5 +1,16 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,9 +18,13 @@ import { styles } from './Onboarding.styles';
 import { IPHONE_MODELS, GENDER_OPTIONS } from './Onboarding.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
-import { initiateSignup } from '@/services';
+import { IOSPicker } from '@/components/IOSPicker';
+// import { initiateSignup } from '@/services';
 
-type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OnboardingScreen'>;
+type OnboardingScreenNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  'OnboardingScreen'
+>;
 
 const OnboardingScreen = (): JSX.Element => {
   const navigation = useNavigation<OnboardingScreenNavigationProp>();
@@ -22,7 +37,6 @@ const OnboardingScreen = (): JSX.Element => {
   const [location, setLocation] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
 
   // Validation logic
   const isFormValid = () => {
@@ -44,20 +58,24 @@ const OnboardingScreen = (): JSX.Element => {
 
     setLoading(true);
     try {
-      await initiateSignup({
-        creatorName: name,
-        contactNumber: phoneNumber,
-        email: email,
-        portfolio: portfolioLink,
-        iphoneModel: selectedIphoneModel,
-        gender: selectedGender,
-        location: location,
-      });
-      // Navigate to OTP screen with phone number
-      navigation.navigate('OtpScreen', { phoneNumber, flow: 'signup' });
+      // API call commented out - backend not running
+      // await initiateSignup({
+      //   creatorName: name,
+      //   contactNumber: phoneNumber,
+      //   email: email,
+      //   portfolio: portfolioLink,
+      //   iphoneModel: selectedIphoneModel,
+      //   gender: selectedGender,
+      //   location: location,
+      // });
+      // Navigate directly to RegisterScreen to continue the flow
+      navigation.navigate('RegisterScreen');
     } catch (error) {
       console.error('Initiate Signup Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to initiate signup. Please try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to initiate signup. Please try again.';
       Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
@@ -75,18 +93,29 @@ const OnboardingScreen = (): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+      >
         <View style={styles.header}>
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <BackButton/>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <BackButton />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
             <Text style={styles.helpButtonText}>Help</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
         </View>
         <View style={styles.content}>
-            <Text style={styles.title}>Tell us a bit about yourself</Text>
+          <Text style={styles.title}>Tell us a bit about yourself</Text>
         </View>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
+          scrollEnabled={true}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.inputsContainer}>
             {/* Name Input */}
             <View style={styles.inputContainer}>
@@ -94,7 +123,7 @@ const OnboardingScreen = (): JSX.Element => {
               <TextInput
                 style={[
                   styles.textInput,
-                  focusedField === 'name' && styles.textInputFocused
+                  focusedField === 'name' && styles.textInputFocused,
                 ]}
                 value={name}
                 onChangeText={setName}
@@ -102,28 +131,35 @@ const OnboardingScreen = (): JSX.Element => {
                 onBlur={() => setFocusedField(null)}
                 placeholder="Enter your name"
                 placeholderTextColor="#9CA3AF"
+                returnKeyType="next"
               />
             </View>
 
             {/* Phone Number Input */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Phone Number</Text>
-              <View style={[
-                styles.phoneInputContainer,
-                focusedField === 'phone' && styles.phoneInputContainerFocused
-              ]}>
+              <View
+                style={[
+                  styles.phoneInputContainer,
+                  focusedField === 'phone' && styles.phoneInputContainerFocused,
+                ]}
+              >
                 <View style={styles.phonePrefix}>
                   <Text style={styles.phonePrefixText}>+91</Text>
                 </View>
                 <TextInput
                   style={styles.phoneTextInput}
                   value={phoneNumber}
-                  onChangeText={setPhoneNumber}
+                  onChangeText={text =>
+                    setPhoneNumber(text.replace(/[^\d]/g, '').slice(0, 10))
+                  }
                   onFocus={() => setFocusedField('phone')}
                   onBlur={() => setFocusedField(null)}
                   placeholder="Enter your phone number"
                   placeholderTextColor="#9CA3AF"
                   keyboardType="phone-pad"
+                  maxLength={10}
+                  returnKeyType="next"
                 />
               </View>
             </View>
@@ -134,7 +170,7 @@ const OnboardingScreen = (): JSX.Element => {
               <TextInput
                 style={[
                   styles.textInput,
-                  focusedField === 'email' && styles.textInputFocused
+                  focusedField === 'email' && styles.textInputFocused,
                 ]}
                 value={email}
                 onChangeText={setEmail}
@@ -144,6 +180,7 @@ const OnboardingScreen = (): JSX.Element => {
                 placeholderTextColor="#9CA3AF"
                 keyboardType="email-address"
                 autoCapitalize="none"
+                returnKeyType="next"
               />
             </View>
 
@@ -153,7 +190,7 @@ const OnboardingScreen = (): JSX.Element => {
               <TextInput
                 style={[
                   styles.textInput,
-                  focusedField === 'portfolio' && styles.textInputFocused
+                  focusedField === 'portfolio' && styles.textInputFocused,
                 ]}
                 value={portfolioLink}
                 onChangeText={setPortfolioLink}
@@ -163,80 +200,27 @@ const OnboardingScreen = (): JSX.Element => {
                 placeholderTextColor="#9CA3AF"
                 keyboardType="url"
                 autoCapitalize="none"
+                returnKeyType="next"
               />
             </View>
 
-            {/* iPhone Model Dropdown */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>iPhone Model</Text>
-              <TouchableOpacity
-                style={[
-                  styles.dropdownButton,
-                  focusedField === 'iphone' && styles.textInputFocused
-                ]}
-                onPress={() => setFocusedField(focusedField === 'iphone' ? null : 'iphone')}
-              >
-                <Text style={[
-                  styles.dropdownText,
-                  !selectedIphoneModel && styles.placeholderText
-                ]}>
-                  {selectedIphoneModel || 'Select iPhone model'}
-                </Text>
-                <Text style={styles.dropdownArrow}>▼</Text>
-              </TouchableOpacity>
-              {focusedField === 'iphone' && (
-                <View style={styles.dropdownList}>
-                  {IPHONE_MODELS.map((model, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        setSelectedIphoneModel(model);
-                        setFocusedField(null);
-                      }}
-                    >
-                      <Text style={styles.dropdownItemText}>{model}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
+            {/* iPhone Model Picker */}
+            <IOSPicker
+              label="iPhone Model"
+              selectedValue={selectedIphoneModel}
+              onValueChange={setSelectedIphoneModel}
+              items={IPHONE_MODELS}
+              placeholder="Select iPhone model"
+            />
 
-            {/* Gender Dropdown */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Gender</Text>
-              <TouchableOpacity
-                style={[
-                  styles.dropdownButton,
-                  focusedField === 'gender' && styles.textInputFocused
-                ]}
-                onPress={() => setFocusedField(focusedField === 'gender' ? null : 'gender')}
-              >
-                <Text style={[
-                  styles.dropdownText,
-                  !selectedGender && styles.placeholderText
-                ]}>
-                  {selectedGender || 'Select gender'}
-                </Text>
-                <Text style={styles.dropdownArrow}>▼</Text>
-              </TouchableOpacity>
-              {focusedField === 'gender' && (
-                <View style={styles.dropdownList}>
-                  {GENDER_OPTIONS.map((option, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        setSelectedGender(option);
-                        setFocusedField(null);
-                      }}
-                    >
-                      <Text style={styles.dropdownItemText}>{option}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
-            </View>
+            {/* Gender Picker */}
+            <IOSPicker
+              label="Gender"
+              selectedValue={selectedGender}
+              onValueChange={setSelectedGender}
+              items={GENDER_OPTIONS}
+              placeholder="Select gender"
+            />
 
             {/* Location Input */}
             <View style={styles.inputContainer}>
@@ -244,7 +228,7 @@ const OnboardingScreen = (): JSX.Element => {
               <TextInput
                 style={[
                   styles.textInput,
-                  focusedField === 'location' && styles.textInputFocused
+                  focusedField === 'location' && styles.textInputFocused,
                 ]}
                 value={location}
                 onChangeText={setLocation}
@@ -252,8 +236,12 @@ const OnboardingScreen = (): JSX.Element => {
                 onBlur={() => setFocusedField(null)}
                 placeholder="Enter your location"
                 placeholderTextColor="#9CA3AF"
+                returnKeyType="done"
               />
             </View>
+
+            {/* Extra space at bottom to prevent content from hiding */}
+            <View style={styles.bottomSpacer} />
           </View>
         </ScrollView>
 
@@ -262,6 +250,7 @@ const OnboardingScreen = (): JSX.Element => {
             onPress={handleVerify}
             disabled={!isFormValid() || loading}
             style={styles.verifyButtonTouchable}
+            activeOpacity={0.7}
           >
             <LinearGradient
               colors={['#000000', '#61240E']}
@@ -269,20 +258,25 @@ const OnboardingScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                (!isFormValid() || loading) && styles.verifyButtonDisabled
+                (!isFormValid() || loading) && styles.verifyButtonDisabled,
               ]}
             >
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text style={[
-                  styles.verifyButtonText,
-                  !isFormValid() && styles.verifyButtonTextDisabled
-                ]}>Continue</Text>
+                <Text
+                  style={[
+                    styles.verifyButtonText,
+                    !isFormValid() && styles.verifyButtonTextDisabled,
+                  ]}
+                >
+                  Continue
+                </Text>
               )}
             </LinearGradient>
           </TouchableOpacity>
         </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

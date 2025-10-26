@@ -4,14 +4,25 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    gap:23,
-    paddingHorizontal:23
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 23,
+    paddingTop: 12,
+    paddingBottom: 130,
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
+    paddingBottom: 12,
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   backButton: {
     width: 40,
@@ -26,8 +37,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FEEDD6',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical:10,
-    paddingHorizontal:16
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   helpButtonText: {
     fontSize: 16,
@@ -35,6 +46,8 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
+    marginTop: 8,
+    marginBottom: 24,
   },
   title: {
     fontSize: 24,
@@ -42,6 +55,7 @@ export const styles = StyleSheet.create({
     color: '#111827',
     lineHeight: 32,
     fontFamily: 'Saans TRIAL',
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 14,
@@ -51,10 +65,15 @@ export const styles = StyleSheet.create({
     fontFamily: 'Saans TRIAL',
     textAlignVertical: 'center',
   },
+  otpSection: {
+    marginTop: 8,
+    marginBottom: 24,
+  },
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap:12
+    gap: 12,
+    marginBottom: 24,
   },
   otpInput: {
     flex: 1,
@@ -69,38 +88,40 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   resendContainer: {
-    paddingTop:23
+    paddingVertical: 12,
   },
   resendText: {
     fontSize: 14,
     color: '#B7410E',
     fontWeight: '500',
-    fontFamily:'Inter'
+    fontFamily: 'Inter',
   },
   bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingBottom: 34,
     paddingTop: 20,
     paddingHorizontal: 23,
-    gap:14
+    gap: 14,
+    backgroundColor: '#FFFFFF',
+    zIndex: 100,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   verifyButtonTouchable: {
     borderRadius: 100,
   },
   verifyButton: {
     borderRadius: 100,
-    paddingTop: 10,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
     opacity: 1,
+    minHeight: 52,
   },
   verifyButtonText: {
     color: '#FFFFFF',

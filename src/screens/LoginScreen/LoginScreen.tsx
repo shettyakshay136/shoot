@@ -8,20 +8,29 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import { requestOtp } from '@/services';
+import { useAuth } from '@/contexts/AuthContext';
+// import { requestOtp } from '@/services';
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'LoginScreen'>;
+type LoginScreenNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  'LoginScreen'
+>;
 
 const LoginScreen = (): JSX.Element => {
   const { width, height } = Dimensions.get('window');
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const { login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -33,11 +42,16 @@ const LoginScreen = (): JSX.Element => {
 
     setLoading(true);
     try {
-      await requestOtp(phoneNumber);
-      navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
+      // API call commented out - backend not running
+      // await requestOtp(phoneNumber);
+      // Directly login with mock token to bypass OTP
+      await login('mock-token-' + phoneNumber);
     } catch (error) {
       console.error('Login Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to login. Please try again.';
       Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
@@ -46,7 +60,11 @@ const LoginScreen = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <StatusBar translucent barStyle="light-content" backgroundColor="transparent" />
+      <StatusBar
+        translucent
+        barStyle="light-content"
+        backgroundColor="transparent"
+      />
       <View style={styles.background}>
         <MyLoginSvg width={width} height={height} />
       </View>
@@ -55,11 +73,7 @@ const LoginScreen = (): JSX.Element => {
         <Text style={styles.headline}>
           India’s Fastest Real-Time Content Creation Platform
         </Text>
-        <View
-          style={[
-            styles.inputRow,
-          ]}
-        >
+        <View style={[styles.inputRow]}>
           <Text style={styles.countryPrefix}>+91</Text>
           <TextInput
             placeholder="Enter Phone Number"
@@ -70,46 +84,44 @@ const LoginScreen = (): JSX.Element => {
             keyboardType="phone-pad"
             returnKeyType="done"
             value={phoneNumber}
-            onChangeText={v => setPhoneNumber(v.replace(/[^\d]/g, '').slice(0, 10))}
+            onChangeText={v =>
+              setPhoneNumber(v.replace(/[^\d]/g, '').slice(0, 10))
+            }
             style={styles.phoneInput}
             selectionColor="white"
             maxLength={10}
           />
         </View>
-        <View style={{gap:24}}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleSignIn}
-          style={[
-            styles.signInButton,
-            (phoneNumber.length !== 10 || loading) ? { opacity: 0.5 } : {}
-          ]}
-          disabled={phoneNumber.length !== 10 || loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text
-              allowFontScaling={false}
-              style={[styles.signInText]}
-            >
-              Sign in
+        <View style={{ gap: 24 }}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleSignIn}
+            style={[
+              styles.signInButton,
+              phoneNumber.length !== 10 || loading ? { opacity: 0.5 } : {},
+            ]}
+            disabled={phoneNumber.length !== 10 || loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text allowFontScaling={false} style={[styles.signInText]}>
+                Sign in
+              </Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              navigation.navigate('OnboardingScreen');
+            }}
+            style={styles.registerButtonContainer}
+          >
+            <Text style={styles.registerText}>
+              New creator? <Text style={styles.registerLink}>Register</Text>
             </Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            navigation.navigate('OnboardingScreen');
-          }}
-          style={styles.registerButtonContainer}
-        >
-          <Text style={styles.registerText}>
-            New creator? <Text style={styles.registerLink}>Register</Text>
-          </Text>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </View>
-
       </View>
     </View>
   );

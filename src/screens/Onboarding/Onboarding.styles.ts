@@ -4,14 +4,17 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    gap:23,
-    paddingHorizontal:23
+  },
+  keyboardView: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
+    paddingHorizontal: 23,
+    paddingBottom: 12,
   },
   backButton: {
     width: 40,
@@ -26,8 +29,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FEEDD6',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical:10,
-    paddingHorizontal:16
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   helpButtonText: {
     fontSize: 16,
@@ -35,9 +38,23 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
+    paddingHorizontal: 23,
+    paddingBottom: 12,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#111827',
+    lineHeight: 32,
+    fontFamily: 'Saans TRIAL',
   },
   scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
+    paddingHorizontal: 23,
+    paddingTop: 12,
+    paddingBottom: 100, // Extra padding to ensure button doesn't cover content
   },
   inputsContainer: {
     gap: 16,
@@ -66,6 +83,7 @@ export const styles = StyleSheet.create({
   textInputFocused: {
     borderWidth: 1.5,
     borderColor: '#414651',
+    backgroundColor: '#FAFBFC',
   },
   phoneInputContainer: {
     height: 48,
@@ -81,12 +99,13 @@ export const styles = StyleSheet.create({
   phoneInputContainerFocused: {
     borderWidth: 1.5,
     borderColor: '#414651',
+    backgroundColor: '#FAFBFC',
   },
   phonePrefix: {
     backgroundColor: '#F0F4F8',
     borderRadius: 5,
-    paddingVertical:4,
-    paddingHorizontal:8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   phonePrefixText: {
     fontSize: 16,
@@ -100,6 +119,45 @@ export const styles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     paddingVertical: 0,
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 24,
+    paddingTop: 16,
+    paddingHorizontal: 23,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  verifyButtonTouchable: {
+    borderRadius: 100,
+  },
+  verifyButton: {
+    borderRadius: 100,
+    paddingTop: 12,
+    paddingRight: 20,
+    paddingBottom: 12,
+    paddingLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
+    minHeight: 52,
+  },
+  verifyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  verifyButtonDisabled: {
+    opacity: 0.5,
+  },
+  verifyButtonTextDisabled: {
+    color: '#FFFFFF',
   },
   dropdownButton: {
     height: 48,
@@ -154,49 +212,6 @@ export const styles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Saans TRIAL',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#111827',
-    lineHeight: 32,
-    fontFamily: 'Saans TRIAL',
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingBottom: 21,
-    paddingTop: 20,
-    paddingHorizontal: 23,
-    gap:14
-  },
-  verifyButtonTouchable: {
-    borderRadius: 100,
-  },
-  verifyButton: {
-    borderRadius: 100,
-    paddingTop: 10,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    opacity: 1,
-  },
-  verifyButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  verifyButtonDisabled: {
-    opacity: 0.5,
-  },
-  verifyButtonTextDisabled: {
-    color: '#FFFFFF',
-  },
   helpText: {
     fontSize: 14,
     fontWeight: '600',
@@ -209,5 +224,8 @@ export const styles = StyleSheet.create({
   },
   changeNumberText: {
     color: '#B7410E',
+  },
+  bottomSpacer: {
+    height: 20,
   },
 });

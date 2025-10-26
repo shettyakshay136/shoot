@@ -1,17 +1,28 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 23,
+    paddingTop: 12,
+    paddingBottom: 140,
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    gap:23,
-    paddingHorizontal:23
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
+    paddingBottom: 12,
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   backButton: {
     width: 40,
@@ -26,8 +37,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FEEDD6',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical:10,
-    paddingHorizontal:16
+    paddingVertical: 10,
+    paddingHorizontal: 16,
   },
   helpButtonText: {
     fontSize: 16,
@@ -35,7 +46,8 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
-    gap:20
+    gap: 24,
+    marginBottom: 16,
   },
   scrollView: {
     flex: 1,
@@ -44,7 +56,7 @@ export const styles = StyleSheet.create({
     gap: 16,
   },
   inputContainer: {
-    gap: 6,
+    gap: 12,
   },
   inputLabel: {
     fontSize: 14,
@@ -86,8 +98,8 @@ export const styles = StyleSheet.create({
   phonePrefix: {
     backgroundColor: '#F0F4F8',
     borderRadius: 5,
-    paddingVertical:4,
-    paddingHorizontal:8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   phonePrefixText: {
     fontSize: 16,
@@ -161,16 +173,20 @@ export const styles = StyleSheet.create({
     color: '#111827',
     lineHeight: 32,
     fontFamily: 'Saans TRIAL',
+    marginBottom: 8,
   },
   bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingBottom: 21,
+    paddingBottom: 34,
     paddingTop: 20,
     paddingHorizontal: 23,
-    gap:14
+    gap: 14,
+    backgroundColor: '#FFFFFF',
+    zIndex: 100,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   verifyButtonTouchable: {
     borderRadius: 100,
@@ -244,18 +260,33 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#FED7AA',
-    paddingTop: 18,
-    paddingRight: 16,
-    paddingBottom: 18,
-    paddingLeft: 16,
-    flexDirection: 'column',
-    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    gap: 12,
+  },
+  referralHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  giftIcon: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  referralText: {
+    flex: 1,
+    gap: 4,
   },
   gift: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    gap:8
+    gap: 8,
   },
   giftText: {
     gap: 1,
@@ -263,8 +294,8 @@ export const styles = StyleSheet.create({
   referralCodeText: {
     fontFamily: 'Saans TRIAL',
     fontWeight: '600',
-    fontSize: 18,
-    lineHeight: 28,
+    fontSize: 16,
+    lineHeight: 24,
     color: '#983614',
   },
   bonusText: {
@@ -277,19 +308,16 @@ export const styles = StyleSheet.create({
   referralCodeInput: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
+    position: 'relative',
   },
   referralCodeTextInput: {
     flex: 1,
-    height: 40,
+    height: 44,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#FFFFFF',
-    paddingTop: 8,
-    paddingRight: 12,
-    paddingBottom: 8,
-    paddingLeft: 12,
+    paddingHorizontal: 12,
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',

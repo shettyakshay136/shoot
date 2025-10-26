@@ -1,5 +1,14 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView,TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
@@ -8,7 +17,10 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import GiftSvg from '@/assets/svg/gift.svg';
 
-type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OnboardingScreen'>;
+type OnboardingScreenNavigationProp = NativeStackNavigationProp<
+  AuthStackParamList,
+  'OnboardingScreen'
+>;
 
 const RegisterScreen = (): JSX.Element => {
   const navigation = useNavigation<OnboardingScreenNavigationProp>();
@@ -33,9 +45,7 @@ const RegisterScreen = (): JSX.Element => {
 
   // Validation logic
   const isFormValid = () => {
-    return (
-      phoneNumber.trim() !== ''
-    );
+    return phoneNumber.trim() !== '';
   };
 
   const handleVerify = () => {
@@ -55,23 +65,38 @@ const RegisterScreen = (): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={0}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          scrollEnabled={true}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <BackButton/>
+              <BackButton />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
-            <Text style={styles.helpButtonText}>Help</Text>
+              <Text style={styles.helpButtonText}>Help</Text>
             </TouchableOpacity>
-        </View>
-        <View style={styles.content}>
+          </View>
+
+          <View style={styles.content}>
             <Text style={styles.title}>Hello, Satya!</Text>
+
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Phone Number</Text>
-              <View style={[
-                styles.phoneInputContainer,
-                focusedField === 'phone' && styles.phoneInputContainerFocused
-              ]}>
+              <View
+                style={[
+                  styles.phoneInputContainer,
+                  focusedField === 'phone' && styles.phoneInputContainerFocused,
+                ]}
+              >
                 <View style={styles.phonePrefix}>
                   <Text style={styles.phonePrefixText}>+91</Text>
                 </View>
@@ -84,36 +109,45 @@ const RegisterScreen = (): JSX.Element => {
                   placeholder="Enter your phone number"
                   placeholderTextColor="#9CA3AF"
                   keyboardType="phone-pad"
+                  returnKeyType="done"
                 />
               </View>
               <View style={styles.checkboxContainer}>
                 <TouchableOpacity
                   style={styles.checkbox}
-                  onPress={() => setReceiveWhatsAppUpdates(!receiveWhatsAppUpdates)}
+                  onPress={() =>
+                    setReceiveWhatsAppUpdates(!receiveWhatsAppUpdates)
+                  }
                 >
                   {receiveWhatsAppUpdates && (
                     <Text style={styles.checkmark}>✓</Text>
                   )}
                 </TouchableOpacity>
-                <Text style={styles.checkboxText}>Receive updates on WhatsApp</Text>
+                <Text style={styles.checkboxText}>
+                  Receive updates on WhatsApp
+                </Text>
               </View>
             </View>
-        </View>
 
-        <View style={styles.bottomContainer}>
-           <View style={styles.referralContainer}>
-             <View style={styles.gift}>
-                 <GiftSvg/>
-                 <View style={styles.giftText}>
-                     <Text style={styles.referralCodeText}>Have a referral code?</Text>
-                     <Text style={styles.bonusText}>Get up to ₹500 as referral joining bonus</Text>
-                 </View>
-             </View>
+            <View style={styles.referralContainer}>
+              <View style={styles.referralHeader}>
+                <View style={styles.giftIcon}>
+                  <GiftSvg />
+                </View>
+                <View style={styles.referralText}>
+                  <Text style={styles.referralCodeText}>
+                    Have a referral code?
+                  </Text>
+                  <Text style={styles.bonusText}>
+                    Get up to ₹500 as referral joining bonus
+                  </Text>
+                </View>
+              </View>
               <View style={styles.referralCodeInput}>
                 <TextInput
                   style={[
                     styles.referralCodeTextInput,
-                    isValidReferralCode && styles.referralCodeTextInputValid
+                    isValidReferralCode && styles.referralCodeTextInputValid,
                   ]}
                   value={referralCode}
                   onChangeText={handleReferralCodeChange}
@@ -123,14 +157,15 @@ const RegisterScreen = (): JSX.Element => {
                   placeholderTextColor="#9CA3AF"
                   autoCapitalize="characters"
                   maxLength={10}
+                  returnKeyType="done"
                 />
-                {isValidReferralCode && (
-                  <Text style={styles.tickMark}>✓</Text>
-                )}
+                {isValidReferralCode && <Text style={styles.tickMark}>✓</Text>}
               </View>
-            <View />
+            </View>
+          </View>
+        </ScrollView>
 
-           </View>
+        <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={handleVerify}
             disabled={!isFormValid()}
@@ -142,17 +177,21 @@ const RegisterScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                !isFormValid() && styles.verifyButtonDisabled
+                !isFormValid() && styles.verifyButtonDisabled,
               ]}
             >
-              <Text style={[
-                styles.verifyButtonText,
-                !isFormValid() && styles.verifyButtonTextDisabled
-              ]}>Register</Text>
+              <Text
+                style={[
+                  styles.verifyButtonText,
+                  !isFormValid() && styles.verifyButtonTextDisabled,
+                ]}
+              >
+                Register
+              </Text>
             </LinearGradient>
           </TouchableOpacity>
-          
         </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
