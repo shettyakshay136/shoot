@@ -11,6 +11,8 @@ const OTPModal: React.FC<OTPModalProps> = ({
   onClose,
   onVerify,
   onResend,
+  title = 'Shoot start OTP',
+  subtitle = 'Request the 4-digit OTP from your client to begin',
 }) => {
   const [otp, setOtp] = useState(['', '', '', '']);
   const [resendTimer, setResendTimer] = useState(62);
@@ -93,9 +95,9 @@ const OTPModal: React.FC<OTPModalProps> = ({
         </View>
         
         <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Shoot start OTP</Text>
+          <Text style={styles.titleText}>{title}</Text>
           <Text style={styles.instructionText}>
-            Request the 4-digit OTP from your client to begin
+            {subtitle}
           </Text>
         </View>
 

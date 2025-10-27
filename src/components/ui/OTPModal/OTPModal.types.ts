@@ -3,5 +3,7 @@ export interface OTPModalProps {
   onClose: () => void;
   onVerify: () => void;
   onResend?: () => void;
+  title?: string;
+  subtitle?: string;
 }
 

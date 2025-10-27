@@ -99,7 +99,8 @@ const ShootDetailsScreen = (): JSX.Element => {
     // Handle OTP verification
     console.log('OTP verified');
     setIsOTPModalVisible(false);
-    // Navigate to shooting screen or perform next action
+    // Navigate to countdown screen
+    navigation.navigate('CountdownScreen');
   };
 
   const handleOTPResend = () => {

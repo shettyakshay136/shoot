@@ -5,5 +5,7 @@ export type ShootStackParamList = {
   ShootDetails: {
     shootData?: ShootDetailsData;
   };
+  CountdownScreen: undefined;
+  DeliveryDeadlineScreen: undefined;
 };
 

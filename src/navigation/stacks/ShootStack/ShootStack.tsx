@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { type JSX } from 'react';
 import { COMMON_SCREEN_OPTIONS } from '../../Constants';
-import { ShootsScreen, ShootDetailsScreen } from '@/screens';
+import { ShootsScreen, ShootDetailsScreen, CountdownScreen, DeliveryDeadlineScreen } from '@/screens';
 import { ShootStackParamList } from './ShootStack.types';
 
 const Stack = createNativeStackNavigator<ShootStackParamList>();
@@ -19,6 +19,22 @@ const ShootStack = (): JSX.Element => {
         component={ShootDetailsScreen}
         options={{ 
           title: 'Shoot Details',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="CountdownScreen" 
+        component={CountdownScreen}
+        options={{ 
+          title: 'Countdown',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="DeliveryDeadlineScreen" 
+        component={DeliveryDeadlineScreen}
+        options={{ 
+          title: 'Delivery Deadline',
           headerShown: false,
         }}
       />
