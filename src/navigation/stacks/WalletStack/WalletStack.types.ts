@@ -1,5 +1,9 @@
+import type { WithdrawalDetailsData } from '@/screens/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
+
 export type WalletStackParamList = {
   Wallet: undefined;
-  // Add other wallet-related screens here
+  WithdrawalDetails: {
+    withdrawalData?: WithdrawalDetailsData;
+  };
 };
 

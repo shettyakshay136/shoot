@@ -1,10 +1,11 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationStatusScreen.styles';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
 import { UploadModal } from '@/components';
+import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
 
 interface Step {
   id: number;
@@ -32,39 +33,61 @@ const ApplicationStatusScreen = (): JSX.Element => {
     setIsUploadModalVisible(false);
   };
 
-  const handleFileUpload = () => {
-    // Handle file upload logic here
-    console.log('File upload initiated');
-    
-    // Update steps: mark current active step as completed and next step as active
-    setSteps(prevSteps => {
-      const updatedSteps = [...prevSteps];
-      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
-      
-      if (currentActiveIndex !== -1) {
-        // Mark current step as completed
-        updatedSteps[currentActiveIndex] = {
-          ...updatedSteps[currentActiveIndex],
-          status: 'completed',
-          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
-          actionButton: undefined, // Remove action button for completed step
-        };
-        
-        // Mark next step as active
-        const nextStepIndex = currentActiveIndex + 1;
-        if (nextStepIndex < updatedSteps.length) {
-          updatedSteps[nextStepIndex] = {
-            ...updatedSteps[nextStepIndex],
-            status: 'active',
-            isExpanded: true,
+  const handleFileUpload = async () => {
+    try {
+      const results = await DocumentPicker.pick({
+        type: [DocumentTypes.allFiles],
+        allowMultiSelection: true,
+        copyTo: Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
+        presentationStyle: 'fullScreen',
+      });
+
+      const formData = new FormData();
+      results.forEach((file: any, index: number) => {
+        const uri = file.fileCopyUri ?? file.uri;
+        formData.append('files', {
+          uri,
+          type: file.type ?? 'application/octet-stream',
+          name: file.name ?? `upload-${index}`,
+        } as any);
+      });
+
+      // Example upload (adjust endpoint as needed)
+      // await rogApi.post('/uploads', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+      console.log('Selected files:', results.map((f: any) => ({ name: f.name, size: f.size, uri: f.fileCopyUri ?? f.uri })));
+
+      setSteps(prevSteps => {
+        const updatedSteps = [...prevSteps];
+        const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
+        if (currentActiveIndex !== -1) {
+          updatedSteps[currentActiveIndex] = {
+            ...updatedSteps[currentActiveIndex],
+            status: 'completed',
+            timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
+            actionButton: undefined,
           };
+          const nextStepIndex = currentActiveIndex + 1;
+          if (nextStepIndex < updatedSteps.length) {
+            updatedSteps[nextStepIndex] = {
+              ...updatedSteps[nextStepIndex],
+              status: 'active',
+              isExpanded: true,
+            };
+          }
         }
+        return updatedSteps;
+      });
+      setIsUploadModalVisible(false);
+    } catch (e: any) {
+      if (DocumentPicker.isCancel(e)) {
+        // user cancelled
+      } else if (isInProgress(e)) {
+        console.warn('Multiple pickers opened');
+      } else {
+        console.error('File picking error:', e);
       }
-      
-      return updatedSteps;
-    });
-    
-    setIsUploadModalVisible(false);
+    }
   };
 
   const handleUploadShoot = () => {

@@ -19,8 +19,14 @@ import BanknoteArrowUpIcon from '../../assets/svg/banknote-arrow-up.svg';
 import CurrencyIcon from '../../assets/svg/indian-rupee.svg';
 import MoreIcon from '../../assets/svg/more.svg';
 import ClapperboardIcon from '../../assets/svg/file.svg';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HomeStackParamList } from '@/navigation/stacks/HomeStack/HomeStack.types';
+
+type HomeNav = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
 
 const HomeScreen = (): JSX.Element => {
+  const navigation = useNavigation<HomeNav>();
   const [isOnline, setIsOnline] = useState(false);
   const [activeTab, setActiveTab] = useState('Available');
 
@@ -186,9 +192,11 @@ const HomeScreen = (): JSX.Element => {
 
          {renderTabContent()}
            <View>
-             <View style={[styles.sectionHeader, styles.performanceSection]}>
+            <View style={[styles.sectionHeader, styles.performanceSection]}>
                <Text style={styles.sectionTitle}>Performance</Text>
-               <Text style={styles.sectionall}>See all</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Performance')}>
+                <Text style={styles.sectionall}>See all</Text>
+              </TouchableOpacity>
              </View>
              <View style={styles.performanceCards}>
                <View style={styles.performanceCard}>
