@@ -47,7 +47,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
             Follow the instructions you have received in the email and upload it securely from here.
           </Text>
           
-          <TouchableOpacity style={styles.uploadButton} onPress={onUpload}>
+          <TouchableOpacity style={styles.uploadButton}>
             <Text style={styles.uploadButtonText}>Upload Files</Text>
           </TouchableOpacity>
         </View>
