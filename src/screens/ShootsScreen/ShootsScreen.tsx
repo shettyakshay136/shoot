@@ -424,7 +424,7 @@ const ShootsScreen = (): JSX.Element => {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.leftSection}>
-            <Text style={styles.name}>Akshay Shetty</Text>
+            <Text style={styles.name}>Om Verma</Text>
             <Text style={styles.address} numberOfLines={1} ellipsizeMode="tail">
               Professor CR Rao Rd, Gachibowli, Hyderabad, Telangana 500032
             </Text>
