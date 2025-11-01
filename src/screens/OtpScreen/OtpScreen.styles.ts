@@ -27,7 +27,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical:10,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    flexDirection:'row',
+    gap:8
   },
   helpButtonText: {
     fontSize: 16,

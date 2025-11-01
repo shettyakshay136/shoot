@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     borderColor: PRIMARY_COLORS[900],
   },
   inactiveTabButton: {
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
     borderColor: '#D5D7DA',
   },
   tabButtonText: {

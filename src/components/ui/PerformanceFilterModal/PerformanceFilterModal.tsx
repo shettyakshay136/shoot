@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import BaseModal from '@/components/layout/BaseModal/BaseModal';
 import { styles } from '@/components/ui/PerformanceFilterModal/PerformanceFilterModal.styles';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg'
 // colors imported elsewhere if needed
 
 export interface PerformanceFilterModalProps {
@@ -72,6 +73,7 @@ const PerformanceFilterModal = ({
                 style={styles.applyButton}
               >
                 <Text style={styles.applyText}>Filter</Text>
+                <ArrowUp/>
               </LinearGradient>
             </TouchableOpacity>
 

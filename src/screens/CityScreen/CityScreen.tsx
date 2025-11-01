@@ -1,5 +1,5 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,7 +7,10 @@ import { styles } from './CityScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import { SimpleModal } from '@/components';
-import BoomSvg from '@/assets/svg/boom.svg'
+import BoomSvg from '@/assets/svg/boom.svg';
+import Infoicon from '@/assets/svg/info.svg';
+import Dropdownicon from '@/assets/svg/dropdown.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg'
 
 type CityScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'CityScreen'>;
 
@@ -67,10 +70,11 @@ const CityScreen = (): JSX.Element => {
     <SafeAreaView style={styles.container}>
         <View style={styles.header}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <BackButton/>
+              <BackButton/>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
-            <Text style={styles.helpButtonText}>Help</Text>
+              <Infoicon/>
+              <Text style={styles.helpButtonText}>Help</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.content}>
@@ -94,23 +98,31 @@ const CityScreen = (): JSX.Element => {
                   ]}>
                     {selectedCity || 'Select your city'}
                   </Text>
-                  <Text style={styles.dropdownArrow}>
-                    {isDropdownOpen ? '▲' : '▼'}
-                  </Text>
+                  {isDropdownOpen ? <Dropdownicon/> : <Dropdownicon style={{transform:[{rotate:'180deg'}]}}/>}
+                
                 </TouchableOpacity>
                 
                 {isDropdownOpen && (
-                  <View style={styles.dropdownList}>
-                    {cities.map((city, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        style={styles.dropdownItem}
-                        onPress={() => handleCitySelect(city)}
-                      >
-                        <Text style={styles.dropdownItemText}>{city}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                    {cities.map((city, index) => {
+                      const isSelected = city === selectedCity;
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          style={[
+                            styles.dropdownItem,
+                            isSelected && styles.dropdownItemSelected,
+                          ]}
+                          onPress={() => handleCitySelect(city)}
+                        >
+                          <Text style={[
+                            styles.dropdownItemText,
+                            isSelected && styles.dropdownItemTextSelected,
+                          ]}>{city}</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
                 )}
               </View>
             </View>
@@ -204,6 +216,7 @@ const CityScreen = (): JSX.Element => {
                 style={styles.confirmButtonGradient}
               >
                 <Text style={styles.confirmButtonText}>Check Status</Text>
+                <ArrowUp/>
               </LinearGradient>
             </TouchableOpacity>
           </View>

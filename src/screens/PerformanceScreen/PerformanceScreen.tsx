@@ -8,6 +8,10 @@ import BackButton from '@/assets/svg/backButtonPdp.svg';
 import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { PerformanceFilterModal } from '@/components/ui';
+import StarIcon from '@/assets/svg/star.svg';
+import MoneyIcon from "@/assets/svg/money.svg";
+import RocketIcon from "@/assets/svg/rocket.svg";
+import ClapperboardIcon from '@/assets/svg/file.svg'
 
 const TABS = ['Earning', 'Bookings', 'Reels Delivered', 'Total'];
 const X_AXIS_LABELS: string[] = ['1D', '1W', '1M', '6M', '1Y', '5Y', 'MAX'];
@@ -123,7 +127,7 @@ const PerformanceScreen = (): JSX.Element => {
 
             <View style={{ gap: 12 }}>
             <View style={styles.metricRow}> 
-              <Text style={styles.metricEmoji}>🎬</Text>
+              <ClapperboardIcon width={77} height={77}/>
               <View style={{ flex: 1 }}>
                 <Text style={styles.metricValue}>24</Text>
                 <Text style={styles.metricLabel}>Shoots</Text>
@@ -132,7 +136,7 @@ const PerformanceScreen = (): JSX.Element => {
             </View>
 
             <View style={styles.metricRow}> 
-              <Text style={styles.metricEmoji}>⭐</Text>
+              <StarIcon width={77} height={77}/>
               <View style={{ flex: 1 }}>
                 <Text style={styles.metricValue}>4.8</Text>
                 <Text style={styles.metricLabel}>Rating</Text>
@@ -141,7 +145,7 @@ const PerformanceScreen = (): JSX.Element => {
             </View>
 
             <View style={styles.metricRow}> 
-              <Text style={styles.metricEmoji}>🚀</Text>
+              <RocketIcon width={77} height={77}/>
               <View style={{ flex: 1 }}>
                 <Text style={styles.metricValue}>95.8%</Text>
                 <Text style={styles.metricLabel}>Success rate</Text>
@@ -150,7 +154,7 @@ const PerformanceScreen = (): JSX.Element => {
             </View>
 
             <View style={styles.metricRow}> 
-              <Text style={styles.metricEmoji}>💰</Text>
+              <MoneyIcon width={77} height={77}/>
               <View style={{ flex: 1 }}>
                 <Text style={styles.metricValue}>₹1,887</Text>
                 <Text style={styles.metricLabel}>Success rate</Text>

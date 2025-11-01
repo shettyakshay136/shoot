@@ -27,7 +27,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical:10,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    flexDirection:'row',
+    gap:8
   },
   helpButtonText: {
     fontSize: 16,
@@ -38,6 +40,9 @@ export const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollViewContent: {
+    paddingBottom: 160,
   },
   inputsContainer: {
     gap: 16,
@@ -87,6 +92,8 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical:4,
     paddingHorizontal:8,
+    flexDirection:'row',
+    gap:2
   },
   phonePrefixText: {
     fontSize: 16,
@@ -142,17 +149,22 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    overflow:'hidden'
   },
   dropdownItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   dropdownItemText: {
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FEEDD6',
+  },
+  dropdownItemTextSelected: {
+    color: '#983614',
   },
   title: {
     fontSize: 24,

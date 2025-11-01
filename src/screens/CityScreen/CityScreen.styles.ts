@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet , Dimensions } from 'react-native';
+
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
   container: {
@@ -27,7 +30,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical:10,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    flexDirection:'row',
+    gap:8
   },
   helpButtonText: {
     fontSize: 16,
@@ -89,18 +94,28 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     overflow:'hidden',
-    maxHeight:600
+    maxHeight:SCREEN_HEIGHT * 0.5,
+    zIndex: 1000,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   dropdownItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   dropdownItemText: {
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FEEDD6',
+  },
+  dropdownItemTextSelected: {
+    color: '#983614',
   },
   title: {
     fontSize: 24,
@@ -233,6 +248,8 @@ export const styles = StyleSheet.create({
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection:'row',
+    gap:8
   },
   confirmButtonText: {
     fontSize: 16,

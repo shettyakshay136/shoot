@@ -22,6 +22,8 @@ import ClapperboardIcon from '../../assets/svg/file.svg';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@/navigation/stacks/HomeStack/HomeStack.types';
+import CardIcon from '@/assets/svg/card.svg';
+import StarIcon from '@/assets/svg/star.svg'
 
 type HomeNav = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
 
@@ -146,6 +148,7 @@ const HomeScreen = (): JSX.Element => {
             <Text style={styles.balanceAmount}>₹12,542.12</Text>
           </View>
           <TouchableOpacity style={styles.earnMoreButton}>
+            <CardIcon/>
             <Text style={styles.earnMoreText}>Earn More</Text>
           </TouchableOpacity>
         </View>
@@ -207,7 +210,7 @@ const HomeScreen = (): JSX.Element => {
                  </View>
                </View>
                <View style={styles.performanceCard}>
-                 <ClapperboardIcon width={40} height={40}/>
+                 <StarIcon/>
                  <View>
                    <Text style={styles.performanceValue}>{PERFORMANCE_DATA.ratings.value}</Text>
                    <Text style={styles.performanceLabel}>{PERFORMANCE_DATA.ratings.label}</Text>

@@ -9,6 +9,7 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import { completeLogin, completeSignup, resendOtp } from '@/services';
 import { useAuth, useToast } from '@/contexts';
+import Infoicon from '@/assets/svg/info.svg';
 
 type OtpScreenRouteProp = RouteProp<AuthStackParamList, 'OtpScreen'>;
 type OtpScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OtpScreen'>;
@@ -107,6 +108,7 @@ const OtpScreen = (): JSX.Element => {
           <BackButton/>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
+          <Infoicon/>
           <Text style={styles.helpButtonText}>Help</Text>
         </TouchableOpacity>
       </View>

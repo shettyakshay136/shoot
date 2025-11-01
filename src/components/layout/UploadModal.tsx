@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import FileSvg from '@/assets/svg/file.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg'
 
 interface UploadModalProps {
   isVisible: boolean;
@@ -36,6 +37,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
       propagateSwipe={true}
     >
       <View style={styles.container}>
+      <View style={styles.handleLine} />
         <View style={styles.content}>
           <View style={styles.iconContainer}>
             <FileSvg width={80} height={80} />
@@ -65,6 +67,7 @@ const UploadModal: React.FC<UploadModalProps> = ({
                 style={styles.checkStatusButtonGradient}
               >
                 <Text style={styles.checkStatusButtonText}>Submit for Review</Text>
+                <ArrowUp/>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -79,6 +82,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     margin: 0,
   },
+  handleLine: {
+    width: "40%",
+    height: 5,
+    backgroundColor: 'black',
+    borderRadius: 2,
+    alignSelf: 'center',
+  },
   container: {
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 20,
@@ -86,7 +96,6 @@ const styles = StyleSheet.create({
     padding: 24,
     width: '100%',
     alignItems: 'center',
-    maxHeight: '90%',
     minHeight: '60%',
   },
   handleBar: {
@@ -99,6 +108,7 @@ const styles = StyleSheet.create({
   content: {
     alignItems: 'center',
     width: '100%',
+    paddingVertical:20
   },
   iconContainer: {
     marginBottom: 24,
@@ -161,6 +171,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal:18,
     backgroundColor: '#FFFFFF',
+    paddingVertical:10
   },
   checkStatusButton: {
     borderRadius: 100,
@@ -172,6 +183,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
+    paddingVertical:10,
+    flexDirection:'row',
+    gap:8
   },
   checkStatusButtonText: {
     fontSize: 16,

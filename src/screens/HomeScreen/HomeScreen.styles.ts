@@ -104,6 +104,9 @@ export const styles = StyleSheet.create({
     paddingRight: 16,
     paddingBottom: 10,
     paddingLeft: 16,
+    flexDirection:'row',
+    alignItems:'center',
+    gap:8
   },
   earnMoreText: {
     fontFamily: 'Saans TRIAL',

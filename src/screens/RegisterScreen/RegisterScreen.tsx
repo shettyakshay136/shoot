@@ -7,6 +7,7 @@ import { styles } from './RegisterScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import GiftSvg from '@/assets/svg/gift.svg';
+import Infoicon from '@/assets/svg/info.svg';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OnboardingScreen'>;
 
@@ -61,6 +62,7 @@ const RegisterScreen = (): JSX.Element => {
             <BackButton/>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
+              <Infoicon/>
             <Text style={styles.helpButtonText}>Help</Text>
             </TouchableOpacity>
         </View>
@@ -151,6 +153,9 @@ const RegisterScreen = (): JSX.Element => {
               ]}>Register</Text>
             </LinearGradient>
           </TouchableOpacity>
+          <Text style={{fontSize:14, color:'#414651', textAlign:'center', fontWeight:600}}>
+          By registering, you agree to our Terms of Service and Privacy Policy
+          </Text>
           
         </View>
     </SafeAreaView>

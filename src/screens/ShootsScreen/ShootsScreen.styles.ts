@@ -157,7 +157,7 @@ export const styles = StyleSheet.create({
   cardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap:5
   },
   payBadge: {
     backgroundColor: '#FEEDD6',

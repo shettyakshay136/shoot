@@ -8,6 +8,8 @@ import { IPHONE_MODELS, GENDER_OPTIONS } from './Onboarding.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import { initiateSignup } from '@/services';
+import Infoicon from '@/assets/svg/info.svg';
+import Dropdownicon from '@/assets/svg/dropdown.svg'
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'OnboardingScreen'>;
 
@@ -80,13 +82,18 @@ const OnboardingScreen = (): JSX.Element => {
             <BackButton/>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
-            <Text style={styles.helpButtonText}>Help</Text>
+              <Infoicon/>
+              <Text style={styles.helpButtonText}>Help</Text>
             </TouchableOpacity>
         </View>
         <View style={styles.content}>
             <Text style={styles.title}>Tell us a bit about yourself</Text>
         </View>
-        <ScrollView style={styles.scrollView}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          keyboardShouldPersistTaps="handled"
+        >
           <View style={styles.inputsContainer}>
             {/* Name Input */}
             <View style={styles.inputContainer}>
@@ -114,6 +121,7 @@ const OnboardingScreen = (): JSX.Element => {
               ]}>
                 <View style={styles.phonePrefix}>
                   <Text style={styles.phonePrefixText}>+91</Text>
+                  <Dropdownicon />
                 </View>
                 <TextInput
                   style={styles.phoneTextInput}
@@ -182,23 +190,33 @@ const OnboardingScreen = (): JSX.Element => {
                 ]}>
                   {selectedIphoneModel || 'Select iPhone model'}
                 </Text>
-                <Text style={styles.dropdownArrow}>▼</Text>
+                <Dropdownicon />
+                {/* <Text style={styles.dropdownArrow}>▼</Text> */}
               </TouchableOpacity>
               {focusedField === 'iphone' && (
-                <View style={styles.dropdownList}>
-                  {IPHONE_MODELS.map((model, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        setSelectedIphoneModel(model);
-                        setFocusedField(null);
-                      }}
-                    >
-                      <Text style={styles.dropdownItemText}>{model}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                  {IPHONE_MODELS.map((model, index) => {
+                    const isSelected = model === selectedIphoneModel;
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.dropdownItem,
+                          isSelected && styles.dropdownItemSelected,
+                        ]}
+                        onPress={() => {
+                          setSelectedIphoneModel(model);
+                          setFocusedField(null);
+                        }}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          isSelected && styles.dropdownItemTextSelected,
+                        ]}>{model}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
               )}
             </View>
 
@@ -218,23 +236,32 @@ const OnboardingScreen = (): JSX.Element => {
                 ]}>
                   {selectedGender || 'Select gender'}
                 </Text>
-                <Text style={styles.dropdownArrow}>▼</Text>
+                <Dropdownicon />
               </TouchableOpacity>
               {focusedField === 'gender' && (
-                <View style={styles.dropdownList}>
-                  {GENDER_OPTIONS.map((option, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.dropdownItem}
-                      onPress={() => {
-                        setSelectedGender(option);
-                        setFocusedField(null);
-                      }}
-                    >
-                      <Text style={styles.dropdownItemText}>{option}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+                <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                  {GENDER_OPTIONS.map((option, index) => {
+                    const isSelected = option === selectedGender;
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.dropdownItem,
+                          isSelected && styles.dropdownItemSelected,
+                        ]}
+                        onPress={() => {
+                          setSelectedGender(option);
+                          setFocusedField(null);
+                        }}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          isSelected && styles.dropdownItemTextSelected,
+                        ]}>{option}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
               )}
             </View>
 

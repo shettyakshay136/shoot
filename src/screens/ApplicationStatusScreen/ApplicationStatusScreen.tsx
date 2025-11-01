@@ -4,8 +4,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationStatusScreen.styles';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
-import { UploadModal } from '@/components';
+import { UploadModal, MoneySetupModal } from '@/components';
 import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
+import Infoicon from '@/assets/svg/info.svg';
+import Tick from '@/assets/svg/tick.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg';
 
 interface Step {
   id: number;
@@ -24,6 +27,7 @@ interface Step {
 const ApplicationStatusScreen = (): JSX.Element => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+  const [isMoneyModalVisible, setIsMoneyModalVisible] = useState(false);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -157,6 +161,16 @@ const ApplicationStatusScreen = (): JSX.Element => {
     });
   };
 
+  const handleMoneyContinue = (method: 'bank' | 'upi') => {
+    console.log('Selected payout method:', method);
+    setIsMoneyModalVisible(false);
+  };
+
+  const handleMoneySkip = () => {
+    console.log('Skipped payout setup');
+    setIsMoneyModalVisible(false);
+  };
+
   const [steps, setSteps] = useState<Step[]>([
     {
       id: 1,
@@ -222,7 +236,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
     if (step.status === 'completed') {
       return (
         <View style={styles.completedIcon}>
-          <Text style={styles.checkmark}>✓</Text>
+          <Tick/>
         </View>
       );
     } else if (step.status === 'active') {
@@ -281,6 +295,8 @@ const ApplicationStatusScreen = (): JSX.Element => {
             {(isExpanded || step.status === 'active') && step.actionButton && (
               <TouchableOpacity style={styles.actionButton} onPress={step.actionButton.onPress}>
                 <Text style={styles.actionButtonText}>{step.actionButton.text}</Text>
+                <ArrowUp/>
+
               </TouchableOpacity>
             )}
           </View>
@@ -303,6 +319,10 @@ const ApplicationStatusScreen = (): JSX.Element => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Application Status</Text>
+        <TouchableOpacity style={styles.helpButton}>
+          <Infoicon/>
+          <Text style={styles.helpButtonText}>Help</Text>
+        </TouchableOpacity>
         {/* <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
           <Text style={styles.helpButtonText}>Help</Text>
         </TouchableOpacity> */}
@@ -332,7 +352,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity style={styles.submitButton} onPress={() => setIsMoneyModalVisible(true)}>
           <LinearGradient
             colors={['#000000', '#61240E']}
             start={{ x: 0, y: 0 }}
@@ -340,6 +360,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
             style={styles.submitButtonGradient}
           >
             <Text style={styles.submitButtonText}>Let's Capture</Text>
+            <ArrowUp/>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -350,6 +371,15 @@ const ApplicationStatusScreen = (): JSX.Element => {
         onClose={handleCloseUploadModal}
         onUpload={handleFileUpload}
         onCheckStatus={handleCloseUploadModal}
+      />
+
+      {/* Money Setup Modal */}
+      <MoneySetupModal
+        isVisible={isMoneyModalVisible}
+        onClose={() => setIsMoneyModalVisible(false)}
+        onContinue={handleMoneyContinue}
+        onSkip={handleMoneySkip}
+        defaultMethod={null}
       />
     </SafeAreaView>
   );

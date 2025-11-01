@@ -17,6 +17,9 @@ import { BaseModal, UpcomingShootModal, ROGDressModal } from '@/components';
 import MagnifyingGlassIcon from '@/assets/svg/magnifyingglass.svg';
 import RightArrow from '@/assets/svg/backButtonPdp.svg';
 import type { ShootStackParamList } from '@/navigation/stacks/ShootStack/ShootStack.types';
+import LocationIcon from '@/assets/svg/location.svg';
+import Timer from '@/assets/svg/timer.svg';
+import StarIcon from '@/assets/svg/star.svg'
 
 type ShootsScreenNavigationProp = NativeStackNavigationProp<ShootStackParamList, 'Shoot'>;
 
@@ -146,13 +149,17 @@ const ShootsScreen = (): JSX.Element => {
               >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
+                    <LocationIcon width={15} height={15}/>
+                    <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                  </View>
                   <View style={styles.cardFooter}>
+                    <Timer width={15} height={15}/>
                     <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   </View>
                 </View>
                 <View style={{    transform: [{ rotate: '180deg' }],}}>
-                  <RightArrow />
+                  <RightArrow width={21} height={21} />
                 </View>
               </TouchableOpacity>
             ))}
@@ -209,8 +216,12 @@ const ShootsScreen = (): JSX.Element => {
                 }}
               >
                 <Text style={styles.contentText}>{shoot.title}</Text>
-                <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
+                  <LocationIcon width={15} height={15}/>
+                  <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                </View>
                 <View style={styles.cardFooter}>
+                  <Timer width={15} height={15}/>
                   <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   <View style={styles.daysBadge}>
                     <Text style={{color:'#E75B0F' , fontWeight:600 , fontSize:14}}>{shoot.daysLeft} days</Text>
@@ -227,12 +238,21 @@ const ShootsScreen = (): JSX.Element => {
               <View key={shoot.id} style={[styles.upcomingContent,{gap:10}]}>
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <Text style={styles.contentSubtext}>{shoot.location}</Text>
-                  <Text style={styles.contentSubtext}>{shoot.date}</Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
+                    <LocationIcon width={15} height={15}/>
+                    <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                  </View>
+                  <View style={styles.cardFooter}>
+                    <Timer width={15} height={15}/>
+                    <Text style={styles.contentSubtext}>{shoot.date}</Text>
+                  </View>
                 </View>
                 <View style={{borderTopColor:'#F5F5F5', borderTopWidth:1}}/>
                 <View style={{flexDirection:'row', alignItems:'center',justifyContent:'space-between'}}>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
+                    <StarIcon width={20} height={20}/>
                     <Text style={{color:'#000000', fontWeight:600, fontSize:18}}>4.8/5.0</Text>
+                  </View>
                     <Text style={{color:'#000000', fontWeight:600, fontSize:18}}>₹12,542.12</Text>
                 </View>
               </View>
@@ -244,10 +264,14 @@ const ShootsScreen = (): JSX.Element => {
           <View style={styles.tabContent}>
             {REJECTED_SHOOTS.map((shoot) => (
               <View key={shoot.id} style={[styles.upcomingContent,{gap:10}]}>
-                <View>|
+                <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
+                    <LocationIcon width={15} height={15}/>
+                    <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                  </View>
                   <View style={styles.cardFooter}>
+                    <Timer width={15} height={15}/>
                     <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   </View>
                 </View>
