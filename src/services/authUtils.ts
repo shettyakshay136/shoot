@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   apiRequestOtp,
   apiCompleteLogin,
@@ -12,26 +11,19 @@ import {
   CompleteSignupRequest,
   CompleteSignupResponse,
 } from './auth';
-import { AUTH_TOKEN_KEY, USER_KEY } from './constants';
 
 /**
  * Login Flow - Request OTP
  */
-export const requestOtp = async (
+export const loginOtp = (
   phoneNumber: string
 ): Promise<SendOtpResponse> => {
-  try {
-    const result = await apiRequestOtp(phoneNumber);
-    return result;
-  } catch (error: unknown) {
-    console.error('Error requesting OTP:', error);
-    throw error;
-  }
+  return apiRequestOtp(phoneNumber);
 };
 
 /**
  * Login Flow - Complete Login
- * On success: creates session, stores token
+ * On success: returns token
  */
 export const completeLogin = async (
   phoneNumber: string,
@@ -39,15 +31,10 @@ export const completeLogin = async (
 ): Promise<CompleteLoginResponse> => {
   try {
     const result = await apiCompleteLogin(phoneNumber, otp);
-    
-    // Store authentication data
-    if (result.token) {
-      await AsyncStorage.setItem(AUTH_TOKEN_KEY, result.token);
-    }
-    
     return result;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error completing login:', error);
+    // Error message is already extracted in apiCompleteLogin
     throw error;
   }
 };
@@ -61,8 +48,9 @@ export const resendOtp = async (
   try {
     const result = await apiResendOtp(contactNumber);
     return result;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error resending OTP:', error);
+    // Error message is already extracted in apiResendOtp
     throw error;
   }
 };
@@ -77,33 +65,26 @@ export const initiateSignup = async (
   try {
     const result = await apiInitiateSignup(data);
     return result;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error initiating signup:', error);
+    // Error message is already extracted in apiInitiateSignup
     throw error;
   }
 };
 
 /**
  * Signup Flow - Complete Signup
- * On success: creates session, stores token and creator data
+ * On success: returns token and creator data
  */
 export const completeSignup = async (
   data: CompleteSignupRequest
 ): Promise<CompleteSignupResponse> => {
   try {
     const result = await apiCompleteSignup(data);
-    
-    // Store authentication data
-    if (result.token) {
-      await AsyncStorage.setItem(AUTH_TOKEN_KEY, result.token);
-    }
-    if (result.creator) {
-      await AsyncStorage.setItem(USER_KEY, JSON.stringify(result.creator));
-    }
-    
     return result;
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('Error completing signup:', error);
+    // Error message is already extracted in apiCompleteSignup
     throw error;
   }
 };

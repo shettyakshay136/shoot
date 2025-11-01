@@ -1,13 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { type JSX } from 'react';
 import { StyleSheet } from 'react-native';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { PRIMARY_COLORS } from '../../theme/colors';
 
 // Import stack navigators
-import HomeStack from './HomeStack';
-import ShootStack from './ShootStack';
-import WalletStack from './WalletStack';
-import ProfileStack from './ProfileStack';
+import HomeStack from '../stacks/HomeStack';
+import ShootStack from '../stacks/ShootStack';
+import WalletStack from '../stacks/WalletStack';
+import ProfileStack from '../stacks/ProfileStack';
 
 // Import SVG icons
 import HouseIcon from '../../assets/svg/house.svg';
@@ -25,7 +26,7 @@ export type AppTabParamList = {
 const Tab = createBottomTabNavigator<AppTabParamList>();
 
 // Icon components
-const HomeIcon = ({ color, focused }: { color: string; focused: boolean }) => (
+const HomeIcon = ({ focused }: { color: string; focused: boolean }) => (
   <HouseIcon 
     width={24} 
     height={24} 
@@ -33,7 +34,7 @@ const HomeIcon = ({ color, focused }: { color: string; focused: boolean }) => (
   />
 );
 
-const ShootIcon = ({ color, focused }: { color: string; focused: boolean }) => (
+const ShootIcon = ({ focused }: { color: string; focused: boolean }) => (
   <ClapperboardIcon 
     width={24} 
     height={24} 
@@ -41,7 +42,7 @@ const ShootIcon = ({ color, focused }: { color: string; focused: boolean }) => (
   />
 );
 
-const WalletIcon = ({ color, focused }: { color: string; focused: boolean }) => (
+const WalletIcon = ({ focused }: { color: string; focused: boolean }) => (
   <WalletCardsIcon 
     width={24} 
     height={24} 
@@ -49,7 +50,7 @@ const WalletIcon = ({ color, focused }: { color: string; focused: boolean }) => 
   />
 );
 
-const ProfileIcon = ({ color, focused }: { color: string; focused: boolean }) => (
+const ProfileIcon = ({ focused }: { color: string; focused: boolean }) => (
   <UserRoundIcon 
     width={24} 
     height={24} 
@@ -62,7 +63,6 @@ const AppNavigator = (): JSX.Element => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: PRIMARY_COLORS[900],
         tabBarInactiveTintColor: 'rgba(0, 0, 0, 0.6)',
         tabBarLabelStyle: styles.tabBarLabel,
@@ -75,14 +75,19 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: HomeIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
       <Tab.Screen
         name="ShootStack"
         component={ShootStack}
-        options={{
-          tabBarLabel: 'Shoot',
-          tabBarIcon: ShootIcon,
+        options={({ route }) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? 'Shoot';
+          return {
+            tabBarLabel: 'Shoot',
+            tabBarIcon: ShootIcon,
+            tabBarStyle: routeName === 'ShootDetails' ? styles.hiddenTabBar : styles.tabBar,
+          };
         }}
       />
       <Tab.Screen
@@ -91,6 +96,7 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Wallet',
           tabBarIcon: WalletIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
       <Tab.Screen
@@ -99,6 +105,7 @@ const AppNavigator = (): JSX.Element => {
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ProfileIcon,
+          tabBarStyle: styles.tabBar,
         }}
       />
     </Tab.Navigator>
@@ -118,6 +125,9 @@ const styles = StyleSheet.create({
     paddingBottom: 9,
     paddingLeft: 16,
     justifyContent: 'space-between',
+  },
+  hiddenTabBar: {
+    display: 'none',
   },
   tabBarLabel: {
     fontSize: 12,

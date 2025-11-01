@@ -35,6 +35,8 @@ const OtpScreen = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const { phoneNumber, flow = 'login' } = route.params;
+  const { login } = useAuth();
+  const { showToast } = useToast();
 
   // Mask phone number like 9******987
   const maskedPhone = phoneNumber.replace(/(\d)\d{6}(\d{3})/, '$1******$2');
@@ -69,7 +71,7 @@ const OtpScreen = (): JSX.Element => {
   const handleVerify = async () => {
     const otpCode = otp.join('');
     if (otpCode.length !== 4) {
-      Alert.alert('Error', 'Please enter a valid 4-digit OTP');
+      showToast('Error', 'error', 'Please enter a valid 4-digit OTP');
       return;
     }
 

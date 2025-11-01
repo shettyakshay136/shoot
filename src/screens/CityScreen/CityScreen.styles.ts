@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet , Dimensions } from 'react-native';
+
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
   container: {
@@ -119,6 +122,12 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FEEDD6',
+  },
+  dropdownItemTextSelected: {
+    color: '#983614',
   },
   title: {
     fontSize: 24,
@@ -247,6 +256,8 @@ export const styles = StyleSheet.create({
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection:'row',
+    gap:8
   },
   confirmButtonText: {
     fontSize: 16,

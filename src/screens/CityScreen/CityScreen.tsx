@@ -137,23 +137,31 @@ const CityScreen = (): JSX.Element => {
                   >
                     {selectedCity || 'Select your city'}
                   </Text>
-                  <Text style={styles.dropdownArrow}>
-                    {isDropdownOpen ? '▲' : '▼'}
-                  </Text>
+                  {isDropdownOpen ? <Dropdownicon/> : <Dropdownicon style={{transform:[{rotate:'180deg'}]}}/>}
+                
                 </TouchableOpacity>
 
                 {isDropdownOpen && (
-                  <View style={styles.dropdownList}>
-                    {cities.map((city, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        style={styles.dropdownItem}
-                        onPress={() => handleCitySelect(city)}
-                      >
-                        <Text style={styles.dropdownItemText}>{city}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
+                  <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                    {cities.map((city, index) => {
+                      const isSelected = city === selectedCity;
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          style={[
+                            styles.dropdownItem,
+                            isSelected && styles.dropdownItemSelected,
+                          ]}
+                          onPress={() => handleCitySelect(city)}
+                        >
+                          <Text style={[
+                            styles.dropdownItemText,
+                            isSelected && styles.dropdownItemTextSelected,
+                          ]}>{city}</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
                 )}
               </View>
             </View>
@@ -250,6 +258,7 @@ const CityScreen = (): JSX.Element => {
                 style={styles.confirmButtonGradient}
               >
                 <Text style={styles.confirmButtonText}>Check Status</Text>
+                <ArrowUp/>
               </LinearGradient>
             </TouchableOpacity>
           </View>

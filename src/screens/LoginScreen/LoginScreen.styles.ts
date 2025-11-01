@@ -92,7 +92,11 @@ export const styles = StyleSheet.create({
     elevation: 4,
   },
   signInButtonDisabled: { 
-    backgroundColor: 'rgba(255,255,255,0.6)' 
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    opacity: 0.5,
+  },
+  buttonContainer: {
+    gap: 24,
   },
   signInText: { 
     color: '#983614', 

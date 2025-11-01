@@ -1,10 +1,14 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationStatusScreen.styles';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
-import { UploadModal } from '@/components';
+import { UploadModal, MoneySetupModal } from '@/components';
+import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
+import Infoicon from '@/assets/svg/info.svg';
+import Tick from '@/assets/svg/tick.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg';
 
 interface Step {
   id: number;
@@ -23,6 +27,7 @@ interface Step {
 const ApplicationStatusScreen = (): JSX.Element => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+  const [isMoneyModalVisible, setIsMoneyModalVisible] = useState(false);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -32,39 +37,61 @@ const ApplicationStatusScreen = (): JSX.Element => {
     setIsUploadModalVisible(false);
   };
 
-  const handleFileUpload = () => {
-    // Handle file upload logic here
-    console.log('File upload initiated');
-    
-    // Update steps: mark current active step as completed and next step as active
-    setSteps(prevSteps => {
-      const updatedSteps = [...prevSteps];
-      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
-      
-      if (currentActiveIndex !== -1) {
-        // Mark current step as completed
-        updatedSteps[currentActiveIndex] = {
-          ...updatedSteps[currentActiveIndex],
-          status: 'completed',
-          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
-          actionButton: undefined, // Remove action button for completed step
-        };
-        
-        // Mark next step as active
-        const nextStepIndex = currentActiveIndex + 1;
-        if (nextStepIndex < updatedSteps.length) {
-          updatedSteps[nextStepIndex] = {
-            ...updatedSteps[nextStepIndex],
-            status: 'active',
-            isExpanded: true,
+  const handleFileUpload = async () => {
+    try {
+      const results = await DocumentPicker.pick({
+        type: [DocumentTypes.allFiles],
+        allowMultiSelection: true,
+        copyTo: Platform.OS === 'android' ? 'cachesDirectory' : 'documentDirectory',
+        presentationStyle: 'fullScreen',
+      });
+
+      const formData = new FormData();
+      results.forEach((file: any, index: number) => {
+        const uri = file.fileCopyUri ?? file.uri;
+        formData.append('files', {
+          uri,
+          type: file.type ?? 'application/octet-stream',
+          name: file.name ?? `upload-${index}`,
+        } as any);
+      });
+
+      // Example upload (adjust endpoint as needed)
+      // await rogApi.post('/uploads', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+
+      console.log('Selected files:', results.map((f: any) => ({ name: f.name, size: f.size, uri: f.fileCopyUri ?? f.uri })));
+
+      setSteps(prevSteps => {
+        const updatedSteps = [...prevSteps];
+        const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
+        if (currentActiveIndex !== -1) {
+          updatedSteps[currentActiveIndex] = {
+            ...updatedSteps[currentActiveIndex],
+            status: 'completed',
+            timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
+            actionButton: undefined,
           };
+          const nextStepIndex = currentActiveIndex + 1;
+          if (nextStepIndex < updatedSteps.length) {
+            updatedSteps[nextStepIndex] = {
+              ...updatedSteps[nextStepIndex],
+              status: 'active',
+              isExpanded: true,
+            };
+          }
         }
+        return updatedSteps;
+      });
+      setIsUploadModalVisible(false);
+    } catch (e: any) {
+      if (DocumentPicker.isCancel(e)) {
+        // user cancelled
+      } else if (isInProgress(e)) {
+        console.warn('Multiple pickers opened');
+      } else {
+        console.error('File picking error:', e);
       }
-      
-      return updatedSteps;
-    });
-    
-    setIsUploadModalVisible(false);
+    }
   };
 
   const handleUploadShoot = () => {
@@ -134,6 +161,16 @@ const ApplicationStatusScreen = (): JSX.Element => {
     });
   };
 
+  const handleMoneyContinue = (method: 'bank' | 'upi') => {
+    console.log('Selected payout method:', method);
+    setIsMoneyModalVisible(false);
+  };
+
+  const handleMoneySkip = () => {
+    console.log('Skipped payout setup');
+    setIsMoneyModalVisible(false);
+  };
+
   const [steps, setSteps] = useState<Step[]>([
     {
       id: 1,
@@ -199,7 +236,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
     if (step.status === 'completed') {
       return (
         <View style={styles.completedIcon}>
-          <Text style={styles.checkmark}>✓</Text>
+          <Tick/>
         </View>
       );
     } else if (step.status === 'active') {
@@ -258,6 +295,8 @@ const ApplicationStatusScreen = (): JSX.Element => {
             {(isExpanded || step.status === 'active') && step.actionButton && (
               <TouchableOpacity style={styles.actionButton} onPress={step.actionButton.onPress}>
                 <Text style={styles.actionButtonText}>{step.actionButton.text}</Text>
+                <ArrowUp/>
+
               </TouchableOpacity>
             )}
           </View>
@@ -280,6 +319,10 @@ const ApplicationStatusScreen = (): JSX.Element => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Application Status</Text>
+        <TouchableOpacity style={styles.helpButton}>
+          <Infoicon/>
+          <Text style={styles.helpButtonText}>Help</Text>
+        </TouchableOpacity>
         {/* <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
           <Text style={styles.helpButtonText}>Help</Text>
         </TouchableOpacity> */}
@@ -309,7 +352,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.submitButton}>
+        <TouchableOpacity style={styles.submitButton} onPress={() => setIsMoneyModalVisible(true)}>
           <LinearGradient
             colors={['#000000', '#61240E']}
             start={{ x: 0, y: 0 }}
@@ -317,6 +360,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
             style={styles.submitButtonGradient}
           >
             <Text style={styles.submitButtonText}>Let's Capture</Text>
+            <ArrowUp/>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -327,6 +371,15 @@ const ApplicationStatusScreen = (): JSX.Element => {
         onClose={handleCloseUploadModal}
         onUpload={handleFileUpload}
         onCheckStatus={handleCloseUploadModal}
+      />
+
+      {/* Money Setup Modal */}
+      <MoneySetupModal
+        isVisible={isMoneyModalVisible}
+        onClose={() => setIsMoneyModalVisible(false)}
+        onContinue={handleMoneyContinue}
+        onSkip={handleMoneySkip}
+        defaultMethod={null}
       />
     </SafeAreaView>
   );

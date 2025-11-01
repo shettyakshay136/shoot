@@ -146,6 +146,7 @@ const OnboardingScreen = (): JSX.Element => {
               >
                 <View style={styles.phonePrefix}>
                   <Text style={styles.phonePrefixText}>+91</Text>
+                  <Dropdownicon />
                 </View>
                 <TextInput
                   style={styles.phoneTextInput}

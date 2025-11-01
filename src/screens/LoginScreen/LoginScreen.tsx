@@ -6,7 +6,6 @@ import {
   Dimensions,
   TouchableOpacity,
   TextInput,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -19,8 +18,13 @@ import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
+<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 // import { requestOtp } from '@/services';
+=======
+import { loginOtp } from '@/services';
+import { useToast } from '@/contexts';
+>>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -33,14 +37,16 @@ const LoginScreen = (): JSX.Element => {
   const { login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
     if (phoneNumber.length !== 10) {
-      Alert.alert('Error', 'Please enter a valid 10-digit phone number');
+      showToast('Error', 'error', 'Please enter a valid 10-digit phone number');
       return;
     }
 
     setLoading(true);
+<<<<<<< HEAD
     try {
       // API call commented out - backend not running
       // await requestOtp(phoneNumber);
@@ -56,6 +62,20 @@ const LoginScreen = (): JSX.Element => {
     } finally {
       setLoading(false);
     }
+=======
+    loginOtp(phoneNumber)
+      .then((data) => {
+        showToast('Success', 'success', 'The OTP is' + " " + data.data );
+        navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Login Error:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+        showToast('Error', 'error', errorMessage);
+        setLoading(false);
+      });
+>>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
   };
 
   return (
@@ -92,6 +112,7 @@ const LoginScreen = (): JSX.Element => {
             maxLength={10}
           />
         </View>
+<<<<<<< HEAD
         <View style={{ gap: 24 }}>
           <TouchableOpacity
             activeOpacity={0.85}
@@ -119,6 +140,26 @@ const LoginScreen = (): JSX.Element => {
           >
             <Text style={styles.registerText}>
               New creator? <Text style={styles.registerLink}>Register</Text>
+=======
+        <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={handleSignIn}
+          style={[
+            styles.signInButton,
+            (phoneNumber.length !== 10 || loading) && styles.signInButtonDisabled
+          ]}
+          disabled={phoneNumber.length !== 10 || loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text
+              allowFontScaling={false}
+              style={[styles.signInText]}
+            >
+              Sign in
+>>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
             </Text>
           </TouchableOpacity>
         </View>

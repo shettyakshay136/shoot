@@ -1,12 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { type JSX } from 'react';
-import { COMMON_SCREEN_OPTIONS } from '../Constants';
-import { HomeScreen } from '@/screens'
-
-export type HomeStackParamList = {
-  Home: undefined;
-  // Add other home-related screens here
-};
+import { COMMON_SCREEN_OPTIONS } from '../../Constants';
+import { HomeScreen, PerformanceScreen } from '@/screens';
+import { HomeStackParamList } from './HomeStack.types';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -18,8 +14,14 @@ const HomeStack = (): JSX.Element => {
         component={HomeScreen}
         options={{ title: 'Home' }}
       />
+      <Stack.Screen 
+        name="Performance" 
+        component={PerformanceScreen}
+        options={{ title: 'Performance', headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
 
 export default HomeStack;
+

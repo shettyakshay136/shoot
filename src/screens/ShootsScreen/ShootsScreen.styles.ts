@@ -1,0 +1,400 @@
+import { StyleSheet } from 'react-native';
+import { PRIMARY_COLORS } from '../../theme/colors';
+
+export const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    backgroundColor: '#F8F4F0',
+  },
+  container: {
+    height: '100%',
+    backgroundColor: '#F8F4F0',
+    width: '100%',
+    paddingHorizontal:18
+  },
+  header: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingTop: 16,
+  },
+  leftSection: {
+    flex: 1,
+    marginRight: 16,
+  },
+  name: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '700',
+    fontSize: 20,
+    lineHeight: 30,
+    color: '#000000',
+    letterSpacing: 0,
+  },
+  address: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '400',
+    fontSize: 16,
+    lineHeight: 24,
+    color: '#717680',
+    width: '60%',
+    letterSpacing: 0,
+  },
+  toggleButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    minWidth: 80,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+  },
+  toggleButtonActive: {
+    backgroundColor: PRIMARY_COLORS[500],
+    borderColor: PRIMARY_COLORS[500],
+  },
+  toggleButtonInactive: {
+    backgroundColor: 'transparent',
+    borderColor: '#D1D1D1',
+  },
+  toggleText: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 24,
+    letterSpacing: 0,
+  },
+  toggleTextActive: {
+    color: '#FFFFFF',
+  },
+  toggleTextInactive: {
+    color: '#717680',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingTop:9
+  },
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D1D1',
+    paddingHorizontal:8,
+    gap:6
+  },
+  searchIcon: {
+  },
+  searchInput: {
+    fontSize: 16,
+    color: '#000000',
+    fontFamily: 'Saans TRIAL',
+  },
+  filterButton: {
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D1D1D1',
+    backgroundColor:'white',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  filterText: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '500',
+    fontSize: 16,
+    color: '#B7410E',
+  },
+  sectionContainer: {
+  },
+  sectionHeader: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 32,
+    color: 'black',
+    letterSpacing: 0,
+  },
+  sectionall: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '400',
+    fontSize: 16,
+    lineHeight: 32,
+    color: '#252B37',
+    letterSpacing: 0,
+  },
+  tabContent: {
+    gap: 12,
+  },
+  upcomingContent: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 16,
+    gap: 2,
+  },
+  contentText: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '600',
+    fontSize: 18,
+    lineHeight: 28,
+    color: '#181D27',
+  },
+  contentSubtext: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '300',
+    fontSize: 15,
+    lineHeight: 20,
+    color: '#717680',
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap:5
+  },
+  payBadge: {
+    backgroundColor: '#FEEDD6',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  daysBadge: {
+    backgroundColor: '#FEEDD6',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  completedBadge: {
+    backgroundColor: '#E8F5E8',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  rejectedBadge: {
+    backgroundColor: '#FFE5E5',
+    borderRadius: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  filterSectionTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 12,
+    color: '#000',
+    fontFamily: 'Saans TRIAL',
+  },
+  filterOption: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+  filterOptionText: {
+    fontSize: 14,
+    color: '#000',
+    fontFamily: 'Saans TRIAL',
+  },
+  modalTitle: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '500',
+    fontSize: 24,
+    textAlign: 'center',
+    color: '#000',
+    marginBottom: 24,
+  },
+  dateRangeContainer: {
+    gap:6
+  },
+  dateRangeLabel: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '500',
+    fontSize: 14,
+    color: '#000',
+  },
+  dateInputsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  dateInputWrapper: {
+    flex: 1,
+  },
+  dateInput: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D1D1',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+    fontFamily: 'Saans TRIAL',
+    color: '#000',
+  },
+  dateConnector: {
+    width: 30,
+    height: 2,
+    backgroundColor: '#D1D1D1',
+  },
+  dropdownContainer: {
+    gap: 6,
+  },
+  dropdownButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D1D1',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  dropdownButtonText: {
+    fontSize: 16,
+    fontFamily: 'Saans TRIAL',
+    color: '#000',
+  },
+  placeholderText: {
+    color: '#717680',
+  },
+  dropdownArrow: {
+    fontSize: 12,
+    color: '#717680',
+  },
+  dropdownOptions: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#D1D1D1',
+    borderRadius: 10,
+    marginTop: 4,
+    maxHeight: 200,
+    overflow: 'hidden',
+  },
+  dropdownOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    fontFamily: 'Saans TRIAL',
+    color: '#000',
+  },
+  radiusContainer: {
+    gap: 6,
+    // marginTop: 4,
+  },
+  sliderTrack: {
+    position: 'relative',
+    height: 20,
+    width: '100%',
+    justifyContent: 'center',
+    paddingHorizontal:5
+  },
+  sliderBackground: {
+    height: 4,
+    backgroundColor: '#D1D1D1',
+    borderRadius: 2,
+    width: '100%',
+    position: 'relative',
+  },
+  sliderProgress: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    height: 4,
+    backgroundColor: '#000000',
+    borderRadius: 2,
+  },
+  sliderDot: {
+    position: 'absolute',
+    top: -6,
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -8,
+  },
+  activeDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: 'white',
+    borderWidth:2,
+    borderColor:"black"
+  },
+  inactiveDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderColor: '#D5D7DA',
+    backgroundColor:'#F5F5F5',
+    borderWidth:2
+  },
+  sliderThumb: {
+    position: 'absolute',
+    top: -8,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: -10,
+  },
+  thumbCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 3,
+    borderColor: '#B7410E',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  radiusLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  radiusLabel: {
+    fontFamily: 'Saans TRIAL',
+    fontSize: 14,
+    color: '#717680',
+  },
+  radiusLabelActive: {
+    fontFamily: 'Saans TRIAL',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#B7410E',
+  },
+  applyButtonTouchable: {
+    marginTop: 24,
+    borderRadius: 100,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  applyButton: {
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+  },
+  applyButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    fontFamily: 'Saans TRIAL',
+  },
+});
+

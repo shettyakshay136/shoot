@@ -1,65 +1,86 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AUTH_TOKEN_KEY, USER_KEY } from '@/services/constants';
+
+// Auth storage keys
+export const AUTH_TOKEN_KEY = '@rog_auth_token';
+export const USER_KEY = '@rog_user';
+
+interface User {
+  id?: string;
+  name?: string;
+  contactNumber?: string;
+  email?: string;
+  [key: string]: any;
+}
 
 interface AuthContextType {
-  isLoggedIn: boolean | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
-  token: string | null;
-  login: (token: string) => Promise<void>;
+  user: User | null;
+  login: (token: string, userData?: User) => Promise<void>;
   logout: () => Promise<void>;
-  checkAuth: () => Promise<void>;
+  updateUser: (userData: User) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-
-  const checkAuth = async () => {
-    try {
-      setIsLoading(true);
-      const storedToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-
-      if (storedToken) {
-        setToken(storedToken);
-        setIsLoggedIn(true);
-      } else {
-        setToken(null);
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.error('Error checking auth:', error);
-      setIsLoggedIn(false);
-      setToken(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    checkAuth();
+    const checkAuthStatus = async () => {
+      try {
+        const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+        const userData = await AsyncStorage.getItem(USER_KEY);
+        
+        setIsAuthenticated(!!token);
+        if (userData) {
+          setUser(JSON.parse(userData));
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuthStatus();
   }, []);
 
-  const login = async (newToken: string) => {
+  const login = async (token: string, userData?: User) => {
     try {
-      await AsyncStorage.setItem(AUTH_TOKEN_KEY, newToken);
-      setToken(newToken);
-      setIsLoggedIn(true);
+      // Validate token before storing
+      if (!token || typeof token !== 'string') {
+        console.error('Invalid token provided to login:', token);
+        throw new Error('Invalid token provided');
+      }
+      
+      await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
+      
+      if (userData) {
+        await AsyncStorage.setItem(USER_KEY, JSON.stringify(userData));
+        setUser(userData);
+      }
+      
+      setIsAuthenticated(true);
     } catch (error) {
-      console.error('Error saving token:', error);
+      console.error('Error storing auth data:', error);
       throw error;
     }
   };
@@ -68,30 +89,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
       await AsyncStorage.removeItem(USER_KEY);
-      setToken(null);
-      setIsLoggedIn(false);
+      setIsAuthenticated(false);
+      setUser(null);
     } catch (error) {
-      console.error('Error clearing auth:', error);
+      console.error('Error removing auth data:', error);
       throw error;
     }
   };
 
-  const value: AuthContextType = {
-    isLoggedIn,
-    isLoading,
-    token,
-    login,
-    logout,
-    checkAuth,
+  const updateUser = async (userData: User) => {
+    try {
+      await AsyncStorage.setItem(USER_KEY, JSON.stringify(userData));
+      setUser(userData);
+    } catch (error) {
+      console.error('Error updating user data:', error);
+      throw error;
+    }
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, logout, updateUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};

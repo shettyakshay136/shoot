@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
   },
   activePillText: {
     fontSize: 12,
-    color: '#3B82F6',
+    color: 'Blue/900',
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
@@ -301,11 +301,28 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 32,
+    flexDirection:'row',
+    gap:8
   },
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
     fontFamily: 'Saans TRIAL',
+  },
+  helpButton: {
+    borderRadius: 1000,
+    backgroundColor: '#FEEDD6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical:10,
+    paddingHorizontal:16,
+    flexDirection:'row',
+    gap:8
+  },
+  helpButtonText: {
+    fontSize: 16,
+    color: '#983614',
+    fontWeight: '600',
   },
 });

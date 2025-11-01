@@ -16,6 +16,7 @@ import { styles } from './RegisterScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import GiftSvg from '@/assets/svg/gift.svg';
+import Infoicon from '@/assets/svg/info.svg';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,

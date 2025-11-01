@@ -29,8 +29,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FEEDD6',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical:10,
+    paddingHorizontal:16
   },
   helpButtonText: {
     fontSize: 16,
@@ -50,11 +50,6 @@ export const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  scrollViewContent: {
-    paddingHorizontal: 23,
-    paddingTop: 12,
-    paddingBottom: 100, // Extra padding to ensure button doesn't cover content
   },
   inputsContainer: {
     gap: 16,
@@ -104,8 +99,8 @@ export const styles = StyleSheet.create({
   phonePrefix: {
     backgroundColor: '#F0F4F8',
     borderRadius: 5,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingVertical:4,
+    paddingHorizontal:8,
   },
   phonePrefixText: {
     fontSize: 16,
@@ -200,17 +195,59 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    overflow:'hidden'
   },
   dropdownItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
   },
   dropdownItemText: {
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#111827',
+    lineHeight: 32,
+    fontFamily: 'Saans TRIAL',
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 21,
+    paddingTop: 20,
+    paddingHorizontal: 23,
+    gap:14
+  },
+  verifyButtonTouchable: {
+    borderRadius: 100,
+  },
+  verifyButton: {
+    borderRadius: 100,
+    paddingTop: 10,
+    paddingRight: 20,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
+  },
+  verifyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  verifyButtonDisabled: {
+    opacity: 0.5,
+  },
+  verifyButtonTextDisabled: {
+    color: '#FFFFFF',
   },
   helpText: {
     fontSize: 14,
