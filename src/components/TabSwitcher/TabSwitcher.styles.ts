@@ -11,7 +11,7 @@ export const styles = StyleSheet.create({
   },
   tabButton: {
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 7,
     borderRadius: 1000,
     borderWidth: 1,
     borderColor: '#D5D7DA',

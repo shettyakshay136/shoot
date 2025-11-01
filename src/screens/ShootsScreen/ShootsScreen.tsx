@@ -19,7 +19,8 @@ import RightArrow from '@/assets/svg/backButtonPdp.svg';
 import type { ShootStackParamList } from '@/navigation/stacks/ShootStack/ShootStack.types';
 import LocationIcon from '@/assets/svg/location.svg';
 import Timer from '@/assets/svg/timer.svg';
-import StarIcon from '@/assets/svg/star.svg'
+import StarIcon from '@/assets/svg/star.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg'
 
 type ShootsScreenNavigationProp = NativeStackNavigationProp<ShootStackParamList, 'Shoot'>;
 
@@ -460,6 +461,7 @@ const ShootsScreen = (): JSX.Element => {
               style={styles.applyButton}
             >
               <Text style={styles.applyButtonText}>Filter</Text>
+              <ArrowUp/>
             </LinearGradient>
           </TouchableOpacity>
         </View>

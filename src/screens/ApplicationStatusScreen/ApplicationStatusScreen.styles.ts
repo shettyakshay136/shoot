@@ -4,6 +4,9 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+    paddingHorizontal:23,
+    paddingTop:50,
+    paddingBottom:20
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -20,6 +23,9 @@ export const styles = StyleSheet.create({
     paddingBottom: 16,
     backgroundColor: '#FFFFFF',
     zIndex: 10,
+    flexDirection:"row",
+    justifyContent:'space-between',
+    alignItems:'center'
   },
   headerTitle: {
     fontSize: 24,
@@ -298,8 +304,8 @@ export const styles = StyleSheet.create({
   },
   submitButton: {
     height: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 32,
     flexDirection:'row',
     gap:8
@@ -324,5 +330,19 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#983614',
     fontWeight: '600',
+  },
+  submitButtonGradient: {
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    flexDirection:'row',
+    gap:8,
+    width:'100%',
+    borderRadius:100
+  },
+  footer: {
+    backgroundColor: 'white',
+    gap:12
   },
 });

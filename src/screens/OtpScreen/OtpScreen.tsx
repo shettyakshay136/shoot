@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { useState, useRef, type JSX } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -20,6 +21,7 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 // import { completeLogin, completeSignup, resendOtp } from '@/services';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts';
 
 type OtpScreenRouteProp = RouteProp<AuthStackParamList, 'OtpScreen'>;
 type OtpScreenNavigationProp = NativeStackNavigationProp<
@@ -35,17 +37,30 @@ const OtpScreen = (): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const { phoneNumber, flow = 'login' } = route.params;
-  const { login } = useAuth();
   const { showToast } = useToast();
+  const inputRefs = useRef<(TextInput | null)[]>([]);
 
   // Mask phone number like 9******987
   const maskedPhone = phoneNumber.replace(/(\d)\d{6}(\d{3})/, '$1******$2');
 
   const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) return;
+
     if (value.length <= 1 && /^\d*$/.test(value)) {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+
+      // Auto-focus next input
+      if (value && index < 3) {
+        inputRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -116,17 +131,17 @@ const OtpScreen = (): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <View style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={0}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           scrollEnabled={true}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          bounces={false}
         >
           <View style={styles.header}>
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -149,10 +164,14 @@ const OtpScreen = (): JSX.Element => {
               {otp.map((digit, index) => (
                 <TextInput
                   key={index}
+                  ref={ref => {
+                    inputRefs.current[index] = ref;
+                  }}
                   style={styles.otpInput}
                   value={digit}
                   onChangeText={value => handleOtpChange(index, value)}
-                  keyboardType="number-pad"
+                  onKeyPress={e => handleKeyPress(e, index)}
+                  keyboardType="numeric"
                   maxLength={1}
                   textAlign="center"
                   selectTextOnFocus
@@ -202,7 +221,7 @@ const OtpScreen = (): JSX.Element => {
           </Text>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 

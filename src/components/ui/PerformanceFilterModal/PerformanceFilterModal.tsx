@@ -76,7 +76,6 @@ const PerformanceFilterModal = ({
                 <ArrowUp/>
               </LinearGradient>
             </TouchableOpacity>
-
         </View>
       </ScrollView>
     </BaseModal>
@@ -84,5 +83,3 @@ const PerformanceFilterModal = ({
 };
 
 export default PerformanceFilterModal;
-
-

@@ -16,6 +16,8 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import { SimpleModal } from '@/components';
 import BoomSvg from '@/assets/svg/boom.svg';
+import Dropdownicon from '@/assets/svg/dropdown.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg'
 
 type CityScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -90,7 +92,7 @@ const CityScreen = (): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}

@@ -169,9 +169,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingHorizontal:18,
-    backgroundColor: '#FFFFFF',
-    paddingVertical:10
+    paddingHorizontal: 23,
+    backgroundColor: 'white',
+    paddingVertical:30
   },
   checkStatusButton: {
     borderRadius: 100,
@@ -179,13 +179,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   checkStatusButtonGradient: {
-    height: 52,
+    borderRadius: 120,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingVertical:10,
-    flexDirection:'row',
-    gap:8
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
   },
   checkStatusButtonText: {
     fontSize: 16,

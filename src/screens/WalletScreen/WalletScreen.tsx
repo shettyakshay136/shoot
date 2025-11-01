@@ -341,7 +341,7 @@ const WalletScreen = (): JSX.Element => {
             <View style={styles.actionButtonContainer}>
               <TouchableOpacity style={styles.actionButton}>
                 <IndianRupeeIcon width={24} height={24}/>
-                <Text style={styles.actionButtonText}>Add Money</Text>
+                <Text style={styles.actionButtonText}>Account</Text>
               </TouchableOpacity>
             </View>
           </View>

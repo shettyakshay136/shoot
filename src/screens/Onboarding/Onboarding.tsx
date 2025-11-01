@@ -19,6 +19,7 @@ import { IPHONE_MODELS, GENDER_OPTIONS } from './Onboarding.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import { IOSPicker } from '@/components/IOSPicker';
+import Dropdownicon from '@/assets/svg/dropdown.svg';
 // import { initiateSignup } from '@/services';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<
@@ -250,7 +251,7 @@ const OnboardingScreen = (): JSX.Element => {
           <TouchableOpacity
             onPress={handleVerify}
             disabled={!isFormValid() || loading}
-            style={styles.verifyButtonTouchable}
+            // style={styles.verifyButtonTouchable}
             activeOpacity={0.7}
           >
             <LinearGradient

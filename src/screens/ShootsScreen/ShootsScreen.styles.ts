@@ -5,12 +5,14 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     backgroundColor: '#F8F4F0',
+    flex:1
   },
   container: {
     height: '100%',
     backgroundColor: '#F8F4F0',
     width: '100%',
-    paddingHorizontal:18
+    paddingHorizontal:18,
+    paddingTop:52,
   },
   header: {
     width: '100%',
@@ -85,7 +87,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D1D1',
     paddingHorizontal:8,
-    gap:6
+    gap:6,
+    paddingVertical:10
   },
   searchIcon: {
   },
@@ -379,16 +382,17 @@ export const styles = StyleSheet.create({
     color: '#B7410E',
   },
   applyButtonTouchable: {
-    marginTop: 24,
     borderRadius: 100,
-    overflow: 'hidden',
     width: '100%',
   },
   applyButton: {
-    height: 52,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    flexDirection:'row',
+    gap:5,
+    borderRadius:100,
+    paddingHorizontal:10
   },
   applyButtonText: {
     fontSize: 16,

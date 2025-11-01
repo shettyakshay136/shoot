@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet , Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'white',
   },
   keyboardView: {
     flex: 1,
@@ -13,8 +13,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
-    paddingHorizontal: 23,
     paddingBottom: 12,
+    paddingHorizontal: 23,
   },
   backButton: {
     width: 40,
@@ -50,6 +50,8 @@ export const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+    paddingHorizontal: 23,
+    paddingVertical:20
   },
   inputsContainer: {
     gap: 16,
@@ -86,7 +88,8 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
+    flexDirection:'row',
+    display:'flex',
     alignItems: 'center',
     paddingHorizontal: 5,
     gap: 6,
@@ -101,6 +104,9 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical:4,
     paddingHorizontal:8,
+    flexDirection:'row',
+    gap:5,
+    alignItems:'center',
   },
   phonePrefixText: {
     fontSize: 16,
@@ -120,28 +126,23 @@ export const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    paddingBottom: 24,
     paddingTop: 16,
     paddingHorizontal: 23,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    backgroundColor: 'white',
   },
   verifyButtonTouchable: {
     borderRadius: 100,
   },
   verifyButton: {
-    borderRadius: 100,
-    paddingTop: 12,
-    paddingRight: 20,
-    paddingBottom: 12,
-    paddingLeft: 20,
+    borderRadius: 120,
+    height: 48,
+    // paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
     opacity: 1,
-    minHeight: 52,
+
   },
   verifyButtonText: {
     color: '#FFFFFF',
@@ -206,49 +207,6 @@ export const styles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Saans TRIAL',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#111827',
-    lineHeight: 32,
-    fontFamily: 'Saans TRIAL',
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingBottom: 21,
-    paddingTop: 20,
-    paddingHorizontal: 23,
-    gap:14
-  },
-  verifyButtonTouchable: {
-    borderRadius: 100,
-  },
-  verifyButton: {
-    borderRadius: 100,
-    paddingTop: 10,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    opacity: 1,
-  },
-  verifyButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  verifyButtonDisabled: {
-    opacity: 0.5,
-  },
-  verifyButtonTextDisabled: {
-    color: '#FFFFFF',
-  },
   helpText: {
     fontSize: 14,
     fontWeight: '600',
@@ -265,4 +223,7 @@ export const styles = StyleSheet.create({
   bottomSpacer: {
     height: 20,
   },
+  scrollViewContent:{
+    paddingBottom: Platform.OS === 'ios' ? 56 : 0,
+  }
 });

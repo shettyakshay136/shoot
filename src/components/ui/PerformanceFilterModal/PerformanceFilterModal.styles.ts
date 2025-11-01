@@ -63,6 +63,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    borderRadius:100
   },
   applyText: {
     fontFamily: 'Saans TRIAL',
@@ -72,8 +73,8 @@ export const styles = StyleSheet.create({
   },
   applyTouchable: {
     borderRadius: 100,
-    overflow: 'hidden',
-    marginTop: 8,
+    backgroundColor:"red"
+    // marginTop: 8,
   },
 });
 

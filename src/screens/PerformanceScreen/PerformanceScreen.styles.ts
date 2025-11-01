@@ -10,16 +10,16 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   gradientContainer: {
-    paddingHorizontal: 16,
-    paddingVertical:23,
-    height: height * 0.3,
+    height: height * 0.35,
     width: '100%',
-    gap:30
+    gap:30,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap:12
+    gap:12,
+    paddingTop:52,
+    paddingHorizontal:23
     // justifyContent: 'space-between',
   },
   backButton: {
@@ -55,12 +55,13 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    justifyContent:'center'
   },
   tabPill: {
     backgroundColor: '#FFFFFF1F',
     borderRadius: 1000,
     paddingVertical: 8,
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     borderWidth:1,
     borderColor:'#D5D7DA'
   },

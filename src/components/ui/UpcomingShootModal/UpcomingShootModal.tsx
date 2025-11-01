@@ -75,7 +75,7 @@ const UpcomingShootModal: React.FC<UpcomingShootModalProps> = ({
                 end={{ x: 1, y: 0 }}
                 style={styles.readinessCard}
                 >
-                <MapIcon width={50} height={50} />
+                <MapIcon width={50} height={50} style={{paddingVertical:10}} />
                 <View style={styles.readinessTextContainer}>
                     <Text style={styles.readinessTitle}>Ready to go?</Text>
                     <Text style={styles.readinessSubtext}>

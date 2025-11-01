@@ -129,44 +129,43 @@ const RegisterScreen = (): JSX.Element => {
                 </Text>
               </View>
             </View>
-
-            <View style={styles.referralContainer}>
-              <View style={styles.referralHeader}>
-                <View style={styles.giftIcon}>
-                  <GiftSvg />
-                </View>
-                <View style={styles.referralText}>
-                  <Text style={styles.referralCodeText}>
-                    Have a referral code?
-                  </Text>
-                  <Text style={styles.bonusText}>
-                    Get up to ₹500 as referral joining bonus
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.referralCodeInput}>
-                <TextInput
-                  style={[
-                    styles.referralCodeTextInput,
-                    isValidReferralCode && styles.referralCodeTextInputValid,
-                  ]}
-                  value={referralCode}
-                  onChangeText={handleReferralCodeChange}
-                  onFocus={() => setFocusedField('referral')}
-                  onBlur={() => setFocusedField(null)}
-                  placeholder="Enter referral code"
-                  placeholderTextColor="#9CA3AF"
-                  autoCapitalize="characters"
-                  maxLength={10}
-                  returnKeyType="done"
-                />
-                {isValidReferralCode && <Text style={styles.tickMark}>✓</Text>}
-              </View>
-            </View>
           </View>
         </ScrollView>
 
         <View style={styles.bottomContainer}>
+          <View style={styles.referralContainer}>
+            <View style={styles.referralHeader}>
+              <View style={styles.giftIcon}>
+                <GiftSvg />
+              </View>
+              <View style={styles.referralText}>
+                <Text style={styles.referralCodeText}>
+                  Have a referral code?
+                </Text>
+                <Text style={styles.bonusText}>
+                  Get up to ₹500 as referral joining bonus
+                </Text>
+              </View>
+            </View>
+            <View style={styles.referralCodeInput}>
+              <TextInput
+                style={[
+                  styles.referralCodeTextInput,
+                  isValidReferralCode && styles.referralCodeTextInputValid,
+                ]}
+                value={referralCode}
+                onChangeText={handleReferralCodeChange}
+                onFocus={() => setFocusedField('referral')}
+                onBlur={() => setFocusedField(null)}
+                placeholder="Enter referral code"
+                placeholderTextColor="#9CA3AF"
+                autoCapitalize="characters"
+                maxLength={10}
+                returnKeyType="done"
+              />
+              {isValidReferralCode && <Text style={styles.tickMark}>✓</Text>}
+            </View>
+          </View>
           <TouchableOpacity
             onPress={handleVerify}
             disabled={!isFormValid()}

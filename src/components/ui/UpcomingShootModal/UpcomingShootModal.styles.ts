@@ -77,15 +77,15 @@ export const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#D5D7DA99',
-    overflow: 'hidden',
+    paddingVertical:10
+    // paddingBottom:50
   },
   readinessCard: {
     borderRadius: 16,
-    paddingVertical: 16,
-    paddingHorizontal:12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    paddingHorizontal:12,
   },
   readinessTextContainer: {
     flex: 1,
@@ -108,10 +108,9 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   startButton: {
-    height: 52,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
   },
   startButtonText: {
     fontSize: 16,

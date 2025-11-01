@@ -113,7 +113,7 @@ const HomeScreen = (): JSX.Element => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{flex:1,width:'100%'}}>
     <View style={styles.container}>
       <LinearGradient
         colors={['#000000', PRIMARY_COLORS[900]]} 

@@ -316,7 +316,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Application Status</Text>
         <TouchableOpacity style={styles.helpButton}>
@@ -352,7 +352,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.submitButton} onPress={() => setIsMoneyModalVisible(true)}>
+        <TouchableOpacity onPress={() => setIsMoneyModalVisible(true)}>
           <LinearGradient
             colors={['#000000', '#61240E']}
             start={{ x: 0, y: 0 }}
@@ -381,7 +381,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
         onSkip={handleMoneySkip}
         defaultMethod={null}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

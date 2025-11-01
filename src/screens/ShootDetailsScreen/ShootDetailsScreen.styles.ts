@@ -10,6 +10,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#F8F4F0',
   },
   header: {
+    paddingTop:50
   },
   backButton: {
     width: 40,

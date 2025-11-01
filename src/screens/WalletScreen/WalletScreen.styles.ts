@@ -10,8 +10,7 @@ export const styles = StyleSheet.create({
     width: '100%'
   },
   gradientContainer: {
-    paddingHorizontal: 18,
-    height: height * 0.35,
+    height: height * 0.37,
     width: '100%',
   },
   header: {
@@ -19,7 +18,9 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingBottom:35
+    paddingBottom:35,
+    paddingTop:52,
+    paddingHorizontal:23
   },
   leftSection: {
     flex: 1,

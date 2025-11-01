@@ -18,13 +18,10 @@ import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 // import { requestOtp } from '@/services';
-=======
 import { loginOtp } from '@/services';
 import { useToast } from '@/contexts';
->>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -46,36 +43,21 @@ const LoginScreen = (): JSX.Element => {
     }
 
     setLoading(true);
-<<<<<<< HEAD
-    try {
-      // API call commented out - backend not running
-      // await requestOtp(phoneNumber);
-      // Directly login with mock token to bypass OTP
-      await login('mock-token-' + phoneNumber);
-    } catch (error) {
-      console.error('Login Error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to login. Please try again.';
-      Alert.alert('Error', errorMessage);
-    } finally {
-      setLoading(false);
-    }
-=======
     loginOtp(phoneNumber)
-      .then((data) => {
-        showToast('Success', 'success', 'The OTP is' + " " + data.data );
+      .then(data => {
+        showToast('Success', 'success', 'The OTP is' + ' ' + data.data);
         navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Login Error:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to send OTP. Please try again.';
         showToast('Error', 'error', errorMessage);
         setLoading(false);
       });
->>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
   };
 
   return (
@@ -112,14 +94,14 @@ const LoginScreen = (): JSX.Element => {
             maxLength={10}
           />
         </View>
-<<<<<<< HEAD
-        <View style={{ gap: 24 }}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleSignIn}
             style={[
               styles.signInButton,
-              phoneNumber.length !== 10 || loading ? { opacity: 0.5 } : {},
+              (phoneNumber.length !== 10 || loading) &&
+                styles.signInButtonDisabled,
             ]}
             disabled={phoneNumber.length !== 10 || loading}
           >
@@ -140,26 +122,6 @@ const LoginScreen = (): JSX.Element => {
           >
             <Text style={styles.registerText}>
               New creator? <Text style={styles.registerLink}>Register</Text>
-=======
-        <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleSignIn}
-          style={[
-            styles.signInButton,
-            (phoneNumber.length !== 10 || loading) && styles.signInButtonDisabled
-          ]}
-          disabled={phoneNumber.length !== 10 || loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text
-              allowFontScaling={false}
-              style={[styles.signInText]}
-            >
-              Sign in
->>>>>>> 494e7585f2790e8e0f922759adab6da94309a05f
             </Text>
           </TouchableOpacity>
         </View>

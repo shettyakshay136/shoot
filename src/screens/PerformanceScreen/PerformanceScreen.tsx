@@ -32,7 +32,7 @@ const PerformanceScreen = (): JSX.Element => {
   // Derived data can be wired later if needed for each tab
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} style={{flex:1,width:'100%'}}>
       <View style={styles.container}>
         <LinearGradient
           colors={['#000000', PRIMARY_COLORS[900]]}
