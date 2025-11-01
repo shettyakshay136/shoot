@@ -20,7 +20,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
 
   const accounts = [
-    { id: '1', label: 'UPI: akshay@paytm' },
+    { id: '1', label: 'UPI: om@paytm' },
     { id: '2', label: 'Bank: ****1234' },
   ];
 

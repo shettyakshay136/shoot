@@ -80,7 +80,7 @@ export const PAYOUTS_DATA = [
   {
     id: 2,
     title: 'UPI Transfer',
-    description: 'UPI ID: akshay@paytm',
+    description: 'UPI ID: om@paytm',
     date: 'Wed, Sept 25, 2025',
     amount: '5,000'
   },
