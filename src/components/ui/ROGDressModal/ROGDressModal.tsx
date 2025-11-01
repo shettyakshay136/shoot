@@ -13,13 +13,13 @@ const ROGDressModal: React.FC<ROGDressModalProps> = ({
   onDecline,
 }) => {
   const handleConfirm = () => {
+    // Call onConfirm first, let parent handle closing and navigation
     onConfirm();
-    onClose();
   };
 
   const handleDecline = () => {
+    // Call onDecline first, let parent handle closing
     onDecline();
-    onClose();
   };
 
   return (
@@ -36,7 +36,7 @@ const ROGDressModal: React.FC<ROGDressModalProps> = ({
         <View style={styles.imageContainer}>
           <TshirtIcon width={157} height={157} />
         </View>
-        <View style={{gap:8 , paddingBottom:32}}>     
+        <View style={{ gap: 8, paddingBottom: 32 }}>
           <View style={styles.quickCheckLabel}>
             <Text style={styles.quickCheckText}>Quick check</Text>
           </View>
@@ -73,4 +73,3 @@ const ROGDressModal: React.FC<ROGDressModalProps> = ({
 };
 
 export default ROGDressModal;
-

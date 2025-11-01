@@ -130,7 +130,7 @@ const DeliveryDeadlineScreen = (): JSX.Element => {
           {
             height: gradientHeight.interpolate({
               inputRange: [40, 100],
-              outputRange: [400, 1000],
+              outputRange: [300, 1000],
             }),
           },
         ]}

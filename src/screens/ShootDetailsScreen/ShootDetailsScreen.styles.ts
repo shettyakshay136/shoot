@@ -389,9 +389,10 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   startShootButton: {
-    paddingVertical: 16,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius:100
   },
   startShootButtonText: {
     fontFamily: 'Saans TRIAL',

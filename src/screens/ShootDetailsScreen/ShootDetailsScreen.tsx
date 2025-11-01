@@ -297,7 +297,7 @@ const ShootDetailsScreen = (): JSX.Element => {
       )}
 
       {isUpcomingShootFlow && (
-        <View style={{backgroundColor:'white' , paddingVertical:20, paddingHorizontal:24, gap:16}}>
+        <View style={{backgroundColor:'white',gap:16, paddingVertical:30, paddingHorizontal:15}}>
           <TouchableOpacity 
             style={styles.startShootButtonWrapper}
             onPress={handleStartShoot}

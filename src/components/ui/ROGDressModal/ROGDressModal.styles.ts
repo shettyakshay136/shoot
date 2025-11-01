@@ -46,10 +46,10 @@ export const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   confirmButton: {
-    height: 52,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
+    borderRadius:100
   },
   confirmButtonText: {
     fontSize: 16,

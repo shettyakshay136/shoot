@@ -1,15 +1,23 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput, PanResponder, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  PanResponder,
+  Dimensions,
+} from 'react-native';
 import { type JSX } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from './ShootsScreen.styles';
-import { 
-  TABS, 
-  AVAILABLE_SHOOTS, 
-  UPCOMING_SHOOTS, 
-  PREVIOUS_SHOOTS, 
+import {
+  TABS,
+  AVAILABLE_SHOOTS,
+  UPCOMING_SHOOTS,
+  PREVIOUS_SHOOTS,
   REJECTED_SHOOTS,
 } from './ShootsScreen.constants';
 import { TabSwitcher } from '@/components';
@@ -20,9 +28,12 @@ import type { ShootStackParamList } from '@/navigation/stacks/ShootStack/ShootSt
 import LocationIcon from '@/assets/svg/location.svg';
 import Timer from '@/assets/svg/timer.svg';
 import StarIcon from '@/assets/svg/star.svg';
-import ArrowUp from '@/assets/svg/arrow-up-right.svg'
+import ArrowUp from '@/assets/svg/arrow-up-right.svg';
 
-type ShootsScreenNavigationProp = NativeStackNavigationProp<ShootStackParamList, 'Shoot'>;
+type ShootsScreenNavigationProp = NativeStackNavigationProp<
+  ShootStackParamList,
+  'Shoot'
+>;
 
 const ShootsScreen = (): JSX.Element => {
   const navigation = useNavigation<ShootsScreenNavigationProp>();
@@ -54,7 +65,7 @@ const ShootsScreen = (): JSX.Element => {
   ];
 
   const radiusOptions = [15, 30, 45];
-  
+
   const getSliderPosition = () => {
     const index = radiusOptions.indexOf(selectedRadius);
     return (index / (radiusOptions.length - 1)) * 100;
@@ -72,26 +83,36 @@ const ShootsScreen = (): JSX.Element => {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (evt) => {
+      onPanResponderGrant: evt => {
         position.x = evt.nativeEvent.locationX;
       },
-      onPanResponderMove: (evt) => {
+      onPanResponderMove: evt => {
         const sliderTrackWidth = sliderWidth - 40;
         const stepWidth = sliderTrackWidth / (radiusOptions.length - 1);
         const step = Math.round(evt.nativeEvent.locationX / stepWidth);
-        const clampedStep = Math.max(0, Math.min(step, radiusOptions.length - 1));
+        const clampedStep = Math.max(
+          0,
+          Math.min(step, radiusOptions.length - 1),
+        );
         setSelectedRadius(radiusOptions[clampedStep]);
       },
-    })
+    }),
   ).current;
 
   const handleStartButtonPress = () => {
+    console.log(
+      'Start button pressed - closing upcoming modal and opening ROG dress modal',
+    );
     setIsUpcomingModalVisible(false);
-    setIsROGDressModalVisible(true);
+    // Add a small delay to ensure smooth modal transition
+    setTimeout(() => {
+      setIsROGDressModalVisible(true);
+    }, 400);
   };
 
   const handleROGDressConfirm = () => {
-    // Handle "Yes" confirmation - navigate to ShootDetailsScreen
+    // Handle "Yes" confirmation - close modal and navigate to ShootDetailsScreen
+    setIsROGDressModalVisible(false);
     if (selectedShootDetails) {
       // Wait for modal to close before navigating
       setTimeout(() => {
@@ -103,7 +124,8 @@ const ShootsScreen = (): JSX.Element => {
   };
 
   const handleROGDressDecline = () => {
-    // Handle "Not today" decline
+    // Handle "Not today" decline - close modal
+    setIsROGDressModalVisible(false);
     console.log('User declined wearing ROG apparel');
   };
 
@@ -112,54 +134,75 @@ const ShootsScreen = (): JSX.Element => {
       case 'Available':
         return (
           <View style={styles.tabContent}>
-            {AVAILABLE_SHOOTS.map((shoot) => (
+            {AVAILABLE_SHOOTS.map(shoot => (
               <TouchableOpacity
                 key={shoot.id}
-                style={[styles.upcomingContent,{    flexDirection:'row',
-                  justifyContent:'space-between',
-                  alignItems:'center'}]}
-                onPress={() => navigation.navigate('ShootDetails', {
-                  shootData: {
-                    title: shoot.title,
-                    location: shoot.location,
-                    date: shoot.date,
-                    time: '7:00 PM',
-                    category: shoot.type,
-                    earnings: shoot.pay,
-                    distance: '1.5 km',
-                    eta: '32 mins',
-                    shootHours: `${shoot.duration}`,
-                    reelsRequired: '2 reels',
-                    instantDelivery: 'Within 30 minutes',
-                    addons: ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
-                    description: `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
-                    songs: [
-                      {
-                        title: 'Boujee',
-                        artist: 'Wowashwow (via Soundstripe)',
-                        thumbnail: '#FF6E9C',
-                      },
-                      {
-                        title: 'L\'amour Au Café',
-                        artist: 'Rêves Français (via Soundstripe)',
-                        thumbnail: '#FFD700',
-                      },
-                    ],
-                  }
-                })}
+                style={[
+                  styles.upcomingContent,
+                  {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}
+                onPress={() =>
+                  navigation.navigate('ShootDetails', {
+                    shootData: {
+                      title: shoot.title,
+                      location: shoot.location,
+                      date: shoot.date,
+                      time: '7:00 PM',
+                      category: shoot.type,
+                      earnings: shoot.pay,
+                      distance: '1.5 km',
+                      eta: '32 mins',
+                      shootHours: `${shoot.duration}`,
+                      reelsRequired: '2 reels',
+                      instantDelivery: 'Within 30 minutes',
+                      addons: [
+                        'Pictures (Up to 20)',
+                        'Raw data required',
+                        'Mic',
+                      ],
+                      description: `${
+                        shoot.title
+                      } is a ${shoot.type.toLowerCase()} shoot located in ${
+                        shoot.location
+                      }. ${shoot.duration} of professional content creation.`,
+                      songs: [
+                        {
+                          title: 'Boujee',
+                          artist: 'Wowashwow (via Soundstripe)',
+                          thumbnail: '#FF6E9C',
+                        },
+                        {
+                          title: "L'amour Au Café",
+                          artist: 'Rêves Français (via Soundstripe)',
+                          thumbnail: '#FFD700',
+                        },
+                      ],
+                    },
+                  })
+                }
               >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
-                    <LocationIcon width={15} height={15}/>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    <LocationIcon width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.location}</Text>
                   </View>
                   <View style={styles.cardFooter}>
-                    <Timer width={15} height={15}/>
+                    <Timer width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   </View>
                 </View>
-                <View style={{    transform: [{ rotate: '180deg' }],}}>
+                <View style={{ transform: [{ rotate: '180deg' }] }}>
                   <RightArrow width={21} height={21} />
                 </View>
               </TouchableOpacity>
@@ -169,7 +212,7 @@ const ShootsScreen = (): JSX.Element => {
       case 'Upcoming':
         return (
           <View style={styles.tabContent}>
-            {UPCOMING_SHOOTS.map((shoot) => (
+            {UPCOMING_SHOOTS.map(shoot => (
               <TouchableOpacity
                 key={shoot.id}
                 style={styles.upcomingContent}
@@ -198,7 +241,11 @@ const ShootsScreen = (): JSX.Element => {
                     reelsRequired: '2 reels',
                     instantDelivery: 'Within 30 minutes',
                     addons: ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
-                    description: `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
+                    description: `${
+                      shoot.title
+                    } is a ${shoot.type.toLowerCase()} shoot located in ${
+                      shoot.location
+                    }. ${shoot.duration} of professional content creation.`,
                     songs: [
                       {
                         title: 'Boujee',
@@ -206,7 +253,7 @@ const ShootsScreen = (): JSX.Element => {
                         thumbnail: '#FF6E9C',
                       },
                       {
-                        title: 'L\'amour Au Café',
+                        title: "L'amour Au Café",
                         artist: 'Rêves Français (via Soundstripe)',
                         thumbnail: '#FFD700',
                       },
@@ -217,15 +264,25 @@ const ShootsScreen = (): JSX.Element => {
                 }}
               >
                 <Text style={styles.contentText}>{shoot.title}</Text>
-                <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
-                  <LocationIcon width={15} height={15}/>
+                <View
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+                >
+                  <LocationIcon width={15} height={15} />
                   <Text style={styles.contentSubtext}>{shoot.location}</Text>
                 </View>
                 <View style={styles.cardFooter}>
-                  <Timer width={15} height={15}/>
+                  <Timer width={15} height={15} />
                   <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   <View style={styles.daysBadge}>
-                    <Text style={{color:'#E75B0F' , fontWeight:600 , fontSize:14}}>{shoot.daysLeft} days</Text>
+                    <Text
+                      style={{
+                        color: '#E75B0F',
+                        fontWeight: 600,
+                        fontSize: 14,
+                      }}
+                    >
+                      {shoot.daysLeft} days
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -235,26 +292,61 @@ const ShootsScreen = (): JSX.Element => {
       case 'Previous':
         return (
           <View style={styles.tabContent}>
-            {PREVIOUS_SHOOTS.map((shoot) => (
-              <View key={shoot.id} style={[styles.upcomingContent,{gap:10}]}>
+            {PREVIOUS_SHOOTS.map(shoot => (
+              <View
+                key={shoot.id}
+                style={[styles.upcomingContent, { gap: 10 }]}
+              >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
-                    <LocationIcon width={15} height={15}/>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    <LocationIcon width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.location}</Text>
                   </View>
                   <View style={styles.cardFooter}>
-                    <Timer width={15} height={15}/>
+                    <Timer width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   </View>
                 </View>
-                <View style={{borderTopColor:'#F5F5F5', borderTopWidth:1}}/>
-                <View style={{flexDirection:'row', alignItems:'center',justifyContent:'space-between'}}>
-                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
-                    <StarIcon width={20} height={20}/>
-                    <Text style={{color:'#000000', fontWeight:600, fontSize:18}}>4.8/5.0</Text>
+                <View
+                  style={{ borderTopColor: '#F5F5F5', borderTopWidth: 1 }}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    <StarIcon width={20} height={20} />
+                    <Text
+                      style={{
+                        color: '#000000',
+                        fontWeight: 600,
+                        fontSize: 18,
+                      }}
+                    >
+                      4.8/5.0
+                    </Text>
                   </View>
-                    <Text style={{color:'#000000', fontWeight:600, fontSize:18}}>₹12,542.12</Text>
+                  <Text
+                    style={{ color: '#000000', fontWeight: 600, fontSize: 18 }}
+                  >
+                    ₹12,542.12
+                  </Text>
                 </View>
               </View>
             ))}
@@ -263,28 +355,60 @@ const ShootsScreen = (): JSX.Element => {
       case 'Rejected':
         return (
           <View style={styles.tabContent}>
-            {REJECTED_SHOOTS.map((shoot) => (
-              <View key={shoot.id} style={[styles.upcomingContent,{gap:10}]}>
+            {REJECTED_SHOOTS.map(shoot => (
+              <View
+                key={shoot.id}
+                style={[styles.upcomingContent, { gap: 10 }]}
+              >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
-                  <View style={{flexDirection:'row',alignItems:'center',gap:5}}>
-                    <LocationIcon width={15} height={15}/>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
+                  >
+                    <LocationIcon width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.location}</Text>
                   </View>
                   <View style={styles.cardFooter}>
-                    <Timer width={15} height={15}/>
+                    <Timer width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.date}</Text>
                   </View>
                 </View>
-                <View style={{borderTopColor:'#F5F5F5', borderTopWidth:1}}/>
-                <View style={{flexDirection:'row', alignItems:'center',gap:10}}>
+                <View
+                  style={{ borderTopColor: '#F5F5F5', borderTopWidth: 1 }}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}
+                >
                   <View style={styles.rejectedBadge}>
-                    <Text style={{color:'#D92D20', fontWeight:600, fontSize:12}}>{shoot.status}</Text>
+                    <Text
+                      style={{
+                        color: '#D92D20',
+                        fontWeight: 600,
+                        fontSize: 12,
+                      }}
+                    >
+                      {shoot.status}
+                    </Text>
                   </View>
                   <View>
-                    <Text style={{color:'#717680', fontWeight:400, fontSize:12}}>Penalty imposed</Text>
+                    <Text
+                      style={{
+                        color: '#717680',
+                        fontWeight: 400,
+                        fontSize: 12,
+                      }}
+                    >
+                      Penalty imposed
+                    </Text>
                   </View>
-
                 </View>
               </View>
             ))}
@@ -301,20 +425,26 @@ const ShootsScreen = (): JSX.Element => {
         <View style={styles.header}>
           <View style={styles.leftSection}>
             <Text style={styles.name}>Akshay Shetty</Text>
-            <Text 
-              style={styles.address}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
+            <Text style={styles.address} numberOfLines={1} ellipsizeMode="tail">
               Professor CR Rao Rd, Gachibowli, Hyderabad, Telangana 500032
             </Text>
           </View>
-          
-          <TouchableOpacity 
-            style={[styles.toggleButton, isOnline ? styles.toggleButtonActive : styles.toggleButtonInactive]}
+
+          <TouchableOpacity
+            style={[
+              styles.toggleButton,
+              isOnline
+                ? styles.toggleButtonActive
+                : styles.toggleButtonInactive,
+            ]}
             onPress={toggleOnlineStatus}
           >
-            <Text style={[styles.toggleText, isOnline ? styles.toggleTextActive : styles.toggleTextInactive]}>
+            <Text
+              style={[
+                styles.toggleText,
+                isOnline ? styles.toggleTextActive : styles.toggleTextInactive,
+              ]}
+            >
               {isOnline ? 'Online' : 'Offline'}
             </Text>
           </TouchableOpacity>
@@ -322,14 +452,18 @@ const ShootsScreen = (): JSX.Element => {
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <MagnifyingGlassIcon width={20} height={20} style={styles.searchIcon} />
-            <TextInput 
+            <MagnifyingGlassIcon
+              width={20}
+              height={20}
+              style={styles.searchIcon}
+            />
+            <TextInput
               style={styles.searchInput}
               placeholder="Search or ask anything"
               placeholderTextColor="#717680"
             />
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.filterButton}
             onPress={() => setIsFilterModalVisible(true)}
           >
@@ -338,9 +472,9 @@ const ShootsScreen = (): JSX.Element => {
         </View>
 
         <View style={styles.sectionContainer}>
-          <TabSwitcher 
-            tabs={TABS} 
-            activeTab={activeTab} 
+          <TabSwitcher
+            tabs={TABS}
+            activeTab={activeTab}
             onTabChange={setActiveTab}
           />
 
@@ -356,7 +490,7 @@ const ShootsScreen = (): JSX.Element => {
       >
         <View>
           <Text style={styles.modalTitle}>Filter shoots</Text>
-          <View style={{gap:16,paddingBottom:72}}>
+          <View style={{ gap: 16, paddingBottom: 72 }}>
             <View style={styles.dateRangeContainer}>
               <Text style={styles.dateRangeLabel}>Date Range</Text>
               <View style={styles.dateInputsRow}>
@@ -384,16 +518,21 @@ const ShootsScreen = (): JSX.Element => {
                 style={styles.dropdownButton}
                 onPress={() => setShowHoursDropdown(!showHoursDropdown)}
               >
-                <Text style={[styles.dropdownButtonText, !shootHours && styles.placeholderText]}>
+                <Text
+                  style={[
+                    styles.dropdownButtonText,
+                    !shootHours && styles.placeholderText,
+                  ]}
+                >
                   {shootHours || 'Select Hours'}
                 </Text>
-                <View style={{    transform: [{ rotate: '270deg' }],}}>
-                    <RightArrow  width={21} height={21}/>
-                  </View>
+                <View style={{ transform: [{ rotate: '270deg' }] }}>
+                  <RightArrow width={21} height={21} />
+                </View>
               </TouchableOpacity>
               {showHoursDropdown && (
                 <View style={styles.dropdownOptions}>
-                  {hoursOptions.map((option) => (
+                  {hoursOptions.map(option => (
                     <TouchableOpacity
                       key={option}
                       style={styles.dropdownOption}
@@ -414,34 +553,46 @@ const ShootsScreen = (): JSX.Element => {
               <View style={styles.sliderTrack} {...panResponder.panHandlers}>
                 <TouchableOpacity
                   style={styles.sliderBackground}
-                  onPress={(e) => {
+                  onPress={e => {
                     const { locationX } = e.nativeEvent;
                     handleSliderPress(locationX);
                   }}
                   activeOpacity={1}
                 >
-                  <View style={[styles.sliderProgress, { width: `${getSliderPosition()}%` }]} />
+                  <View
+                    style={[
+                      styles.sliderProgress,
+                      { width: `${getSliderPosition()}%` },
+                    ]}
+                  />
                   {radiusOptions.map((radius, index) => {
-                    const dotPosition = (index / (radiusOptions.length - 1)) * 100;
+                    const dotPosition =
+                      (index / (radiusOptions.length - 1)) * 100;
                     return (
                       <TouchableOpacity
                         key={radius}
                         style={[styles.sliderDot, { left: `${dotPosition}%` }]}
                         onPress={() => setSelectedRadius(radius)}
                       >
-                        <View style={index === radiusOptions.indexOf(selectedRadius) ? styles.activeDot : styles.inactiveDot} />
+                        <View
+                          style={
+                            index === radiusOptions.indexOf(selectedRadius)
+                              ? styles.activeDot
+                              : styles.inactiveDot
+                          }
+                        />
                       </TouchableOpacity>
                     );
                   })}
                 </TouchableOpacity>
               </View>
               <View style={styles.radiusLabels}>
-                {radiusOptions.map((radius) => (
+                {radiusOptions.map(radius => (
                   <Text
                     key={radius}
                     style={[
                       styles.radiusLabel,
-                      selectedRadius === radius && styles.radiusLabelActive
+                      selectedRadius === radius && styles.radiusLabelActive,
                     ]}
                   >
                     {radius}km
@@ -461,7 +612,7 @@ const ShootsScreen = (): JSX.Element => {
               style={styles.applyButton}
             >
               <Text style={styles.applyButtonText}>Filter</Text>
-              <ArrowUp/>
+              <ArrowUp />
             </LinearGradient>
           </TouchableOpacity>
         </View>
@@ -485,4 +636,3 @@ const ShootsScreen = (): JSX.Element => {
 };
 
 export default ShootsScreen;
-

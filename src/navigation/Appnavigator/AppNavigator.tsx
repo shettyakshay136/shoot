@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     height: 69,
     paddingTop: 12,
     paddingRight: 16,
-    paddingBottom: 22,
+    paddingBottom: 62,
     paddingLeft: 16,
     justifyContent: 'space-between',
   },
