@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { type JSX } from 'react';
 import { COMMON_SCREEN_OPTIONS } from '../../Constants';
 import { WalletStackParamList } from './WalletStack.types';
-import { WalletScreen, WithdrawalDetailsScreen } from '@/screens';
+import { WalletScreen, WithdrawalDetailsScreen, AccountsScreen } from '@/screens';
 
 const Stack = createNativeStackNavigator<WalletStackParamList>();
 
@@ -19,6 +19,14 @@ const WalletStack = (): JSX.Element => {
         component={WithdrawalDetailsScreen}
         options={{ 
           title: 'Withdrawal Details',
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen 
+        name="Accounts" 
+        component={AccountsScreen}
+        options={{ 
+          title: 'Edit your account details',
           headerShown: false,
         }}
       />

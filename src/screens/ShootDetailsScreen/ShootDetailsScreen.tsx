@@ -158,13 +158,13 @@ const ShootDetailsScreen = (): JSX.Element => {
             <Text style={styles.earningsText}>You earn <Text style={styles.earningBoldText}>{earnings}/-</Text> from this shoot!</Text>
           </View>
         )}
-        <View style={{gap:10}}>
+        <View style={styles.detailsContainer}>
           {!isUpcomingShootFlow && (
             <Text style={styles.distanceText}>You are {distance} away • ETA {eta}</Text>
           )}
           <Text style={styles.eventTitle}>{title}</Text>
           {!isUpcomingShootFlow && (
-            <View style={{gap:8}}>
+            <View style={styles.infoContainer}>
               <View style={styles.section}>
                 <View style={styles.iconTextRow}>
                   <LocationIcon width={14} height={17} />
@@ -186,7 +186,6 @@ const ShootDetailsScreen = (): JSX.Element => {
                   <Text style={styles.infoText}>{category}</Text>
                 </View>
               </View>
-
             </View>
           )}
         </View>
@@ -194,20 +193,20 @@ const ShootDetailsScreen = (): JSX.Element => {
           <Text style={styles.requirementTitle}>{!isUpcomingShootFlow ?  'Requirement' : "Event details"}</Text>
           
           <View style={styles.requirementCard}>
-            <View style={{justifyContent:'space-between' , flexDirection:'row', alignItems:'center'}}>
+            <View style={styles.requirementRow}>
               <Text style={styles.requirementLabel}>Shoot hours</Text>
               <Text style={styles.requirementValue}>{shootHours}</Text>
             </View>
-            <View style={{justifyContent:'space-between' , flexDirection:'row', alignItems:'center'}}>
+            <View style={styles.requirementRow}>
               <Text style={styles.requirementLabel}>Reels required</Text>
               <Text style={styles.requirementValue}>{reelsRequired}</Text>
             </View>
-            <View style={{justifyContent:'space-between' , flexDirection:'row', alignItems:'center'}}>
+            <View style={styles.requirementRow}>
               <Text style={styles.requirementLabel}>Instant delivery</Text>
               <Text style={styles.instantDelivery}>{instantDelivery}</Text>
             </View>
-            <View style={{paddingTop:6 , gap:4}}>
-              <Text style={[styles.requirementLabel,{lineHeight:24}]}>Add ons</Text>
+            <View style={styles.addonsWrapper}>
+              <Text style={styles.addonLabel}>Add ons</Text>
               <View style={styles.addonsContainer}>
                 {addons?.map((addon, index) => (
                   <View key={index} style={styles.addonPill}>
@@ -216,8 +215,6 @@ const ShootDetailsScreen = (): JSX.Element => {
                 ))}
               </View>
             </View>
-
-          
           </View>
         </View>
           <View style={styles.descriptionSection}>
@@ -235,7 +232,7 @@ const ShootDetailsScreen = (): JSX.Element => {
               <Text style={styles.suggestButtonText}>Suggest songs</Text>
             </TouchableOpacity>
           </View>
-          <View style={{gap:12}}>
+          <View style={styles.songsContainer}>
             {songs?.map((song, index) => (
               <View key={index} style={styles.songCard}>
                 <View style={[styles.songThumbnail, { backgroundColor: song.thumbnail }]} />
@@ -249,7 +246,7 @@ const ShootDetailsScreen = (): JSX.Element => {
         </View>
       </ScrollView>
       {!isUpcomingShootFlow && (
-        <View style={{backgroundColor:'white' , paddingVertical:20, paddingHorizontal:24, gap:16}}>
+        <View style={styles.footerContainer}>
           <View style={styles.termsSection}>
             <TouchableOpacity
               style={styles.checkboxRow}
@@ -297,7 +294,7 @@ const ShootDetailsScreen = (): JSX.Element => {
       )}
 
       {isUpcomingShootFlow && (
-        <View style={{backgroundColor:'white',gap:16, paddingVertical:30, paddingHorizontal:15}}>
+        <View style={styles.upcomingFooterContainer}>
           <TouchableOpacity 
             style={styles.startShootButtonWrapper}
             onPress={handleStartShoot}
@@ -327,14 +324,14 @@ const ShootDetailsScreen = (): JSX.Element => {
         isVisible={isAcceptModalVisible}
         onClose={handleAcceptModalCancel}
         showHeader={false}
-        containerStyle={{paddingBottom: 0 }}
-        contentStyle={{ paddingHorizontal: 24, paddingVertical: 32, alignItems: 'center', gap: 10}}
+        containerStyle={styles.modalContentWrapper}
+        contentStyle={styles.modalContentInner}
       >
         <AcceptIcon width={120} height={120} />
         <View style={styles.earnTag}>
           <Text style={styles.earnTagText}>Earn {earnings}/-</Text>
         </View>
-        <View style={{gap:4}}>
+        <View style={styles.modalContentContainer}>
           <Text style={styles.modalQuestion}>Accept this shoot?</Text>
           <Text style={styles.modalEventTitle}>{title}</Text>
         </View>
@@ -361,14 +358,14 @@ const ShootDetailsScreen = (): JSX.Element => {
         isVisible={isDeclineModalVisible}
         onClose={handleDeclineModalCancel}
         showHeader={false}
-        containerStyle={{paddingBottom: 0 }}
-        contentStyle={{ paddingHorizontal: 24, paddingVertical: 32, alignItems: 'center', gap: 10}}
+        containerStyle={styles.modalContentWrapper}
+        contentStyle={styles.modalContentInner}
       >
         <DeclineIcon width={120} height={120} />
         <View style={styles.earnTagDecline}>
-          <Text style={styles.earnTagTextDecline}>You’re missing out {earnings}/-</Text>
+          <Text style={styles.earnTagTextDecline}>You're missing out {earnings}/-</Text>
         </View>
-        <View style={{gap:4}}>
+        <View style={styles.modalContentContainer}>
           <Text style={styles.modalQuestion}>Reject this shoot?</Text>
           <Text style={styles.modalEventTitle}>{title}</Text>
         </View>

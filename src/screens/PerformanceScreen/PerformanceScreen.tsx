@@ -1,22 +1,17 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '@/screens/PerformanceScreen/PerformanceScreen.styles';
+import { styles } from './PerformanceScreen.styles';
+import { TABS, X_AXIS_LABELS } from './PerformanceScreen.constants';
 import { PRIMARY_COLORS } from '@/theme/colors';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import { LineChart } from 'react-native-chart-kit';
-import { Dimensions } from 'react-native';
 import { PerformanceFilterModal } from '@/components/ui';
 import StarIcon from '@/assets/svg/star.svg';
 import MoneyIcon from "@/assets/svg/money.svg";
 import RocketIcon from "@/assets/svg/rocket.svg";
 import ClapperboardIcon from '@/assets/svg/file.svg'
-
-const TABS = ['Earning', 'Bookings', 'Reels Delivered', 'Total'];
-const X_AXIS_LABELS: string[] = ['1D', '1W', '1M', '6M', '1Y', '5Y', 'MAX'];
-
-// Placeholder dataset illustration (not currently used for x-axis labels only)
 
 const PerformanceScreen = (): JSX.Element => {
   const navigation = useNavigation();
@@ -32,7 +27,7 @@ const PerformanceScreen = (): JSX.Element => {
   // Derived data can be wired later if needed for each tab
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} style={{flex:1,width:'100%'}}>
+    <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollContainer}>
       <View style={styles.container}>
         <LinearGradient
           colors={['#000000', PRIMARY_COLORS[900]]}
@@ -72,7 +67,7 @@ const PerformanceScreen = (): JSX.Element => {
             <View style={styles.cardHeaderRow}>
               <View>
                 <Text style={styles.cardTitle}>Total earning</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+                <View style={styles.amountRow}>
                   <Text style={styles.amountBig}>₹12,543.12</Text>
                   <Text style={styles.deltaPositive}>+2.4%</Text>
                 </View>
@@ -119,16 +114,15 @@ const PerformanceScreen = (): JSX.Element => {
               Your total earning is <Text style={styles.helperStrong}>+12% high</Text> compared to last period. Keep up the great work!
             </Text>
           </View>
-          <View style={{padding:18, gap:18}}>
+          <View style={styles.metricsContainer}>
             <View style={styles.listHeader}> 
               <Text style={styles.listHeaderText}>Performance</Text>
             </View>
 
-
-            <View style={{ gap: 12 }}>
+            <View style={styles.metricList}>
             <View style={styles.metricRow}> 
               <ClapperboardIcon width={77} height={77}/>
-              <View style={{ flex: 1 }}>
+              <View style={styles.metricContent}>
                 <Text style={styles.metricValue}>24</Text>
                 <Text style={styles.metricLabel}>Shoots</Text>
                 <Text style={styles.metricDeltaPositive}>+2.4% from last week</Text>
@@ -137,7 +131,7 @@ const PerformanceScreen = (): JSX.Element => {
 
             <View style={styles.metricRow}> 
               <StarIcon width={77} height={77}/>
-              <View style={{ flex: 1 }}>
+              <View style={styles.metricContent}>
                 <Text style={styles.metricValue}>4.8</Text>
                 <Text style={styles.metricLabel}>Rating</Text>
                 <Text style={styles.metricDeltaPositive}>+2.4% from last week</Text>
@@ -146,7 +140,7 @@ const PerformanceScreen = (): JSX.Element => {
 
             <View style={styles.metricRow}> 
               <RocketIcon width={77} height={77}/>
-              <View style={{ flex: 1 }}>
+              <View style={styles.metricContent}>
                 <Text style={styles.metricValue}>95.8%</Text>
                 <Text style={styles.metricLabel}>Success rate</Text>
                 <Text style={styles.metricDeltaPositive}>+2.4% from last week</Text>
@@ -155,7 +149,7 @@ const PerformanceScreen = (): JSX.Element => {
 
             <View style={styles.metricRow}> 
               <MoneyIcon width={77} height={77}/>
-              <View style={{ flex: 1 }}>
+              <View style={styles.metricContent}>
                 <Text style={styles.metricValue}>₹1,887</Text>
                 <Text style={styles.metricLabel}>Success rate</Text>
                 <Text style={styles.metricDeltaNegative}>+8% from last week</Text>

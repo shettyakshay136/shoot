@@ -427,5 +427,118 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#A4A7AE',
   },
+  datePickerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  datePickerButton: {
+    backgroundColor: 'white',
+    padding: 12,
+    borderRadius: 1000,
+  },
+  datePickerButtonRotated: {
+    transform: [{ rotate: '180deg' }],
+  },
+  datePickerText: {
+    fontWeight: '600',
+    color: '#252B37',
+    fontSize: 24,
+  },
+  earningsCard: {
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    gap: 16,
+  },
+  earningsCardHeader: {
+    gap: 4,
+  },
+  earningsCardTitle: {
+    color: '#535862',
+    fontWeight: '500',
+    fontSize: 16,
+  },
+  earningsCardAmount: {
+    color: 'black',
+    fontWeight: '600',
+    fontSize: 36,
+  },
+  earningsCardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  starIconLarge: {
+    fontSize: 24,
+  },
+  starIconMedium: {
+    fontSize: 15,
+  },
+  allShootsHeader: {
+    gap: 18,
+  },
+  allShootsList: {
+    gap: 12,
+  },
+  transactionCardSeparator: {
+    borderTopColor: '#F5F5F5',
+    borderTopWidth: 1,
+  },
+  transactionCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  amountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  amountValue: {
+    color: '#181D27',
+    fontWeight: '600',
+    fontSize: 18,
+  },
+  filtersHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  filtersTitle: {
+    color: '#414651',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  filtersLink: {
+    color: '#B7410E',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  payoutCardFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+    justifyContent: 'space-between',
+  },
+  payoutId: {
+    color: '#717680',
+    fontWeight: '400',
+    fontSize: 16,
+  },
+  payoutAmountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  payoutAmountValue: {
+    color: '#181D27',
+    fontWeight: '600',
+    fontSize: 18,
+  },
 });
 

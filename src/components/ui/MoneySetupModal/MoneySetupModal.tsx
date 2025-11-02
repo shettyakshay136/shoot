@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './MoneySetupModal.styles';
 import MoneySvg from '@/assets/svg/money.svg';
-import { SimpleModal } from '@/components';
+import { SimpleModal } from '@/components/layout';
 import Bankicon from '@/assets/svg/bank.svg';
 import UPI from '@/assets/svg/upi.svg'
 

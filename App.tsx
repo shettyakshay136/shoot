@@ -6,7 +6,7 @@ import {
 } from 'react-native-safe-area-context';
 import RootNavigator from '@/navigation/Rootnavigator';
 import { AuthProvider, ToastProvider } from '@/contexts';
-import { ToastContainer } from '@/components/layout';
+import { ToastContainer } from '@/components/features';
 
 // Custom wrapper component for colored safe areas
 const CustomSafeAreaWrapper = ({

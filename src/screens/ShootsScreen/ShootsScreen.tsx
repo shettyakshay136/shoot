@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, type JSX } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,8 @@ import {
   PanResponder,
   Dimensions,
 } from 'react-native';
-import { type JSX } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from './ShootsScreen.styles';
 import {
   TABS,
@@ -20,20 +18,16 @@ import {
   PREVIOUS_SHOOTS,
   REJECTED_SHOOTS,
 } from './ShootsScreen.constants';
-import { TabSwitcher } from '@/components';
-import { BaseModal, UpcomingShootModal, ROGDressModal } from '@/components';
+import TabSwitcher from '@/components/TabSwitcher';
+import { BaseModal } from '@/components/layout';
+import { UpcomingShootModal, ROGDressModal } from '@/components/ui';
 import MagnifyingGlassIcon from '@/assets/svg/magnifyingglass.svg';
 import RightArrow from '@/assets/svg/backButtonPdp.svg';
-import type { ShootStackParamList } from '@/navigation/stacks/ShootStack/ShootStack.types';
 import LocationIcon from '@/assets/svg/location.svg';
 import Timer from '@/assets/svg/timer.svg';
 import StarIcon from '@/assets/svg/star.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
-
-type ShootsScreenNavigationProp = NativeStackNavigationProp<
-  ShootStackParamList,
-  'Shoot'
->;
+import type { ShootsScreenNavigationProp } from './ShootsScreen.types';
 
 const ShootsScreen = (): JSX.Element => {
   const navigation = useNavigation<ShootsScreenNavigationProp>();

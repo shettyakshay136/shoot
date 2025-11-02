@@ -12,9 +12,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './CityScreen.styles';
+import { CITIES } from './CityScreen.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
-import { SimpleModal } from '@/components';
+import { SimpleModal } from '@/components/layout';
 import BoomSvg from '@/assets/svg/boom.svg';
 import Dropdownicon from '@/assets/svg/dropdown.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg'
@@ -30,34 +31,6 @@ const CityScreen = (): JSX.Element => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const cities = [
-    'Mumbai',
-    'Delhi',
-    'Bangalore',
-    'Hyderabad',
-    'Chennai',
-    'Kolkata',
-    'Pune',
-    'Ahmedabad',
-    'Jaipur',
-    'Surat',
-    'Lucknow',
-    'Kanpur',
-    'Nagpur',
-    'Indore',
-    'Thane',
-    'Bhopal',
-    'Visakhapatnam',
-    'Pimpri-Chinchwad',
-    'Patna',
-    'Vadodara',
-    'Ghaziabad',
-    'Ludhiana',
-    'Agra',
-    'Nashik',
-    'Faridabad',
-  ];
 
   const isFormValid = () => {
     return selectedCity.trim() !== '';
@@ -145,7 +118,7 @@ const CityScreen = (): JSX.Element => {
 
                 {isDropdownOpen && (
                   <ScrollView style={styles.dropdownList} nestedScrollEnabled>
-                    {cities.map((city, index) => {
+                    {CITIES.map((city, index) => {
                       const isSelected = city === selectedCity;
                       return (
                         <TouchableOpacity

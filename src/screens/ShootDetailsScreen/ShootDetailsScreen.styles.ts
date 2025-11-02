@@ -400,5 +400,54 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
   },
+  detailsContainer: {
+    gap: 10,
+  },
+  infoContainer: {
+    gap: 8,
+  },
+  requirementRow: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addonsWrapper: {
+    paddingTop: 6,
+    gap: 4,
+  },
+  addonLabel: {
+    fontFamily: 'Saans TRIAL',
+    fontWeight: '400',
+    fontSize: 16,
+    color: '#535862',
+    lineHeight: 24,
+  },
+  songsContainer: {
+    gap: 12,
+  },
+  footerContainer: {
+    backgroundColor: 'white',
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    gap: 16,
+  },
+  upcomingFooterContainer: {
+    backgroundColor: 'white',
+    gap: 16,
+    paddingVertical: 30,
+    paddingHorizontal: 15,
+  },
+  modalContentContainer: {
+    gap: 4,
+  },
+  modalContentWrapper: {
+    paddingBottom: 0,
+  },
+  modalContentInner: {
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    alignItems: 'center',
+    gap: 10,
+  },
 });
 

@@ -1,28 +1,16 @@
 import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationStatusScreen.styles';
+import type { Step } from './ApplicationStatusScreen.types';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
-import { UploadModal, MoneySetupModal } from '@/components';
+import { UploadModal } from '@/components/ui';
+import { MoneySetupModal } from '@/components/ui';
 import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
 import Infoicon from '@/assets/svg/info.svg';
 import Tick from '@/assets/svg/tick.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
-
-interface Step {
-  id: number;
-  title: string;
-  status: 'completed' | 'active' | 'pending';
-  timeAgo?: string;
-  estimatedTime?: string;
-  description: string;
-  isExpanded?: boolean;
-  actionButton?: {
-    text: string;
-    onPress: () => void;
-  };
-}
 
 const ApplicationStatusScreen = (): JSX.Element => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default

@@ -101,23 +101,23 @@ const WalletScreen = (): JSX.Element => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={{flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
-              <TouchableOpacity style={{backgroundColor:'white',padding:12,borderRadius:1000}}>
+            <View style={styles.datePickerContainer}>
+              <TouchableOpacity style={styles.datePickerButton}>
                 <BackButton/>
               </TouchableOpacity>
               <View>
-                <Text style={{fontWeight:600 , color:'#252B37', fontSize:24}}>25.08.2025</Text>
+                <Text style={styles.datePickerText}>25.08.2025</Text>
               </View>
-              <TouchableOpacity style={{backgroundColor:'white',padding:10,borderRadius:1000 , transform:[{rotate:'180deg'}]}}>
+              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]}>
                 <BackButton/>
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor:'white',padding:16, borderRadius:12, gap:16}}>
-              <View style={{gap:4}}>
-                <Text style={{color:'#535862' , fontWeight:500 , fontSize:16}}>Total Earnings</Text>
-                <Text style={{color:'black' , fontWeight:600 , fontSize:36}}>₹50000</Text>
+            <View style={styles.earningsCard}>
+              <View style={styles.earningsCardHeader}>
+                <Text style={styles.earningsCardTitle}>Total Earnings</Text>
+                <Text style={styles.earningsCardAmount}>₹50000</Text>
               </View>
-              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={styles.earningsCardFooter}>
                 <View style={styles.performanceCard}>
                   <ClapperboardIcon width={40} height={40}/>
                   <View>
@@ -126,7 +126,7 @@ const WalletScreen = (): JSX.Element => {
                   </View>
                 </View>
                 <View style={styles.performanceCard}>
-                  <Text style={{fontSize:24}}>⭐</Text>
+                  <Text style={styles.starIconLarge}>⭐</Text>
                   <View>
                     <Text style={styles.performanceValue}>5</Text>
                     <Text style={styles.performanceLabel}>shoots</Text>
@@ -134,9 +134,9 @@ const WalletScreen = (): JSX.Element => {
                 </View>
               </View>
             </View>
-            <View style={{gap:18}}>
-              <Text style={{color:'#414651', fontWeight:600, fontSize:16}}>All Shoots</Text>
-              <View style={{gap:12}}>
+            <View style={styles.allShootsHeader}>
+              <Text style={styles.filtersTitle}>All Shoots</Text>
+              <View style={styles.allShootsList}>
                 {EARNINGS_DATA.map((item) => (
                   <TouchableOpacity 
                     key={item.id} 
@@ -151,14 +151,14 @@ const WalletScreen = (): JSX.Element => {
                         <Text style={styles.transactionDate}>{item.date}</Text>
                       </View>
                     </View>
-                    <View style={{borderTopColor:'#F5F5F5', borderTopWidth:1}}/>
-                    <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between'}}>
-                      <View style={{flexDirection:'row', alignItems:'center', gap:4}}>
-                      <Text style={{fontSize:15}}>⭐</Text>
+                    <View style={styles.transactionCardSeparator}/>
+                    <View style={styles.transactionCardFooter}>
+                      <View style={styles.ratingContainer}>
+                        <Text style={styles.starIconMedium}>⭐</Text>
                         <Text style={styles.amountText}>4.5/5.0</Text>
                       </View>
                       <View>
-                        <Text style={{color:'#181D27', fontWeight:'600', fontSize:18}}>₹15,000</Text>
+                        <Text style={styles.amountValue}>₹15,000</Text>
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -214,23 +214,23 @@ const WalletScreen = (): JSX.Element => {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={{flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
-              <TouchableOpacity style={{backgroundColor:'white',padding:12,borderRadius:1000}}>
+            <View style={styles.datePickerContainer}>
+              <TouchableOpacity style={styles.datePickerButton}>
                 <BackButton/>
               </TouchableOpacity>
               <View>
-                <Text style={{fontWeight:600 , color:'#252B37', fontSize:24}}>25.08.2025</Text>
+                <Text style={styles.datePickerText}>25.08.2025</Text>
               </View>
-              <TouchableOpacity style={{backgroundColor:'white',padding:10,borderRadius:1000 , transform:[{rotate:'180deg'}]}}>
+              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]}>
                 <BackButton/>
               </TouchableOpacity>
             </View>
-            <View style={{backgroundColor:'white',padding:16, borderRadius:12, gap:16}}>
-              <View style={{gap:4}}>
-                <Text style={{color:'#535862' , fontWeight:500 , fontSize:16}}>Total Earnings</Text>
-                <Text style={{color:'black' , fontWeight:600 , fontSize:36}}>₹50000</Text>
+            <View style={styles.earningsCard}>
+              <View style={styles.earningsCardHeader}>
+                <Text style={styles.earningsCardTitle}>Total Earnings</Text>
+                <Text style={styles.earningsCardAmount}>₹50000</Text>
               </View>
-              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+              <View style={styles.earningsCardFooter}>
                 <View style={styles.performanceCard}>
                   <ClapperboardIcon width={40} height={40}/>
                   <View>
@@ -239,7 +239,7 @@ const WalletScreen = (): JSX.Element => {
                   </View>
                 </View>
                 <View style={styles.performanceCard}>
-                  <Text style={{fontSize:24}}>⭐</Text>
+                  <Text style={styles.starIconLarge}>⭐</Text>
                   <View>
                     <Text style={styles.performanceValue}>5</Text>
                     <Text style={styles.performanceLabel}>shoots</Text>
@@ -247,12 +247,12 @@ const WalletScreen = (): JSX.Element => {
                 </View>
               </View>
             </View>
-            <View style={{gap:18}}>
-              <View style={{flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
-                <Text style={{color:'#414651', fontWeight:600, fontSize:16}}>All Shoots</Text>
-                <Text style={{color:'#B7410E', fontWeight:600, fontSize:16}}>Filters</Text>
+            <View style={styles.allShootsHeader}>
+              <View style={styles.filtersHeader}>
+                <Text style={styles.filtersTitle}>All Shoots</Text>
+                <Text style={styles.filtersLink}>Filters</Text>
               </View>
-              <View style={{gap:12}}>
+              <View style={styles.allShootsList}>
               {PAYOUTS_DATA.map((item) => (
                 <TouchableOpacity 
                   key={item.id} 
@@ -266,13 +266,13 @@ const WalletScreen = (): JSX.Element => {
                       <Text style={styles.transactionDate}>{item.date}</Text>
                     </View>
                   </View>
-                  <View style={{borderTopColor:'#F5F5F5', borderTopWidth:1}}/>
-                  <View style={{flexDirection:'row', alignItems:'center', gap:15 , justifyContent:'space-between'}}>
+                  <View style={styles.transactionCardSeparator}/>
+                  <View style={styles.payoutCardFooter}>
                     <View>
-                      <Text style={{color:'#717680', fontWeight:'400', fontSize:16}}>ID: ROGW12345</Text>
+                      <Text style={styles.payoutId}>ID: ROGW12345</Text>
                     </View>
-                    <View style={{flexDirection:'row', alignItems:'center', gap:5}}>
-                      <Text style={{color:'#181D27', fontWeight:'600', fontSize:18}}>15,00</Text>
+                    <View style={styles.payoutAmountContainer}>
+                      <Text style={styles.payoutAmountValue}>15,00</Text>
                       <View style={styles.payoutBadge}>
                         <Text style={styles.amountText}>-₹{item.amount}</Text>
                       </View>
@@ -339,7 +339,10 @@ const WalletScreen = (): JSX.Element => {
               </TouchableOpacity>
             </View>
             <View style={styles.actionButtonContainer}>
-              <TouchableOpacity style={styles.actionButton}>
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => navigation.navigate('Accounts')}
+              >
                 <IndianRupeeIcon width={24} height={24}/>
                 <Text style={styles.actionButtonText}>Account</Text>
               </TouchableOpacity>

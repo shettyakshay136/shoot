@@ -245,6 +245,25 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: '#E63B2E',
   },
+  scrollContainer: {
+    flex: 1,
+    width: '100%',
+  },
+  amountRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  metricsContainer: {
+    padding: 18,
+    gap: 18,
+  },
+  metricList: {
+    gap: 12,
+  },
+  metricContent: {
+    flex: 1,
+  },
 });
 
 

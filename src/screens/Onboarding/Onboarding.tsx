@@ -18,8 +18,8 @@ import { styles } from './Onboarding.styles';
 import { IPHONE_MODELS, GENDER_OPTIONS } from './Onboarding.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
-import { IOSPicker } from '@/components/IOSPicker';
 import Dropdownicon from '@/assets/svg/dropdown.svg';
+import { IOSPicker } from '@/components/features';
 // import { initiateSignup } from '@/services';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<

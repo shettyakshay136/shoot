@@ -13,7 +13,7 @@ import {
   PERFORMANCE_DATA,
   FOOTER_CONTENT
 } from './HomeScreen.constants';
-import { TabSwitcher } from '../../components';
+import TabSwitcher from '../../components/TabSwitcher';
 
 import BanknoteArrowUpIcon from '../../assets/svg/banknote-arrow-up.svg';
 import CurrencyIcon from '../../assets/svg/indian-rupee.svg';
@@ -113,7 +113,7 @@ const HomeScreen = (): JSX.Element => {
   };
 
   return (
-    <ScrollView style={{flex:1,width:'100%'}}>
+    <ScrollView style={styles.scrollContainer}>
     <View style={styles.container}>
       <LinearGradient
         colors={['#000000', PRIMARY_COLORS[900]]} 

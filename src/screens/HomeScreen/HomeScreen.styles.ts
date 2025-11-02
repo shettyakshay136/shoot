@@ -273,4 +273,8 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Saans TRIAL',
   },
+  scrollContainer: {
+    flex: 1,
+    width: '100%',
+  },
 });

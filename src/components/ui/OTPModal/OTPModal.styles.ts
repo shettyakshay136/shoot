@@ -51,6 +51,11 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#181D27',
+    fontFamily: 'Saans TRIAL',
   },
   otpText: {
     fontSize: 24,

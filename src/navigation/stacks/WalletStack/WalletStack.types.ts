@@ -5,5 +5,6 @@ export type WalletStackParamList = {
   WithdrawalDetails: {
     withdrawalData?: WithdrawalDetailsData;
   };
+  Accounts: undefined;
 };
 

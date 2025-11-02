@@ -13,3 +13,4 @@ export { default as ShootDetailsScreen} from './ShootDetailsScreen';
 export { default as CountdownScreen} from './CountdownScreen';
 export { default as DeliveryDeadlineScreen} from './DeliveryDeadlineScreen';
 export { default as PerformanceScreen} from './PerformanceScreen';
+export { default as AccountsScreen} from './AccountsScreen';
