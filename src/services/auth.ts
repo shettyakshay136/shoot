@@ -177,3 +177,384 @@ export const apiCompleteSignup = async (
   }
 };
 
+export async function apiValidateUser(accessToken: string) {
+  return rogApi.get('/creator/auth/validate', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
+// Profile Management Types
+export interface CreatorProfileUpdatePayload {
+  onboarded?: boolean;
+  kycVerified?: boolean;
+  creatorName?: string;
+  email?: string;
+  primaryLocation?: string;
+  primaryLocationCoordinates?: {
+    type: string;
+    coordinates: [number, number];
+  };
+  whatsappNotification?: boolean;
+  state?: string;
+  pincode?: string;
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
+  bio?: string;
+  social_links?: {
+    instagram?: string;
+    youtube?: string;
+    twitter?: string;
+  };
+}
+
+export interface GetProfileResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    redirectTo?: string;
+    token?: string;
+    creator?: any;
+  };
+}
+
+export interface UpdateProfileResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    status?: string;
+    creator?: any;
+  };
+}
+
+// KYC Types
+export interface DigiLockerAuthUrlResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    authorizationUrl: string;
+    state?: string;
+    code?: string;
+  };
+}
+
+export interface KYCVerifyResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    kycVerified: boolean;
+    kycDetails?: {
+      digilockerid: string;
+      name: string;
+      dob: string;
+      gender: string;
+      verifiedAt: string;
+    };
+  };
+}
+
+export interface KYCUserDetailsResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    digilockerid: string;
+    name: string;
+    dob: string;
+    gender: string;
+    aadhaarxml?: string | null;
+  };
+}
+
+export interface DigiLockerCallbackResponse {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  data?: {
+    message: string;
+    creatorId: string;
+  };
+}
+
+/**
+ * Profile Management - Get Creator Profile
+ * GET /creator/auth/profile
+ */
+export const apiGetCreatorProfile = async (
+  accessToken: string,
+): Promise<GetProfileResponse> => {
+  try {
+    const response = await rogApi.get<GetProfileResponse>(
+      '/creator/auth/profile',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('getCreatorProfile error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to get profile';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Profile Management - Update Creator Profile
+ * PUT /creator/auth/profile
+ */
+export const apiUpdateCreatorProfile = async (
+  payload: CreatorProfileUpdatePayload,
+  accessToken: string,
+): Promise<UpdateProfileResponse> => {
+  try {
+    const response = await rogApi.put<UpdateProfileResponse>(
+      '/creator/auth/profile',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('updateCreatorProfile error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to update profile';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * KYC - Get DigiLocker Auth URL
+ * GET /creator/auth/digilocker/auth
+ */
+export const apiGetDigiLockerAuthUrl = async (
+  accessToken: string,
+): Promise<DigiLockerAuthUrlResponse> => {
+  try {
+    const response = await rogApi.get<DigiLockerAuthUrlResponse>(
+      '/creator/auth/digilocker/auth',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('getDigiLockerAuthUrl error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to get DigiLocker auth URL';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * KYC - DigiLocker Callback
+ * GET /creator/auth/digilocker/callback
+ */
+export const apiDigiLockerCallback = async (
+  code: string,
+  state: string,
+): Promise<DigiLockerCallbackResponse> => {
+  try {
+    const response = await rogApi.get<DigiLockerCallbackResponse>(
+      '/creator/auth/digilocker/callback',
+      {
+        params: { code, state },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('digiLockerCallback error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'DigiLocker callback failed';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * KYC - Get KYC Verification Status
+ * GET /creator/auth/digilocker/verify
+ */
+export const apiGetKYCVerificationStatus = async (
+  accessToken: string,
+): Promise<KYCVerifyResponse> => {
+  try {
+    const response = await rogApi.get<KYCVerifyResponse>(
+      '/creator/auth/digilocker/verify',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('getKYCVerificationStatus error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to get KYC verification status';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * KYC - Get DigiLocker User Details
+ * GET /creator/auth/digilocker/user
+ */
+export const apiGetDigiLockerUserDetails = async (
+  accessToken: string,
+): Promise<KYCUserDetailsResponse> => {
+  try {
+    const response = await rogApi.get<KYCUserDetailsResponse>(
+      '/creator/auth/digilocker/user',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('getDigiLockerUserDetails error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to get DigiLocker user details';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Logout
+ * POST /creator/auth/logout
+ */
+export const apiLogout = async (accessToken: string): Promise<any> => {
+  try {
+    const response = await rogApi.post(
+      '/creator/auth/logout',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('logout error:', error);
+    const errorMessage =
+      error?.response?.data?.message || error?.message || 'Logout failed';
+    throw new Error(errorMessage);
+  }
+};
+
+// Phone Number Change Types
+export interface InitiatePhoneChangeRequest {
+  newPhoneNumber: string;
+}
+
+export interface InitiatePhoneChangeResponse {
+  success?: boolean;
+  message?: string;
+  status?: number;
+  data?: {
+    otp?: string; // For development
+  };
+}
+
+export interface CompletePhoneChangeRequest {
+  newPhoneNumber: string;
+  otp: string;
+  whatsappPreference?: boolean;
+}
+
+export interface CompletePhoneChangeResponse {
+  success?: boolean;
+  message?: string;
+  status?: number;
+  data?: {
+    creator?: any;
+    token?: string;
+    oldPhoneNumber?: string;
+    newPhoneNumber?: string;
+  };
+}
+
+/**
+ * Phone Number Change - Initiate
+ * POST /creator/auth/change-phone-number/initiate
+ */
+export const apiInitiatePhoneChange = async (
+  payload: InitiatePhoneChangeRequest,
+  accessToken: string,
+): Promise<InitiatePhoneChangeResponse> => {
+  try {
+    const response = await rogApi.post<InitiatePhoneChangeResponse>(
+      '/creator/auth/change-phone-number/initiate',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('initiatePhoneChange error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to initiate phone number change';
+    throw new Error(errorMessage);
+  }
+};
+
+/**
+ * Phone Number Change - Complete
+ * POST /creator/auth/change-phone-number/complete
+ */
+export const apiCompletePhoneChange = async (
+  payload: CompletePhoneChangeRequest,
+  accessToken: string,
+): Promise<CompletePhoneChangeResponse> => {
+  try {
+    const response = await rogApi.post<CompletePhoneChangeResponse>(
+      '/creator/auth/change-phone-number/complete',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error('completePhoneChange error:', error);
+    const errorMessage =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Failed to complete phone number change';
+    throw new Error(errorMessage);
+  }
+};
+

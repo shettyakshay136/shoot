@@ -45,7 +45,6 @@ const LoginScreen = (): JSX.Element => {
     setLoading(true);
     loginOtp(phoneNumber)
       .then(data => {
-        showToast('Success', 'success', 'The OTP is' + ' ' + data.data);
         navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
         setLoading(false);
       })

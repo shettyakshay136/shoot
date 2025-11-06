@@ -1,6 +1,7 @@
-import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import React, { useState, useEffect, type JSX } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Platform, ActivityIndicator, Linking } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './ApplicationStatusScreen.styles';
 import type { Step } from './ApplicationStatusScreen.types';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
@@ -11,11 +12,34 @@ import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-nati
 import Infoicon from '@/assets/svg/info.svg';
 import Tick from '@/assets/svg/tick.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
+import { getDigiLockerAuthUrl, getKYCVerificationStatus, updateCreatorProfile } from '@/services';
+import { useToast, AUTH_TOKEN_KEY } from '@/contexts';
+import { useAuth, CREATOR_STATUS_KEY } from '@/contexts/AuthContext';
+import { CREATOR_STATUS } from '@/types/models.config';
+import { useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '@/navigation/types';
+import type { NavigationProp } from '@react-navigation/native';
 
 const ApplicationStatusScreen = (): JSX.Element => {
+  const { showToast } = useToast();
+  const { user } = useAuth();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [isMoneyModalVisible, setIsMoneyModalVisible] = useState(false);
+  const [isVerifyingKYC, setIsVerifyingKYC] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState<string>(
+    CREATOR_STATUS.APPLICATION_RECIEVED.value,
+  );
+
+  // Read status from storage
+  useEffect(() => {
+    const getCurrentStatus = async () => {
+      const status = await AsyncStorage.getItem(CREATOR_STATUS_KEY);
+      if (status) setCurrentStatus(status);
+    };
+    getCurrentStatus();
+  }, [currentStatus]);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -115,38 +139,40 @@ const ApplicationStatusScreen = (): JSX.Element => {
     });
   };
 
-  const handleVerifyKYC = () => {
-    // Handle KYC verification logic here
-    console.log('KYC verification initiated');
-    
-    // Update steps: mark current active step as completed and next step as active
-    setSteps(prevSteps => {
-      const updatedSteps = [...prevSteps];
-      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
-      
-      if (currentActiveIndex !== -1) {
-        // Mark current step as completed
-        updatedSteps[currentActiveIndex] = {
-          ...updatedSteps[currentActiveIndex],
-          status: 'completed',
-          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
-          actionButton: undefined, // Remove action button for completed step
-        };
-        
-        // Mark next step as active and completed (Onboarded step)
-        const nextStepIndex = currentActiveIndex + 1;
-        if (nextStepIndex < updatedSteps.length) {
-          updatedSteps[nextStepIndex] = {
-            ...updatedSteps[nextStepIndex],
-            status: 'completed',
-            timeAgo: updatedSteps[nextStepIndex].id === 1 ? 'Just now' : undefined,
-            description: 'onboarded_message', // Special identifier for onboarded message
-          };
-        }
+  const handleVerifyKYC = async () => {
+    try {
+      setIsVerifyingKYC(true);
+      const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) {
+        showToast('Session expired. Please login again.', 'error');
+        return;
       }
-      
-      return updatedSteps;
-    });
+      const res = await getDigiLockerAuthUrl(token);
+      if (res.success && res.data?.authorizationUrl) {
+        showToast('Opening DigiLocker…', 'success');
+        Linking.openURL(res.data?.authorizationUrl);
+      } else {
+        showToast(res.message || 'Failed to start KYC', 'error');
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Failed to start KYC', 'error');
+    } finally {
+      setIsVerifyingKYC(false);
+    }
+  };
+
+  const checkKYCStatus = async () => {
+    try {
+      const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) return;
+      const res = await getKYCVerificationStatus(token);
+      if (res.success && res.data?.kycVerified) {
+        setCurrentStatus(CREATOR_STATUS.ONBOARDED.value);
+        showToast('KYC verification completed successfully!', 'success');
+      }
+    } catch (e) {
+      // no-op
+    }
   };
 
   const handleMoneyContinue = (method: 'bank' | 'upi') => {
@@ -157,6 +183,22 @@ const ApplicationStatusScreen = (): JSX.Element => {
   const handleMoneySkip = () => {
     console.log('Skipped payout setup');
     setIsMoneyModalVisible(false);
+  };
+
+  const handleContinue = async () => {
+    try {
+      const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      if (!token) return;
+      await updateCreatorProfile(
+        {
+          onboarded: true,
+        },
+        token,
+      );
+      navigation.navigate('App', { screen: 'HomeStack' });
+    } catch (e) {
+      showToast('Failed to complete application', 'error');
+    }
   };
 
   const [steps, setSteps] = useState<Step[]>([
@@ -281,10 +323,19 @@ const ApplicationStatusScreen = (): JSX.Element => {
               <Text style={styles.estimatedTimeText}>{step.estimatedTime}</Text>
             )}
             {(isExpanded || step.status === 'active') && step.actionButton && (
-              <TouchableOpacity style={styles.actionButton} onPress={step.actionButton.onPress}>
-                <Text style={styles.actionButtonText}>{step.actionButton.text}</Text>
-                <ArrowUp/>
-
+              <TouchableOpacity 
+                style={styles.actionButton} 
+                onPress={step.actionButton.onPress}
+                disabled={step.id === 4 && isVerifyingKYC}
+              >
+                {step.id === 4 && isVerifyingKYC ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <>
+                    <Text style={styles.actionButtonText}>{step.actionButton.text}</Text>
+                    <ArrowUp/>
+                  </>
+                )}
               </TouchableOpacity>
             )}
           </View>
@@ -340,7 +391,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
           </Text>
         </View>
         
-        <TouchableOpacity onPress={() => setIsMoneyModalVisible(true)}>
+        <TouchableOpacity onPress={handleContinue}>
           <LinearGradient
             colors={['#000000', '#61240E']}
             start={{ x: 0, y: 0 }}

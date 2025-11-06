@@ -18,19 +18,31 @@ import BackButton from '@/assets/svg/back.svg';
 import { SimpleModal } from '@/components/layout';
 import BoomSvg from '@/assets/svg/boom.svg';
 import Dropdownicon from '@/assets/svg/dropdown.svg';
-import ArrowUp from '@/assets/svg/arrow-up-right.svg'
+import ArrowUp from '@/assets/svg/arrow-up-right.svg';
+import { updateCreatorProfile } from '@/services';
+import { useToast } from '@/contexts';
+import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCoordinatesForCity } from '@/utils/geolocation';
+import { useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native';
 
 type CityScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   'CityScreen'
 >;
+type CityScreenRouteProp = RouteProp<AuthStackParamList, 'CityScreen'>;
 
 const CityScreen = (): JSX.Element => {
   const navigation = useNavigation<CityScreenNavigationProp>();
+  const route = useRoute<CityScreenRouteProp>();
+  const { showToast } = useToast();
   const [selectedCity, setSelectedCity] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const isFormValid = () => {
     return selectedCity.trim() !== '';
@@ -41,9 +53,52 @@ const CityScreen = (): JSX.Element => {
     setIsDropdownOpen(false);
   };
 
-  const handleContinue = () => {
-    if (isFormValid()) {
+  const handleContinue = async () => {
+    if (!isFormValid()) return;
+
+    setLoading(true);
+    try {
+      // Get access token from AsyncStorage
+      const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+
+      if (!accessToken) {
+        showToast('Authentication required. Please login again.', 'error');
+        return;
+      }
+
+      // Get coordinates for the selected city
+      const coordinates = getCoordinatesForCity(selectedCity);
+
+      if (!coordinates) {
+        showToast(
+          'Unable to fetch coordinates for the selected city.',
+          'error',
+        );
+        return;
+      }
+
+      // Send coordinates in GeoJSON Point format
+      await updateCreatorProfile(
+        {
+          primaryLocation: selectedCity,
+          primaryLocationCoordinates: {
+            type: 'Point',
+            coordinates: [coordinates.longitude, coordinates.latitude],
+          },
+        },
+        accessToken,
+      );
+
+      // Show success modal
       setIsModalVisible(true);
+    } catch (error: any) {
+      console.error('Error updating location:', error);
+      showToast(
+        error?.message || 'Failed to update location. Please try again.',
+        'error',
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -146,7 +201,7 @@ const CityScreen = (): JSX.Element => {
         <View style={styles.bottomContainer}>
           <TouchableOpacity
             onPress={handleContinue}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || loading}
             style={styles.verifyButtonTouchable}
           >
             <LinearGradient
@@ -155,17 +210,21 @@ const CityScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                !isFormValid() && styles.verifyButtonDisabled,
+                (!isFormValid() || loading) && styles.verifyButtonDisabled,
               ]}
             >
-              <Text
-                style={[
-                  styles.verifyButtonText,
-                  !isFormValid() && styles.verifyButtonTextDisabled,
-                ]}
-              >
-                Confirm City
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text
+                  style={[
+                    styles.verifyButtonText,
+                    !isFormValid() && styles.verifyButtonTextDisabled,
+                  ]}
+                >
+                  Confirm City
+                </Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>

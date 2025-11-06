@@ -17,19 +17,42 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import GiftSvg from '@/assets/svg/gift.svg';
 import Infoicon from '@/assets/svg/info.svg';
+import { updateCreatorProfile } from '@/services';
+import { useToast } from '@/contexts';
+import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator } from 'react-native';
 
-type OnboardingScreenNavigationProp = NativeStackNavigationProp<
+type RegisterScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
-  'OnboardingScreen'
+  'RegisterScreen'
+>;
+type RegisterScreenRouteProp = RouteProp<
+  AuthStackParamList,
+  'RegisterScreen'
 >;
 
 const RegisterScreen = (): JSX.Element => {
-  const navigation = useNavigation<OnboardingScreenNavigationProp>();
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const route = useRoute<RegisterScreenRouteProp>();
+  const { showToast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [receiveWhatsAppUpdates, setReceiveWhatsAppUpdates] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [isValidReferralCode, setIsValidReferralCode] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Get phone number from route params
+  useEffect(() => {
+    console.log('route.params', route.params);
+    if (route.params?.phoneNumber) {
+      setPhoneNumber(route.params.phoneNumber);
+    }
+  }, [route.params]);
 
   // Referral code validation
   const validateReferralCode = (code: string) => {
@@ -49,10 +72,40 @@ const RegisterScreen = (): JSX.Element => {
     return phoneNumber.trim() !== '';
   };
 
-  const handleVerify = () => {
-    if (isFormValid()) {
-      // Navigate to CityScreen
-      navigation.navigate('CityScreen');
+  const handleVerify = async () => {
+    if (!isFormValid()) return;
+
+    setLoading(true);
+    try {
+      // Get access token from AsyncStorage
+      const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+
+      if (!accessToken) {
+        showToast('Authentication required. Please login again.', 'error');
+        navigation.navigate('LoginScreen');
+        return;
+      }
+
+      // Update WhatsApp notification preference
+      await updateCreatorProfile(
+        {
+          whatsappNotification: receiveWhatsAppUpdates,
+          // TODO: Add referral code to API call if backend supports it
+          // referralCode: referralCode || undefined,
+        },
+        accessToken,
+      );
+
+      // Navigate to CityScreen with phone number
+      navigation.navigate('CityScreen', { phoneNumber });
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      showToast(
+        error?.message || 'Failed to update preferences. Please try again.',
+        'error',
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -168,7 +221,7 @@ const RegisterScreen = (): JSX.Element => {
           </View>
           <TouchableOpacity
             onPress={handleVerify}
-            disabled={!isFormValid()}
+            disabled={!isFormValid() || loading}
             style={styles.verifyButtonTouchable}
           >
             <LinearGradient
@@ -177,17 +230,21 @@ const RegisterScreen = (): JSX.Element => {
               end={{ x: 1, y: 0 }}
               style={[
                 styles.verifyButton,
-                !isFormValid() && styles.verifyButtonDisabled,
+                (!isFormValid() || loading) && styles.verifyButtonDisabled,
               ]}
             >
-              <Text
-                style={[
-                  styles.verifyButtonText,
-                  !isFormValid() && styles.verifyButtonTextDisabled,
-                ]}
-              >
-                Register
-              </Text>
+              {loading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text
+                  style={[
+                    styles.verifyButtonText,
+                    !isFormValid() && styles.verifyButtonTextDisabled,
+                  ]}
+                >
+                  Register
+                </Text>
+              )}
             </LinearGradient>
           </TouchableOpacity>
         </View>

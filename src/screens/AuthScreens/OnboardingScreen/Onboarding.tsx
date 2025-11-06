@@ -20,7 +20,8 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import Dropdownicon from '@/assets/svg/dropdown.svg';
 import { IOSPicker } from '@/components/features';
-// import { initiateSignup } from '@/services';
+import { initiateSignup } from '@/services';
+import { useToast } from '@/contexts';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -29,6 +30,7 @@ type OnboardingScreenNavigationProp = NativeStackNavigationProp<
 
 const OnboardingScreen = (): JSX.Element => {
   const navigation = useNavigation<OnboardingScreenNavigationProp>();
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
@@ -53,31 +55,30 @@ const OnboardingScreen = (): JSX.Element => {
 
   const handleVerify = async () => {
     if (!isFormValid()) {
-      Alert.alert('Error', 'Please fill all required fields');
+      showToast('Error', 'error', 'Please fill all required fields');
       return;
     }
 
     setLoading(true);
     try {
-      // API call commented out - backend not running
-      // await initiateSignup({
-      //   creatorName: name,
-      //   contactNumber: phoneNumber,
-      //   email: email,
-      //   portfolio: portfolioLink,
-      //   iphoneModel: selectedIphoneModel,
-      //   gender: selectedGender,
-      //   location: location,
-      // });
-      // Navigate directly to RegisterScreen to continue the flow
-      navigation.navigate('RegisterScreen');
+      await initiateSignup({
+        creatorName: name,
+        contactNumber: phoneNumber,
+        email: email,
+        portfolio: portfolioLink,
+        iphoneModel: selectedIphoneModel,
+        gender: selectedGender,
+        location: location,
+      });
+      // Navigate to OTP screen with phone number
+      navigation.navigate('OtpScreen', { phoneNumber, flow: 'signup' });
     } catch (error) {
       console.error('Initiate Signup Error:', error);
       const errorMessage =
         error instanceof Error
           ? error.message
           : 'Failed to initiate signup. Please try again.';
-      Alert.alert('Error', errorMessage);
+      showToast('Error', 'error', errorMessage);
     } finally {
       setLoading(false);
     }
