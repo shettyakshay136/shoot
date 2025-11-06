@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { useEffect, useState, type JSX } from 'react';
 import {
   View,
   Text,
@@ -23,17 +23,13 @@ import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   'RegisterScreen'
 >;
-type RegisterScreenRouteProp = RouteProp<
-  AuthStackParamList,
-  'RegisterScreen'
->;
+type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'RegisterScreen'>;
 
 const RegisterScreen = (): JSX.Element => {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
