@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { PRIMARY_COLORS } from '../../theme/colors';
+import { PRIMARY_COLORS } from '../../../../theme/colors';
 import { type JSX } from 'react';
 import { styles } from './WalletScreen.styles';
 import { 
   EARNINGS_DATA, 
   PAYOUTS_DATA
 } from './WalletScreen.constants';
-import { WithdrawModal } from '../../components/ui';
+import { WithdrawModal } from '../../../../components/ui';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { WalletStackParamList } from '@/navigation/stacks/WalletStack/WalletStack.types';
-import type { WithdrawalDetailsData } from '@/screens/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
+import type { WithdrawalDetailsData } from '@/screens/AppScreens/Wallet/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
 
-import BanknoteArrowUpIcon from '../../assets/svg/banknote-arrow-up.svg';
-import IndianRupeeIcon from '../../assets/svg/wallet.svg';
-import ClapperboardIcon from '../../assets/svg/file.svg';
+import BanknoteArrowUpIcon from '../../../../assets/svg/banknote-arrow-up.svg';
+import IndianRupeeIcon from '../../../../assets/svg/wallet.svg';
+import ClapperboardIcon from '../../../../assets/svg/file.svg';
 // removed unused icons
 import BackButton from '@/assets/svg/backButtonPdp.svg'
 

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { PRIMARY_COLORS } from '../../theme/colors';
+import { PRIMARY_COLORS } from '../../../../theme/colors';
 
 export const styles = StyleSheet.create({
   scrollContent: {

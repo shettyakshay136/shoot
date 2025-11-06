@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, type JSX } from 'react';
 import { View, Text, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { PRIMARY_COLORS } from '../../theme/colors';
-import { OTPModal } from '../../components/ui';
+import { PRIMARY_COLORS } from '../../../../theme/colors';
+import { OTPModal } from '../../../../components/ui';
 import { styles } from './CountdownScreen.styles';
 import type { CountdownScreenNavigationProp } from './CountdownScreen.types';
 

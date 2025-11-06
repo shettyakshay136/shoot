@@ -1,4 +1,4 @@
-import type { WithdrawalDetailsData } from '@/screens/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
+import type { WithdrawalDetailsData } from '@/screens/AppScreens/Wallet/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
 
 export type WalletStackParamList = {
   Wallet: undefined;

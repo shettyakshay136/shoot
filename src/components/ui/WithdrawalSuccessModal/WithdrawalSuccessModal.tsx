@@ -8,7 +8,7 @@ import AcceptIcon from '@/assets/svg/accept.svg';
 import type { WithdrawalSuccessModalProps } from './WithdrawalSuccessModal.types';
 import { styles } from './WithdrawalSuccessModal.styles';
 import type { WalletStackParamList } from '@/navigation/stacks/WalletStack/WalletStack.types';
-import type { WithdrawalDetailsData } from '@/screens/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
+import type { WithdrawalDetailsData } from '@/screens/AppScreens/Wallet/WithdrawalDetailsScreen/WithdrawalDetailsScreen.types';
 
 type NavigationProp = NativeStackNavigationProp<WalletStackParamList>;
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { PRIMARY_COLORS } from '../../theme/colors';
+import { PRIMARY_COLORS } from '../../../../theme/colors';
 import { type JSX } from 'react';
 import { styles } from './HomeScreen.styles';
 import { 
@@ -13,12 +13,12 @@ import {
   PERFORMANCE_DATA,
   FOOTER_CONTENT
 } from './HomeScreen.constants';
-import TabSwitcher from '../../components/TabSwitcher';
+import TabSwitcher from '../../../../components/TabSwitcher';
 
-import BanknoteArrowUpIcon from '../../assets/svg/banknote-arrow-up.svg';
-import CurrencyIcon from '../../assets/svg/indian-rupee.svg';
-import MoreIcon from '../../assets/svg/more.svg';
-import ClapperboardIcon from '../../assets/svg/file.svg';
+import BanknoteArrowUpIcon from '../../../../assets/svg/banknote-arrow-up.svg';
+import CurrencyIcon from '../../../../assets/svg/indian-rupee.svg';
+import MoreIcon from '../../../../assets/svg/more.svg';
+import ClapperboardIcon from '../../../../assets/svg/file.svg';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@/navigation/stacks/HomeStack/HomeStack.types';

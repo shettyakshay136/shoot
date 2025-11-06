@@ -1,10 +1,10 @@
 import React, { type JSX } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { PRIMARY_COLORS, TEXT_COLORS } from '../../theme/colors';
+import { PRIMARY_COLORS, TEXT_COLORS } from '../../../../theme/colors';
 import { styles } from './ProfileScreen.styles';
-import { useAuth } from '../../contexts';
-import UserRoundIcon from '../../assets/svg/user-round.svg';
+import { useAuth } from '../../../../contexts';
+import UserRoundIcon from '../../../../assets/svg/user-round.svg';
 
 const ProfileScreen = (): JSX.Element => {
   const { user, logout } = useAuth();
