@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logout as apiLogout } from '@/services/authUtils';
 
 // Auth storage keys
 export const AUTH_TOKEN_KEY = '@rog_auth_token';
@@ -87,13 +88,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
-      await AsyncStorage.removeItem(USER_KEY);
+      // Call API logout and clear storage (handles both API call and storage clearing)
+      await apiLogout();
+      // Update state after logout
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {
-      console.error('Error removing auth data:', error);
-      throw error;
+      console.error('Error during logout:', error);
+      // Even if API call fails, clear local state
+      setIsAuthenticated(false);
+      setUser(null);
+      // Don't throw error - logout should always succeed locally
     }
   };
 

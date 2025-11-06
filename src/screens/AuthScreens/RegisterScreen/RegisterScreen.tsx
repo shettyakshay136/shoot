@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { type JSX } from 'react';
 import {
   View,
   Text,

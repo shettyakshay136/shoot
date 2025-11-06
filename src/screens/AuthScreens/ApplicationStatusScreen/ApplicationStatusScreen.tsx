@@ -1,5 +1,6 @@
 import React, { useState, useEffect, type JSX } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Platform, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, Linking } from 'react-native';
+// import { Platform } from 'react-native'; // Commented out - was used with react-native-document-picker
 import LinearGradient from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './ApplicationStatusScreen.styles';
@@ -8,7 +9,7 @@ import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
 import { UploadModal } from '@/components/ui';
 import { MoneySetupModal } from '@/components/ui';
-import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
+// import DocumentPicker, { isInProgress, types as DocumentTypes } from 'react-native-document-picker';
 import Infoicon from '@/assets/svg/info.svg';
 import Tick from '@/assets/svg/tick.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
@@ -50,6 +51,8 @@ const ApplicationStatusScreen = (): JSX.Element => {
   };
 
   const handleFileUpload = async () => {
+    // Commented out react-native-document-picker related code
+    /*
     try {
       const results = await DocumentPicker.pick({
         type: [DocumentTypes.allFiles],
@@ -104,6 +107,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
         console.error('File picking error:', e);
       }
     }
+    */
   };
 
   const handleUploadShoot = () => {

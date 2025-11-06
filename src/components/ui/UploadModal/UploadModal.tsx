@@ -1,12 +1,15 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Platform, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+// import { Platform } from 'react-native'; // Commented out - was used with react-native-document-picker
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import FileSvg from '@/assets/svg/file.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
 import rogApi from '@/services/axiosInstance';
 
+// Commented out react-native-document-picker related code
 // Safely import DocumentPicker with error handling
+/*
 let DocumentPicker: any;
 let isInProgress: any;
 let DocumentTypes: any;
@@ -19,6 +22,10 @@ try {
 } catch (error) {
   console.error('Failed to import react-native-document-picker:', error);
 }
+*/
+// let DocumentPicker: any;
+// let isInProgress: any;
+// let DocumentTypes: any;
 
 // Define DocumentPickerResponse type manually since we're using dynamic import
 interface DocumentPickerResponse {
@@ -254,6 +261,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   // Handle file selection and upload
   const handleFileUpload = async () => {
+    // Commented out react-native-document-picker related code
+    /*
     try {
       // Check if DocumentPicker is available
       if (!DocumentPicker || typeof DocumentPicker.pick !== 'function') {
@@ -288,6 +297,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
       }
 
       const results = await DocumentPicker.pick(pickerOptions);
+    */
+    try {
+      // DocumentPicker code commented out
+      const results: any[] = [];
 
       if (!results || results.length === 0) {
         return;
@@ -325,6 +338,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
       setIsUploading(false);
       setUploadProgress(null);
       
+      // Commented out react-native-document-picker related code
+      /*
       if (DocumentPicker && DocumentPicker.isCancel && DocumentPicker.isCancel(error)) {
         // User cancelled
         return;
@@ -346,6 +361,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
           Alert.alert('Error', errorMessage);
         }
       }
+      */
+      console.error('File picking error:', error);
+      Alert.alert('Error', error?.message || 'Failed to pick files');
     }
   };
 

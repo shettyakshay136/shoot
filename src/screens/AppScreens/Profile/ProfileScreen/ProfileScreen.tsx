@@ -15,7 +15,6 @@ import { useAuth, useToast } from '@/contexts';
 import type { ProfileStackParamList } from '@/navigation/stacks/ProfileStack/ProfileStack.types';
 import SimpleModal from '@/components/layout/SimpleModal';
 import styles from './ProfileScreen.styles';
-import { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 
 type ProfileScreenNavigationProp = NativeStackNavigationProp<
   ProfileStackParamList,
@@ -25,21 +24,21 @@ type ProfileScreenNavigationProp = NativeStackNavigationProp<
 // Import navlist SVGs
 import ReferAndEarnIcon from '@/assets/svg/refer-and-earn.svg';
 import ChevronRightIcon from '@/assets/svg/chevron-right.svg';
-import UserRoundIcon from '@/assets/app/screens/profile/navlist/user-round.svg';
-import CreditCardIcon from '@/assets/app/screens/profile/navlist/credit-card.svg';
+import UserRoundIcon from '@/assets/svg/user-round.svg';
+import CreditCardIcon from '@/assets/svg/card.svg';
 import BellElectricIcon from '@/assets/svg/bell-electric.svg';
 import ApertureIcon from '@/assets/svg/aperture.svg';
-import MessageCircleQuestionIcon from '@/assets/app/screens/profile/navlist/message-circle-question-mark.svg';
+import MessageCircleQuestionIcon from '@/assets/svg/info.svg'; // TODO: Replace with message-circle-question-mark.svg when available
 import ZapIcon from '@/assets/svg/zap.svg';
-import StarIcon from '@/assets/app/screens/profile/navlist/star.svg';
+import StarIcon from '@/assets/svg/star.svg';
 import MedalIcon from '@/assets/svg/medal.svg';
-import BanIcon from '@/assets/app/screens/profile/navlist/ban.svg';
-import BadgeIndianRupeeIcon from '@/assets/app/screens/profile/navlist/badge-indian-rupee.svg';
+import BanIcon from '@/assets/svg/decline.svg'; // TODO: Replace with ban.svg when available
+import BadgeIndianRupeeIcon from '@/assets/svg/indian-rupee.svg';
 import ActivityIcon from '@/assets/svg/activity.svg';
-import RoseIcon from '@/assets/app/screens/profile/navlist/rose.svg';
-import BadgeAlertIcon from '@/assets/app/screens/profile/navlist/badge-alert.svg';
-import SettingsIcon from '@/assets/app/screens/profile/navlist/settings.svg';
-import PowerIcon from '@/assets/app/screens/profile/navlist/power.svg';
+import RoseIcon from '@/assets/svg/gift.svg'; // TODO: Replace with rose.svg when available
+import BadgeAlertIcon from '@/assets/svg/info.svg';
+import SettingsIcon from '@/assets/svg/more.svg'; // TODO: Replace with settings.svg when available
+import PowerIcon from '@/assets/svg/back.svg'; // TODO: Replace with power.svg when available
 import AwardIcon from '@/assets/svg/award.svg';
 import HistoryIcon from '@/assets/svg/history.svg';
 
@@ -138,8 +137,6 @@ const QuickAction = ({
 
 const ProfileScreen = (): JSX.Element => {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
-  const authNavigation =
-    useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
   const { user, logout } = useAuth();
   const { showToast } = useToast();
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
@@ -156,9 +153,15 @@ const ProfileScreen = (): JSX.Element => {
   };
 
   const handleConfirmLogout = async () => {
-    setIsLogoutModalVisible(false);
-    await logout();
-    showToast('Logged out successfully', 'success');
+    try {
+      setIsLogoutModalVisible(false);
+      await logout();
+      showToast('Logged out successfully', 'success');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Logout still succeeds locally even if API call fails
+      showToast('Logged out successfully', 'success');
+    }
   };
 
   return (

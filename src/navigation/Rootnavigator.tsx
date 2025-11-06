@@ -42,13 +42,15 @@ const RootNavigator = (): JSX.Element => {
 
   return (
     <View style={styles.container}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={COMMON_SCREEN_OPTIONS}>
-          {isAuthenticated ? (
-            <Stack.Screen name="App" component={AppNavigator} />
-          ) : (
-            <Stack.Screen name="Auth" component={AuthNavigator} />
-          )}
+      <NavigationContainer
+        key={isAuthenticated ? 'authenticated' : 'unauthenticated'}
+      >
+        <Stack.Navigator
+          initialRouteName={isAuthenticated ? 'App' : 'Auth'}
+          screenOptions={COMMON_SCREEN_OPTIONS}
+        >
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+          <Stack.Screen name="App" component={AppNavigator} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
