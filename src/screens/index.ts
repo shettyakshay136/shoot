@@ -1,10 +1,10 @@
 // Auth Screens
 export { default as LoginScreen } from './AuthScreens/LoginScreen';
-export { default as OnboardingScreen } from './AuthScreens/OnboardingScreen';
 export { default as OtpScreen } from './AuthScreens/OtpScreen';
-export { default as RegisterScreen } from './AuthScreens/RegisterScreen';
-export { default as CityScreen } from './AuthScreens/CityScreen';
-export { default as ApplicationStatusScreen } from './AuthScreens/ApplicationStatusScreen';
+export { default as SignupScreen } from './AuthScreens/SignupScreen';
+export { default as WhatsappPreferenceScreen } from './AuthScreens/WhatsappPreferenceScreen';
+export { default as LocationPreferenceScreen } from './AuthScreens/LocationPreferenceScreen';
+export { default as ApplicationScreen } from './AuthScreens/ApplicationScreen';
 
 // App Screens - Home Tab
 export { default as HomeScreen } from './AppScreens/Home/HomeScreen';

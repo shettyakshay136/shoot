@@ -1,31 +1,17 @@
-import { StyleSheet , Dimensions } from 'react-native';
-
-
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 23,
-    paddingTop: 12,
-    paddingBottom: 140,
-    backgroundColor: '#FFFFFF',
+    gap:23,
+    paddingHorizontal:23
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
-    paddingBottom: 12,
-    backgroundColor: '#FFFFFF',
-    zIndex: 10,
   },
   backButton: {
     width: 40,
@@ -40,8 +26,8 @@ export const styles = StyleSheet.create({
     backgroundColor: '#FEEDD6',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical:10,
+    paddingHorizontal:16
   },
   helpButtonText: {
     fontSize: 16,
@@ -49,15 +35,13 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
-    gap: 24,
-    marginBottom: 16,
+    gap:20
   },
   dropdownContainer: {
     position: 'relative',
-    zIndex: 1000,
   },
   inputContainer: {
-    gap: 12,
+    gap: 6,
   },
   inputLabel: {
     fontSize: 14,
@@ -71,8 +55,8 @@ export const styles = StyleSheet.create({
     borderColor: '#414651',
   },
   dropdownButton: {
-    height: 52,
-    borderRadius: 12,
+    height: 48,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#FFFFFF',
@@ -97,24 +81,19 @@ export const styles = StyleSheet.create({
   },
   dropdownList: {
     position: 'absolute',
-    top: 60,
+    top: 54,
     left: 0,
     right: 0,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#D1D5DB',
-    overflow: 'hidden',
-    maxHeight: 320,
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    overflow:'hidden',
+    maxHeight:600
   },
   dropdownItem: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
@@ -123,42 +102,37 @@ export const styles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Saans TRIAL',
   },
-  dropdownItemSelected: {
-    backgroundColor: '#FEEDD6',
-  },
-  dropdownItemTextSelected: {
-    color: '#983614',
-  },
   title: {
     fontSize: 24,
     fontWeight: '600',
     color: '#111827',
     lineHeight: 32,
     fontFamily: 'Saans TRIAL',
-    marginBottom: 8,
   },
   bottomContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    paddingTop: 16,
+    paddingBottom: 21,
+    paddingTop: 20,
     paddingHorizontal: 23,
-    backgroundColor: 'white',
+    gap:14
   },
   verifyButtonTouchable: {
     borderRadius: 100,
   },
   verifyButton: {
-    borderRadius: 120,
-    height: 48,
-    // paddingHorizontal: 20,
+    borderRadius: 100,
+    paddingTop: 10,
+    paddingRight: 20,
+    paddingBottom: 10,
+    paddingLeft: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
     opacity: 1,
-
   },
   verifyButtonText: {
     color: '#FFFFFF',
@@ -171,6 +145,7 @@ export const styles = StyleSheet.create({
   verifyButtonTextDisabled: {
     color: '#FFFFFF',
   },
+  // BottomSheet styles
   bottomSheetContent: {
     paddingVertical: 20,
     gap: 24,
@@ -201,6 +176,9 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 18,
   },
+  steps: {
+    gap: 12,
+  },
   stepItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -210,19 +188,22 @@ export const styles = StyleSheet.create({
     gap: 12,
   },
   stepNumber: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
     borderRadius: 100,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    flexShrink: 0,
+    paddingTop: 8,
+    paddingRight: 17,
+    paddingBottom: 8,
+    paddingLeft: 17,
   },
   stepNumberText: {
     fontFamily: 'Saans TRIAL',
-    fontWeight: '600',
-    fontSize: 14,
-    lineHeight: 20,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 24,
     color: '#B7410E',
   },
   stepContent: {
@@ -231,16 +212,16 @@ export const styles = StyleSheet.create({
   },
   stepTitle: {
     fontFamily: 'Saans TRIAL',
-    fontWeight: '600',
-    fontSize: 14,
-    lineHeight: 20,
+    fontWeight: '500',
+    fontSize: 16,
+    lineHeight: 24,
     color: '#111827',
   },
   stepDescription: {
     fontFamily: 'Saans TRIAL',
     fontWeight: '400',
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     color: '#6B7280',
   },
   confirmButton: {
@@ -252,8 +233,6 @@ export const styles = StyleSheet.create({
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection:'row',
-    gap:8
   },
   confirmButtonText: {
     fontSize: 16,
@@ -270,7 +249,5 @@ export const styles = StyleSheet.create({
   stepsContainer: {
     backgroundColor: '#FFF7ED',
     borderRadius: 12,
-    gap: 12,
-    padding: 12,
   },
 });

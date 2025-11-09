@@ -23,7 +23,11 @@ const styles = StyleSheet.create({
 });
 
 const RootNavigator = (): JSX.Element => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  // User should only access App routes if authenticated AND onboarded
+  const isOnboarded = user?.onboarded === true;
+  const shouldShowApp = isAuthenticated && isOnboarded;
 
   useEffect(() => {
     if (!isLoading) {
@@ -43,10 +47,10 @@ const RootNavigator = (): JSX.Element => {
   return (
     <View style={styles.container}>
       <NavigationContainer
-        key={isAuthenticated ? 'authenticated' : 'unauthenticated'}
+        key={shouldShowApp ? 'authenticated' : 'unauthenticated'}
       >
         <Stack.Navigator
-          initialRouteName={isAuthenticated ? 'App' : 'Auth'}
+          initialRouteName={shouldShowApp ? 'App' : 'Auth'}
           screenOptions={COMMON_SCREEN_OPTIONS}
         >
           <Stack.Screen name="Auth" component={AuthNavigator} />

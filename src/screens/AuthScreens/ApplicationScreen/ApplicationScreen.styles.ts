@@ -4,45 +4,29 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal:23,
-    paddingTop:50,
-    paddingBottom:20
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
     paddingHorizontal: 23,
-    paddingTop: 12,
-    paddingBottom: 140,
-    backgroundColor: '#FFFFFF',
   },
+
+  /* Header */
   header: {
-    paddingTop: 12,
-    paddingBottom: 16,
-    backgroundColor: '#FFFFFF',
-    zIndex: 10,
-    flexDirection:"row",
-    justifyContent:'space-between',
-    alignItems:'center'
+    paddingTop: 24,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     lineHeight: 32,
+    letterSpacing: -0.48,
   },
-  timelineContainer: {
-    paddingVertical: 10,
-  },
-  stepWrapper: {
-    position: 'relative',
-  },
-  stepContainer: {
-    marginBottom: 8,
-  },
+
+  /* Scroll */
+  content: { flex: 1 },
+  timelineContainer: { paddingVertical: 10 },
+  stepWrapper: { position: 'relative' },
+  stepContainer: { marginBottom: 8 },
+
+  /* Step row */
   stepHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -52,9 +36,11 @@ export const styles = StyleSheet.create({
     marginRight: 10,
     zIndex: 1,
   },
+
+  /* Left icons (done/active/pending) */
   completedIcon: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 100,
     backgroundColor: '#D1FADF',
     alignItems: 'center',
@@ -62,12 +48,12 @@ export const styles = StyleSheet.create({
   },
   checkmark: {
     color: '#054F31',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   activeIcon: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 100,
     backgroundColor: '#0BA5EC',
     alignItems: 'center',
@@ -75,13 +61,13 @@ export const styles = StyleSheet.create({
   },
   activeIconText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
   pendingIcon: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: 100,
     backgroundColor: '#E9EAEB',
     alignItems: 'center',
@@ -89,14 +75,13 @@ export const styles = StyleSheet.create({
   },
   pendingIconText: {
     color: '#000000',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
-  stepInfo: {
-    flex: 1,
-    paddingTop: 2,
-  },
+
+  /* Step info (right) */
+  stepInfo: { flex: 1, paddingTop: 2 },
   stepTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -105,12 +90,14 @@ export const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '500',
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     lineHeight: 24,
     flex: 1,
   },
+
+  /* Status pills */
   timeAgoPill: {
     backgroundColor: '#F5F5F5',
     paddingHorizontal: 8,
@@ -143,14 +130,15 @@ export const styles = StyleSheet.create({
   },
   activePillText: {
     fontSize: 12,
-    color: 'Blue/900',
+    color: '#3B82F6',
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
+
   stepDescription: {
     fontSize: 16,
     color: '#6B7280',
-    lineHeight: 24,
+    lineHeight: 20,
     fontFamily: 'Saans TRIAL',
     fontWeight: '400',
     paddingBottom: 6,
@@ -170,17 +158,21 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     fontStyle: 'italic',
   },
+
+  /* Primary action button (per-step) */
   actionButton: {
     backgroundColor: '#983614',
-    minHeight: 44,
-    borderRadius: 100,
+    height: 44,
+    borderRadius: 1000,
     borderWidth: 1,
     borderColor: '#983614',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingRight: 16,
+    paddingBottom: 10,
+    paddingLeft: 16,
     gap: 8,
     alignSelf: 'flex-start',
   },
@@ -195,22 +187,17 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
-  expandButton: {
-    padding: 8,
-    marginTop: 2,
-  },
-  expandIcon: {
-    width: 20,
-    height: 20,
-    transform: [{ rotate: '90deg' }],
-  },
-  expandIconRotated: {
-    transform: [{ rotate: '270deg' }],
-  },
+
+  /* Expander */
+  expandButton: { padding: 4, marginTop: 2 },
+  expandIcon: { width: 16, height: 16, transform: [{ rotate: '90deg' }] },
+  expandIconRotated: { transform: [{ rotate: '270deg' }] },
+
+  /* Vertical dashed line */
   timelineLine: {
     position: 'absolute',
-    left: 17,
-    top: 48,
+    left: 15,
+    top: 32,
     width: 2,
     bottom: -12,
     borderStyle: 'dashed',
@@ -218,20 +205,19 @@ export const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     zIndex: 0,
   },
+
+  /* Onboarded message */
   onboardedMessageContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#FFF7ED',
+    backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#FEDDB3',
+    borderColor: '#E5E7EB',
     borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    gap: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
-  boomIcon: {
-    marginTop: 2,
-  },
+  boomIcon: { marginRight: 12, marginTop: 2 },
   onboardedMessageText: {
     fontSize: 16,
     fontWeight: '400',
@@ -240,29 +226,17 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
     flex: 1,
   },
-  bottomContainer: {
-    paddingBottom: 34,
-    paddingTop: 20,
-    paddingHorizontal: 23,
-    gap: 14,
+
+  /* Footer */
+  footer: {
     backgroundColor: '#FFFFFF',
-    zIndex: 100,
-    elevation: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    paddingVertical: 16,
   },
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 8,
   },
-  checkboxContainer: {
-    marginTop: 2,
-    width: 20,
-    height: 20,
-  },
+  checkboxContainer: { marginRight: 12, marginTop: 2 },
   checkbox: {
     width: 20,
     height: 20,
@@ -273,76 +247,62 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxCheckmark: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+  checkboxCheckmark: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
   termsText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '400',
     color: '#6B7280',
     fontFamily: 'Saans TRIAL',
-    lineHeight: 18,
+    lineHeight: 20,
     flex: 1,
   },
   termsLink: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
     color: '#983614',
     fontFamily: 'Saans TRIAL',
+    lineHeight: 20,
   },
   privacyLink: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '500',
     color: '#983614',
     fontFamily: 'Saans TRIAL',
+    lineHeight: 20,
   },
-  submitButtonTouchable: {
+
+  /* Footer CTA */
+  captureButton: {
+    backgroundColor: '#0BA5EC',
+    height: 52,
     borderRadius: 100,
-    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  captureButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    fontFamily: 'Saans TRIAL',
   },
   submitButton: {
+    marginTop: 12,
+    borderRadius: 100,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  submitButtonGradient: {
     height: 52,
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 32,
-    flexDirection:'row',
-    gap:8
+    borderRadius: 100,
   },
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
     fontFamily: 'Saans TRIAL',
-  },
-  helpButton: {
-    borderRadius: 1000,
-    backgroundColor: '#FEEDD6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical:10,
-    paddingHorizontal:16,
-    flexDirection:'row',
-    gap:8
-  },
-  helpButtonText: {
-    fontSize: 16,
-    color: '#983614',
-    fontWeight: '600',
-  },
-  submitButtonGradient: {
-    height: 52,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    flexDirection:'row',
-    gap:8,
-    width:'100%',
-    borderRadius:100
-  },
-  footer: {
-    backgroundColor: 'white',
-    gap:12
   },
 });

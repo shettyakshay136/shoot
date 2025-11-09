@@ -1,20 +1,17 @@
-import { StyleSheet , Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  keyboardView: {
-    flex: 1,
+    backgroundColor: '#FFFFFF',
+    gap:23,
+    paddingHorizontal:23
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 16,
-    paddingBottom: 12,
-    paddingHorizontal: 23,
   },
   backButton: {
     width: 40,
@@ -38,20 +35,9 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
-    paddingHorizontal: 23,
-    paddingBottom: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#111827',
-    lineHeight: 32,
-    fontFamily: 'Saans TRIAL',
   },
   scrollView: {
     flex: 1,
-    paddingHorizontal: 23,
-    paddingVertical:20
   },
   inputsContainer: {
     gap: 16,
@@ -80,7 +66,6 @@ export const styles = StyleSheet.create({
   textInputFocused: {
     borderWidth: 1.5,
     borderColor: '#414651',
-    backgroundColor: '#FAFBFC',
   },
   phoneInputContainer: {
     height: 48,
@@ -88,8 +73,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     backgroundColor: '#FFFFFF',
-    flexDirection:'row',
-    display:'flex',
+    flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 5,
     gap: 6,
@@ -97,16 +81,12 @@ export const styles = StyleSheet.create({
   phoneInputContainerFocused: {
     borderWidth: 1.5,
     borderColor: '#414651',
-    backgroundColor: '#FAFBFC',
   },
   phonePrefix: {
     backgroundColor: '#F0F4F8',
     borderRadius: 5,
     paddingVertical:4,
     paddingHorizontal:8,
-    flexDirection:'row',
-    gap:5,
-    alignItems:'center',
   },
   phonePrefixText: {
     fontSize: 16,
@@ -120,40 +100,6 @@ export const styles = StyleSheet.create({
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     paddingVertical: 0,
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingTop: 16,
-    paddingHorizontal: 23,
-    backgroundColor: 'white',
-  },
-  verifyButtonTouchable: {
-    borderRadius: 100,
-  },
-  verifyButton: {
-    borderRadius: 120,
-    height: 48,
-    // paddingHorizontal: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    opacity: 1,
-
-  },
-  verifyButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  verifyButtonDisabled: {
-    opacity: 0.5,
-  },
-  verifyButtonTextDisabled: {
-    color: '#FFFFFF',
   },
   dropdownButton: {
     height: 48,
@@ -196,16 +142,60 @@ export const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    overflow:'hidden'
   },
   dropdownItem: {
     paddingHorizontal: 16,
     paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
   },
   dropdownItemText: {
     fontSize: 16,
     color: '#111827',
     fontFamily: 'Saans TRIAL',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#111827',
+    lineHeight: 32,
+    fontFamily: 'Saans TRIAL',
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingBottom: 21,
+    paddingTop: 20,
+    paddingHorizontal: 23,
+    gap:14
+  },
+  verifyButtonTouchable: {
+    borderRadius: 100,
+  },
+  verifyButton: {
+    borderRadius: 100,
+    paddingTop: 10,
+    paddingRight: 20,
+    paddingBottom: 10,
+    paddingLeft: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
+  },
+  verifyButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  verifyButtonDisabled: {
+    opacity: 0.5,
+  },
+  verifyButtonTextDisabled: {
+    color: '#FFFFFF',
   },
   helpText: {
     fontSize: 14,
@@ -220,10 +210,4 @@ export const styles = StyleSheet.create({
   changeNumberText: {
     color: '#B7410E',
   },
-  bottomSpacer: {
-    height: 20,
-  },
-  scrollViewContent:{
-    paddingBottom: Platform.OS === 'ios' ? 56 : 0,
-  }
 });

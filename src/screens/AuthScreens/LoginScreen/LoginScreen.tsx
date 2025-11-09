@@ -7,19 +7,13 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import { useAuth } from '@/contexts/AuthContext';
-// import { requestOtp } from '@/services';
 import { loginOtp } from '@/services';
 import { useToast } from '@/contexts';
 
@@ -31,7 +25,6 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 const LoginScreen = (): JSX.Element => {
   const { width, height } = Dimensions.get('window');
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const { login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
@@ -44,10 +37,7 @@ const LoginScreen = (): JSX.Element => {
 
     setLoading(true);
     loginOtp(phoneNumber)
-      .then(data => {
-        if ((data as any).data) {
-          showToast('Success', 'success the otp has is', (data as any).data);
-        }
+      .then(() => {
         navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
         setLoading(false);
       })
@@ -118,12 +108,12 @@ const LoginScreen = (): JSX.Element => {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
-              navigation.navigate('OnboardingScreen');
+              navigation.navigate('SignupScreen');
             }}
             style={styles.registerButtonContainer}
           >
             <Text style={styles.registerText}>
-              New creator? <Text style={styles.registerLink}>Register</Text>
+              New creator? <Text style={styles.registerLink}>Sign up</Text>
             </Text>
           </TouchableOpacity>
         </View>

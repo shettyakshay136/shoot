@@ -1,12 +1,20 @@
 export type AuthStackParamList = {
-    LoginScreen: undefined;
-    OnboardingScreen: undefined;
-    OtpScreen: {
-      phoneNumber: string;
-      flow?: 'login' | 'signup';
-    };
-    RegisterScreen: undefined;
-    CityScreen: undefined;
-    ApplicationStatusScreen: undefined;
+  LoginScreen: undefined;
+  SignupScreen: undefined;
+  OtpScreen: {
+    phoneNumber: string;
+    flow?: 'login' | 'signup';
   };
+  WhatsappPreferenceScreen: {
+    phoneNumber?: string;
+  };
+  LocationPreferenceScreen: {
+    phoneNumber?: string;
+  };
+  ApplicationScreen: undefined;
+  DigiLockerCallbackScreen: {
+    code?: string;
+    state?: string;
+  };
+};
   
