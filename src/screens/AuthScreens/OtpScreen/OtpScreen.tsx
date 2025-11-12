@@ -134,6 +134,7 @@ const OtpScreen = (): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{paddingHorizontal:23 , flex:1}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <BackButton />
@@ -203,6 +204,7 @@ const OtpScreen = (): JSX.Element => {
           <Text style={styles.facingIssueText}>Facing issue? </Text>
           <Text style={styles.changeNumberText}>Change your number</Text>
         </Text>
+      </View>
       </View>
     </SafeAreaView>
   );

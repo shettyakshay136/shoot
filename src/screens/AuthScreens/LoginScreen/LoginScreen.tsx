@@ -36,7 +36,7 @@ const LoginScreen = (): JSX.Element => {
     }
 
     setLoading(true);
-    loginOtp(phoneNumber)
+    loginOtp(phoneNumber) 
       .then(() => {
         navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
         setLoading(false);

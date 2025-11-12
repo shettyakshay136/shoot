@@ -5,7 +5,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
     gap:23,
-    paddingHorizontal:23
   },
   header: {
     flexDirection: 'row',
@@ -162,29 +161,24 @@ export const styles = StyleSheet.create({
     fontFamily: 'Saans TRIAL',
   },
   bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingBottom: 21,
-    paddingTop: 20,
-    paddingHorizontal: 23,
+    // position: 'absolute',
+    // bottom: 0,
+    // left: 0,
+    // right: 0,
     gap:14
   },
   verifyButtonTouchable: {
     borderRadius: 100,
+    overflow:'hidden'
   },
   verifyButton: {
     borderRadius: 100,
-    paddingTop: 10,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
     opacity: 1,
+    height:48
   },
   verifyButtonText: {
     color: '#FFFFFF',

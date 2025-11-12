@@ -174,18 +174,16 @@ export const styles = StyleSheet.create({
   },
   verifyButtonTouchable: {
     borderRadius: 100,
+    overflow:'hidden'
   },
   verifyButton: {
     borderRadius: 100,
-    paddingTop: 10,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingLeft: 20,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
     opacity: 1,
+    height:48
   },
   verifyButtonText: {
     color: '#FFFFFF',

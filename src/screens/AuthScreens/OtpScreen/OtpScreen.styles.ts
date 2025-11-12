@@ -3,7 +3,6 @@ import { StyleSheet, Platform } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -107,11 +106,16 @@ export const styles = StyleSheet.create({
     fontFamily: 'Inter',
   },
   bottomContainer: {
-    paddingBottom: Platform.OS === 'ios' ? 20 : 34,
-    paddingHorizontal: 23,
-    gap: 14,
-    backgroundColor: 'white',
-    borderTopColor: '#F3F4F6',
+    // paddingBottom: Platform.OS === 'ios' ? 20 : 34,
+    // paddingHorizontal: 23,
+    // gap: 14,
+    // backgroundColor: 'white',
+    // borderTopColor: '#F3F4F6',
+    position:'absolute',
+    bottom:0,
+    width:'100%',
+    alignSelf:'center',
+    gap:14
   },
   verifyButtonTouchable: {
     borderRadius: 100,

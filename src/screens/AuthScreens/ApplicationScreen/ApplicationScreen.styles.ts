@@ -4,29 +4,40 @@ export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 23,
+    paddingHorizontal:23
   },
-
-  /* Header */
+  keyboardAvoidingView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 23,
+    paddingTop: 12,
+    paddingBottom: 140,
+    backgroundColor: '#FFFFFF',
+  },
   header: {
-    paddingTop: 24,
+    paddingTop: 12,
+    paddingBottom: 16,
+    backgroundColor: '#FFFFFF',
+    zIndex: 10,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     lineHeight: 32,
-    letterSpacing: -0.48,
   },
-
-  /* Scroll */
-  content: { flex: 1 },
-  timelineContainer: { paddingVertical: 10 },
-  stepWrapper: { position: 'relative' },
-  stepContainer: { marginBottom: 8 },
-
-  /* Step row */
+  timelineContainer: {
+    paddingVertical: 10,
+  },
+  stepWrapper: {
+    position: 'relative',
+  },
+  stepContainer: {
+    marginBottom: 8,
+  },
   stepHeader: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -36,11 +47,9 @@ export const styles = StyleSheet.create({
     marginRight: 10,
     zIndex: 1,
   },
-
-  /* Left icons (done/active/pending) */
   completedIcon: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 100,
     backgroundColor: '#D1FADF',
     alignItems: 'center',
@@ -48,12 +57,12 @@ export const styles = StyleSheet.create({
   },
   checkmark: {
     color: '#054F31',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
   },
   activeIcon: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 100,
     backgroundColor: '#0BA5EC',
     alignItems: 'center',
@@ -61,13 +70,13 @@ export const styles = StyleSheet.create({
   },
   activeIconText: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
   pendingIcon: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: 100,
     backgroundColor: '#E9EAEB',
     alignItems: 'center',
@@ -75,13 +84,14 @@ export const styles = StyleSheet.create({
   },
   pendingIconText: {
     color: '#000000',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
-
-  /* Step info (right) */
-  stepInfo: { flex: 1, paddingTop: 2 },
+  stepInfo: {
+    flex: 1,
+    paddingTop: 2,
+  },
   stepTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -90,14 +100,12 @@ export const styles = StyleSheet.create({
   },
   stepTitle: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#111827',
     fontFamily: 'Saans TRIAL',
     lineHeight: 24,
     flex: 1,
   },
-
-  /* Status pills */
   timeAgoPill: {
     backgroundColor: '#F5F5F5',
     paddingHorizontal: 8,
@@ -134,11 +142,10 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'Saans TRIAL',
   },
-
   stepDescription: {
     fontSize: 16,
     color: '#6B7280',
-    lineHeight: 20,
+    lineHeight: 24,
     fontFamily: 'Saans TRIAL',
     fontWeight: '400',
     paddingBottom: 6,
@@ -158,21 +165,17 @@ export const styles = StyleSheet.create({
     marginTop: 4,
     fontStyle: 'italic',
   },
-
-  /* Primary action button (per-step) */
   actionButton: {
     backgroundColor: '#983614',
-    height: 44,
-    borderRadius: 1000,
+    minHeight: 44,
+    borderRadius: 100,
     borderWidth: 1,
     borderColor: '#983614',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 10,
-    paddingRight: 16,
-    paddingBottom: 10,
-    paddingLeft: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     gap: 8,
     alignSelf: 'flex-start',
   },
@@ -187,17 +190,22 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
   },
-
-  /* Expander */
-  expandButton: { padding: 4, marginTop: 2 },
-  expandIcon: { width: 16, height: 16, transform: [{ rotate: '90deg' }] },
-  expandIconRotated: { transform: [{ rotate: '270deg' }] },
-
-  /* Vertical dashed line */
+  expandButton: {
+    padding: 8,
+    marginTop: 2,
+  },
+  expandIcon: {
+    width: 20,
+    height: 20,
+    transform: [{ rotate: '90deg' }],
+  },
+  expandIconRotated: {
+    transform: [{ rotate: '270deg' }],
+  },
   timelineLine: {
     position: 'absolute',
-    left: 15,
-    top: 32,
+    left: 17,
+    top: 48,
     width: 2,
     bottom: -12,
     borderStyle: 'dashed',
@@ -205,19 +213,20 @@ export const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     zIndex: 0,
   },
-
-  /* Onboarded message */
   onboardedMessageContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: 'white',
+    backgroundColor: '#FFF7ED',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: '#FEDDB3',
     borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 12,
   },
-  boomIcon: { marginRight: 12, marginTop: 2 },
+  boomIcon: {
+    marginTop: 2,
+  },
   onboardedMessageText: {
     fontSize: 16,
     fontWeight: '400',
@@ -226,17 +235,29 @@ export const styles = StyleSheet.create({
     lineHeight: 24,
     flex: 1,
   },
-
-  /* Footer */
-  footer: {
+  bottomContainer: {
+    paddingBottom: 34,
+    paddingTop: 20,
+    paddingHorizontal: 23,
+    gap: 14,
     backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
+    zIndex: 100,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    gap: 8,
   },
-  checkboxContainer: { marginRight: 12, marginTop: 2 },
+  checkboxContainer: {
+    marginTop: 2,
+    width: 20,
+    height: 20,
+  },
   checkbox: {
     width: 20,
     height: 20,
@@ -247,57 +268,49 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  checkboxCheckmark: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
+  checkboxCheckmark: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
   termsText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '400',
     color: '#6B7280',
     fontFamily: 'Saans TRIAL',
-    lineHeight: 20,
+    lineHeight: 18,
     flex: 1,
   },
   termsLink: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     color: '#983614',
     fontFamily: 'Saans TRIAL',
-    lineHeight: 20,
   },
   privacyLink: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '500',
     color: '#983614',
     fontFamily: 'Saans TRIAL',
-    lineHeight: 20,
   },
-
-  /* Footer CTA */
-  captureButton: {
-    backgroundColor: '#0BA5EC',
-    height: 52,
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  captureButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    fontFamily: 'Saans TRIAL',
-  },
-  submitButton: {
-    marginTop: 12,
+  submitButtonTouchable: {
     borderRadius: 100,
     overflow: 'hidden',
-    width: '100%',
   },
-  submitButtonGradient: {
+  submitButton: {
     height: 52,
+    // alignItems: 'center',
+    justifyContent: 'center',
+  },
+  submitButtonGradient:{
+    borderRadius: 120,
+    height: 56,
+    // paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    borderRadius: 100,
+    flexDirection: 'row',
+    gap: 8,
+    opacity: 1,
   },
   submitButtonText: {
     fontSize: 16,
@@ -305,4 +318,10 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontFamily: 'Saans TRIAL',
   },
+
+  footer:{
+    gap:12
+
+
+  }
 });

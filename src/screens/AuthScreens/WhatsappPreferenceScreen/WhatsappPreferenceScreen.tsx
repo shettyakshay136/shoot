@@ -72,23 +72,23 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
     setLoading(true);
     try {
       // Get access token from AsyncStorage
-      const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      // const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
 
-      if (!accessToken) {
-        showToast('Authentication required. Please login again.', 'error');
-        navigation.navigate('LoginScreen');
-        return;
-      }
+      // if (!accessToken) {
+      //   showToast('Authentication required. Please login again.', 'error');
+      //   navigation.navigate('LoginScreen');
+      //   return;
+      // }
 
       // Update WhatsApp notification preference
-      await updateCreatorProfile(
-        {
-          whatsappNotification: receiveWhatsAppUpdates,
-          // TODO: Add referral code to API call if backend supports it
-          // referralCode: referralCode || undefined,
-        },
-        accessToken,
-      );
+      // await updateCreatorProfile(
+      //   {
+      //     whatsappNotification: receiveWhatsAppUpdates,
+      //     // TODO: Add referral code to API call if backend supports it
+      //     // referralCode: referralCode || undefined,
+      //   },
+      //   accessToken,
+      // );
 
       // Navigate to LocationPreferenceScreen with phone number
       navigation.navigate('LocationPreferenceScreen', { phoneNumber });
@@ -114,6 +114,7 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{paddingHorizontal:23 , flex:1 , gap:20}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <BackButton />
@@ -218,6 +219,7 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
             )}
           </LinearGradient>
         </TouchableOpacity>
+      </View>
       </View>
     </SafeAreaView>
   );

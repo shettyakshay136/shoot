@@ -1,422 +1,334 @@
-import React, { JSX, useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  SafeAreaView,
-  Linking,
-} from 'react-native';
+import React, { useState, type JSX } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import BoomSvg from '@/assets/svg/boom.svg';
-import ChevronDownSvg from '@/assets/svg/chevron-down.svg';
-import ChevronUpSvg from '@/assets/svg/chevron-up.svg';
-import CheckBoxIcon from '@/assets/svg/checkbox.svg';
-
-import { useToast, AUTH_TOKEN_KEY } from '@/contexts';
-import { CREATOR_STATUS_KEY } from '@/contexts/AuthContext';
-import { CREATOR_STATUS } from '@/types/models.config';
-import {
-  getDigiLockerAuthUrl,
-  updateCreatorProfile,
-} from '@/services/authUtils';
 import { styles } from './ApplicationScreen.styles';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '@/navigation/types';
+import BackButton from '@/assets/svg/backButtonPdp.svg';
+import BoomSvg from '@/assets/svg/boom.svg';
+import { UploadModal } from '@/components/ui';
 
-type StepModel = {
-  key: string;
+interface Step {
+  id: number;
   title: string;
-  description?: string;
-  daysTillNow?: number;
-  timeTheStepTakes?: string;
-  statusValue: string;
-  subComponent?: React.ReactNode | ((disabled: boolean) => React.ReactNode);
-};
-
-function fromDaysAgo(n?: number) {
-  if (n == null) return undefined;
-  if (n <= 0) return 'today';
-  if (n === 1) return '1 day ago';
-  return `${n} days ago`;
+  status: 'completed' | 'active' | 'pending';
+  timeAgo?: string;
+  estimatedTime?: string;
+  description: string;
+  isExpanded?: boolean;
+  actionButton?: {
+    text: string;
+    onPress: () => void;
+  };
 }
 
 const ApplicationStatusScreen = (): JSX.Element => {
-  const { showToast } = useToast();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  // Footer state
-  const [isChecked, setIsChecked] = useState(false);
+  const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
+  const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
 
-  // KYC state
-  const [isVerifyingKYC, setIsVerifyingKYC] = useState(false);
+  const handleUploadAssignment = () => {
+    setIsUploadModalVisible(true);
+  };
 
-  // Current status
-  const [currentStatus, setCurrentStatus] = useState<string>(
-    CREATOR_STATUS.APPLICATION_RECIEVED.value,
-  );
+  const handleCloseUploadModal = () => {
+    setIsUploadModalVisible(false);
+  };
 
-  // Read status from storage
-  useEffect(() => {
-    const getCurrentStatus = async () => {
-      const status = await AsyncStorage.getItem(CREATOR_STATUS_KEY);
-      if (status) setCurrentStatus(status);
-    };
-    getCurrentStatus();
-  }, [currentStatus]);
-
-  // Demo handlers for step CTAs
-  const uploadAssignment = useCallback(() => {
-    showToast('Upload Assignment pressed', 'info');
-  }, [showToast]);
-
-  const uploadShoot = useCallback(() => {
-    showToast('Upload Shoot pressed', 'info');
-  }, [showToast]);
-
-  const handleVerifyKYC = useCallback(async () => {
-    try {
-      setIsVerifyingKYC(true);
-      const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-      if (!token) {
-        showToast('Session expired. Please login again.', 'error');
-        return;
+  const handleFileUpload = () => {
+    // Handle file upload logic here
+    console.log('File upload initiated');
+    
+    // Update steps: mark current active step as completed and next step as active
+    setSteps(prevSteps => {
+      const updatedSteps = [...prevSteps];
+      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
+      
+      if (currentActiveIndex !== -1) {
+        // Mark current step as completed
+        updatedSteps[currentActiveIndex] = {
+          ...updatedSteps[currentActiveIndex],
+          status: 'completed',
+          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
+          actionButton: undefined, // Remove action button for completed step
+        };
+        
+        // Mark next step as active
+        const nextStepIndex = currentActiveIndex + 1;
+        if (nextStepIndex < updatedSteps.length) {
+          updatedSteps[nextStepIndex] = {
+            ...updatedSteps[nextStepIndex],
+            status: 'active',
+            isExpanded: true,
+          };
+        }
       }
-      const res = await getDigiLockerAuthUrl(token);
-      if (res.success && res.data?.authorizationUrl) {
-        showToast('Opening DigiLocker…', 'success');
-        Linking.openURL(res.data?.authorizationUrl);
-      } else {
-        showToast(res.message || 'Failed to start KYC', 'error');
+      
+      return updatedSteps;
+    });
+    
+    setIsUploadModalVisible(false);
+  };
+
+  const handleUploadShoot = () => {
+    // Handle shoot upload logic here
+    console.log('Shoot upload initiated');
+    
+    // Update steps: mark current active step as completed and next step as active
+    setSteps(prevSteps => {
+      const updatedSteps = [...prevSteps];
+      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
+      
+      if (currentActiveIndex !== -1) {
+        // Mark current step as completed
+        updatedSteps[currentActiveIndex] = {
+          ...updatedSteps[currentActiveIndex],
+          status: 'completed',
+          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
+          actionButton: undefined, // Remove action button for completed step
+        };
+        
+        // Mark next step as active
+        const nextStepIndex = currentActiveIndex + 1;
+        if (nextStepIndex < updatedSteps.length) {
+          updatedSteps[nextStepIndex] = {
+            ...updatedSteps[nextStepIndex],
+            status: 'active',
+            isExpanded: true,
+          };
+        }
       }
-    } catch (e: any) {
-      showToast(e?.message || 'Failed to start KYC', 'error');
-    } finally {
-      setIsVerifyingKYC(false);
-    }
-  }, [showToast]);
-
-  // Removed unused checkKYCStatus function
-
-  // Build steps model (UI reads from this)
-  const steps: StepModel[] = useMemo(() => {
-    return [
-      {
-        key: 'application',
-        title: 'Application Received',
-        description: 'Your application has been successfully submitted',
-        daysTillNow: 2,
-        timeTheStepTakes: '~few hours',
-        statusValue: CREATOR_STATUS.APPLICATION_RECIEVED.value,
-      },
-      {
-        key: 'workshop',
-        title: 'Workshop + Assignment',
-        description: 'Learn our process and complete a skill assessment',
-        timeTheStepTakes: '~1–2 days',
-        statusValue:
-          currentStatus === CREATOR_STATUS.WORKSHOP_INITIATED.value
-            ? CREATOR_STATUS.WORKSHOP_INITIATED.value
-            : CREATOR_STATUS.AWAITING_WORKSHOP_SUBMISSION.value,
-        subComponent:
-          currentStatus ===
-          CREATOR_STATUS.AWAITING_WORKSHOP_SUBMISSION.value ? (
-            <View className="bg-amber-50 border border-amber-200 rounded-2xl p-3 mt-2">
-              <View className="flex-row items-start">
-                <BoomSvg width={16} height={16} style={{ marginTop: 2 }} />
-                <Text className="ml-2 text-[12px] text-amber-800">
-                  Your submission is under review. You will be notified via
-                  WhatsApp about the next steps.
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={uploadAssignment}
-              style={styles.actionButton}
-            >
-              <Text style={styles.actionButtonText}>Upload Assignment</Text>
-            </TouchableOpacity>
-          ),
-      },
-      {
-        key: 'demo',
-        title: 'Demo Shoot',
-        description: 'Create your first content piece with our guidance',
-        timeTheStepTakes: '~1 day',
-        statusValue: CREATOR_STATUS.AWAITING_DEMO_SHOOT.value,
-        subComponent: (
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={uploadShoot}
-            style={styles.actionButton}
-          >
-            <Text style={styles.actionButtonText}>Upload Shoot</Text>
-          </TouchableOpacity>
-        ),
-      },
-      {
-        key: 'kyc',
-        title: 'Digital KYC',
-        description: 'Verify your identity to proceed',
-        timeTheStepTakes: '~5–10 mins',
-        statusValue: CREATOR_STATUS.AWAITING_KYC.value,
-        subComponent: (
-          <TouchableOpacity
-            activeOpacity={0.9}
-            onPress={handleVerifyKYC}
-            style={styles.actionButton}
-            disabled={isVerifyingKYC}
-          >
-            {isVerifyingKYC ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.actionButtonText}>Verify</Text>
-            )}
-          </TouchableOpacity>
-        ),
-      },
-      {
-        key: 'onboarded',
-        title: 'Onboarded',
-        description: 'Welcome aboard!',
-        statusValue: CREATOR_STATUS.ONBOARDED.value,
-        subComponent: (
-          <View style={styles.onboardedMessageContainer}>
-            <BoomSvg width={72} height={72} style={styles.boomIcon} />
-            <Text style={styles.onboardedMessageText}>
-              Welcome aboard! Your onboarding is complete and will be delivered
-              shortly.
-            </Text>
-          </View>
-        ),
-      },
-    ];
-  }, [currentStatus, isVerifyingKYC, handleVerifyKYC, uploadAssignment, uploadShoot]);
-
-  // figure out "current index" for visual states
-  const currentIndex = useMemo(() => {
-    const map = {
-      [CREATOR_STATUS.APPLICATION_RECIEVED.value]: 0,
-      [CREATOR_STATUS.WORKSHOP_INITIATED.value]: 1,
-      [CREATOR_STATUS.AWAITING_WORKSHOP_SUBMISSION.value]: 1,
-      [CREATOR_STATUS.AWAITING_DEMO_SHOOT.value]: 2,
-      [CREATOR_STATUS.AWAITING_KYC.value]: 3,
-      [CREATOR_STATUS.ONBOARDED.value]: 4,
-    } as Record<string, number>;
-    return map[currentStatus] ?? 0;
-  }, [currentStatus]);
-
-  // expanded rows (only <= currentIndex can toggle)
-  const [openKeys, setOpenKeys] = useState<Set<string>>(
-    () => new Set([steps[currentIndex]?.key]),
-  );
-  useEffect(() => {
-    setOpenKeys(new Set([steps[currentIndex]?.key]));
-  }, [currentIndex, steps]);
-
-  const canToggle = (index: number) => index <= currentIndex;
-  const toggleKey = (k: string, index: number) => {
-    if (!canToggle(index)) return;
-    setOpenKeys(prev => {
-      const next = new Set(prev);
-      next.has(k) ? next.delete(k) : next.add(k);
-      return next;
+      
+      return updatedSteps;
     });
   };
 
-  const canContinue =
-    currentStatus === CREATOR_STATUS.ONBOARDED.value && isChecked;
+  const handleVerifyKYC = () => {
+    // Handle KYC verification logic here
+    console.log('KYC verification initiated');
+    
+    // Update steps: mark current active step as completed and next step as active
+    setSteps(prevSteps => {
+      const updatedSteps = [...prevSteps];
+      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
+      
+      if (currentActiveIndex !== -1) {
+        // Mark current step as completed
+        updatedSteps[currentActiveIndex] = {
+          ...updatedSteps[currentActiveIndex],
+          status: 'completed',
+          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
+          actionButton: undefined, // Remove action button for completed step
+        };
+        
+        // Mark next step as active and completed (Onboarded step)
+        const nextStepIndex = currentActiveIndex + 1;
+        if (nextStepIndex < updatedSteps.length) {
+          updatedSteps[nextStepIndex] = {
+            ...updatedSteps[nextStepIndex],
+            status: 'completed',
+            timeAgo: updatedSteps[nextStepIndex].id === 1 ? 'Just now' : undefined,
+            description: 'onboarded_message', // Special identifier for onboarded message
+          };
+        }
+      }
+      
+      return updatedSteps;
+    });
+  };
 
-  const renderLeftIcon = (index: number) => {
-    if (index < currentIndex) {
+  const [steps, setSteps] = useState<Step[]>([
+    {
+      id: 1,
+      title: 'Application Received',
+      status: 'completed',
+      timeAgo: '2 days ago',
+      description: 'Your application has been successfully submitted',
+    },
+    {
+      id: 2,
+      title: 'Workshop + Assignment',
+      status: 'active',
+      estimatedTime: '',
+      description: 'Learn our process and complete a skill assessment.',
+      isExpanded: true,
+      actionButton: {
+        text: 'Upload Assignment',
+        onPress: handleUploadAssignment,
+      },
+    },
+    {
+      id: 3,
+      title: 'Demo Shoot',
+      status: 'pending',
+      estimatedTime: '',
+      description: 'Create your first content piece with our guidance.',
+      actionButton: {
+        text: 'Upload Shoot',
+        onPress: handleUploadShoot,
+      },
+    },
+    {
+      id: 4,
+      title: 'Digital KYC',
+      status: 'pending',
+      estimatedTime: '',
+      description: 'Create your first content piece with our guidance.',
+      actionButton: {
+        text: 'Verify',
+        onPress: handleVerifyKYC,
+      },
+    },
+    {
+      id: 5,
+      title: 'Onboarded',
+      status: 'pending',
+      estimatedTime: '',
+      description: 'Create your first content piece with our guidance.',
+    },
+  ]);
+
+  const toggleStepExpansion = (stepId: number) => {
+    const newExpanded = new Set(expandedSteps);
+    if (newExpanded.has(stepId)) {
+      newExpanded.delete(stepId);
+    } else {
+      newExpanded.add(stepId);
+    }
+    setExpandedSteps(newExpanded);
+  };
+
+  const renderStepIcon = (step: Step) => {
+    if (step.status === 'completed') {
       return (
         <View style={styles.completedIcon}>
           <Text style={styles.checkmark}>✓</Text>
         </View>
       );
-    }
-    if (index === currentIndex) {
+    } else if (step.status === 'active') {
       return (
         <View style={styles.activeIcon}>
-          <Text style={styles.activeIconText}>{index + 1}</Text>
+          <Text style={styles.activeIconText}>{step.id}</Text>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.pendingIcon}>
+          <Text style={styles.pendingIconText}>{step.id}</Text>
         </View>
       );
     }
+  };
+
+  const renderStepContent = (step: Step) => {
+    const isExpanded = expandedSteps.has(step.id);
+    
     return (
-      <View style={styles.pendingIcon}>
-        <Text style={styles.pendingIconText}>{index + 1}</Text>
+      <View style={styles.stepContainer}>
+        <View style={styles.stepHeader}>
+          <View style={styles.stepIconContainer}>
+            {renderStepIcon(step)}
+          </View>
+          <View style={styles.stepInfo}>
+            <View style={styles.stepTitleRow}>
+              <Text style={styles.stepTitle}>{step.title}</Text>
+              {step.status === 'completed' && step.id !== 5 && (
+                <View style={step.id === 1 ? styles.timeAgoPill : styles.donePill}>
+                  <Text style={step.id === 1 ? styles.timeAgoText : styles.doneText}>
+                    {step.id === 1 ? step.timeAgo : 'Done'}
+                  </Text>
+                </View>
+              )}
+              {step.status === 'active' && (
+                <View style={styles.activePill}>
+                  <Text style={styles.activePillText}>Active</Text>
+                </View>
+              )}
+            </View>
+            {step.description === 'onboarded_message' ? (
+              <View style={styles.onboardedMessageContainer}>
+                <BoomSvg width={72} height={72} style={styles.boomIcon} />
+                <Text style={styles.onboardedMessageText}>
+                  Welcome! You have successfully completed the onboarding process and can now access all features.
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.stepDescription}>{step.description}</Text>
+            )}
+            {step.estimatedTime && (
+              <Text style={styles.estimatedTimeText}>{step.estimatedTime}</Text>
+            )}
+            {(isExpanded || step.status === 'active') && step.actionButton && (
+              <TouchableOpacity style={styles.actionButton} onPress={step.actionButton.onPress}>
+                <Text style={styles.actionButtonText}>{step.actionButton.text}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {step.status === 'pending' && (
+            <TouchableOpacity onPress={() => toggleStepExpansion(step.id)} style={styles.expandButton}>
+              <BackButton 
+                style={[
+                  styles.expandIcon,
+                  isExpanded && styles.expandIconRotated
+                ]} 
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     );
   };
 
-  const handleContinue = async () => {
-    try {
-      const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-      if (!token) return;
-      await updateCreatorProfile(
-        {
-          onboarded: true,
-        },
-        token,
-      );
-      navigation.navigate('App', { screen: 'HomeStack' });
-    } catch (e) {
-      showToast('Failed to complete application', 'error');
-    } finally {
-      setIsChecked(false);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      <View style={{paddingHorizontal:23 , flex:1}}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Application Status</Text>
+        {/* <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
+          <Text style={styles.helpButtonText}>Help</Text>
+        </TouchableOpacity> */}
       </View>
 
-      {/* Steps */}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.timelineContainer}>
-          {steps.map((step, index) => {
-            const isDone = index < currentIndex;
-            const isLocked = index > currentIndex;
-            const open = openKeys.has(step.key);
-
-            return (
-              <View key={step.key} style={styles.stepWrapper}>
-                <View style={styles.stepContainer}>
-                  <View style={styles.stepHeader}>
-                    {/* Left status icon */}
-                    <View style={styles.stepIconContainer}>
-                      {renderLeftIcon(index)}
-                    </View>
-
-                    {/* Right info */}
-                    <View style={styles.stepInfo}>
-                      <View style={styles.stepTitleRow}>
-                        <Text
-                          style={[
-                            styles.stepTitle,
-                            { color: isLocked ? '#6B7280' : '#111827' },
-                          ]}
-                        >
-                          {step.title}
-                        </Text>
-
-                        {/* Done time ago pill */}
-                        {isDone && step.daysTillNow != null && (
-                          <View style={styles.timeAgoPill}>
-                            <Text style={styles.timeAgoText}>
-                              {fromDaysAgo(step.daysTillNow)}
-                            </Text>
-                          </View>
-                        )}
-
-                        {/* Active pill */}
-                        {index === currentIndex && (
-                          <View style={styles.activePill}>
-                            <Text style={styles.activePillText}>Active</Text>
-                          </View>
-                        )}
-
-                        {/* Expander */}
-                        <TouchableOpacity
-                          activeOpacity={canToggle(index) ? 0.85 : 1}
-                          onPress={() => toggleKey(step.key, index)}
-                          style={styles.expandButton}
-                        >
-                          {open ? <ChevronUpSvg /> : <ChevronDownSvg />}
-                        </TouchableOpacity>
-                      </View>
-
-                      {/* Description */}
-                      {step.description ? (
-                        <Text
-                          style={[
-                            styles.stepDescription,
-                            { color: isLocked ? '#9CA3AF' : '#6B7280' },
-                          ]}
-                        >
-                          {step.description}
-                        </Text>
-                      ) : null}
-
-                      {/* Expanded content */}
-                      {open && (
-                        <View style={{ marginTop: 6 }}>
-                          {step.timeTheStepTakes ? (
-                            <Text style={styles.estimatedTimeText}>
-                              {step.timeTheStepTakes}
-                            </Text>
-                          ) : null}
-
-                          {step.subComponent
-                            ? typeof step.subComponent === 'function'
-                              ? step.subComponent(index < currentIndex)
-                              : step.subComponent
-                            : null}
-                        </View>
-                      )}
-                    </View>
-                  </View>
-                </View>
-
-                {/* Vertical dashed line (between items) */}
-                {index < steps.length - 1 && (
-                  <View style={styles.timelineLine} />
-                )}
-              </View>
-            );
-          })}
+          {steps.map((step, index) => (
+            <View key={step.id} style={styles.stepWrapper}>
+              {renderStepContent(step)}
+              {index < steps.length - 1 && <View style={styles.timelineLine} />}
+            </View>
+          ))}
         </View>
       </ScrollView>
 
-      {/* Footer */}
+      {/* Footer with Buttons */}
       <View style={styles.footer}>
         <View style={styles.termsContainer}>
-          <TouchableOpacity
-            onPress={() => setIsChecked(v => !v)}
-            style={styles.checkboxContainer}
-          >
-            <View
-              style={[
-                styles.checkbox,
-                { backgroundColor: isChecked ? '#983614' : '#FFFFFF' },
-              ]}
-            >
-              {isChecked && (
-                <CheckBoxIcon width={12} height={12} color="#FFFFFF" />
-              )}
+          <TouchableOpacity style={styles.checkboxContainer}>
+            <View style={styles.checkbox}>
+              <Text style={styles.checkboxCheckmark}>✓</Text>
             </View>
           </TouchableOpacity>
           <Text style={styles.termsText}>
-            I accept the{' '}
-            <Text style={styles.termsLink}>Terms & Conditions</Text> and{' '}
-            <Text style={styles.privacyLink}>Privacy Policy</Text>
+            I accept the <Text style={styles.termsLink}>Terms & Conditions</Text> and <Text style={styles.privacyLink}>Privacy Policy</Text>
           </Text>
         </View>
-
-        <TouchableOpacity
-          activeOpacity={canContinue ? 0.9 : 1}
-          disabled={!canContinue}
-          style={styles.submitButton}
-          onPress={handleContinue}
-        >
+        
+        <TouchableOpacity style={styles.submitButton}>
           <LinearGradient
-            colors={
-              canContinue ? ['#000000', '#61240E'] : ['#E5E7EB', '#D1D5DB']
-            }
+            colors={['#000000', '#61240E']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.submitButtonGradient}
           >
-            <Text style={styles.submitButtonText}>Let&apos;s Capture</Text>
+            <Text style={styles.submitButtonText}>Let's Capture</Text>
           </LinearGradient>
         </TouchableOpacity>
+      </View>
+
+      {/* Upload Modal */}
+      <UploadModal
+        isVisible={isUploadModalVisible}
+        onClose={handleCloseUploadModal}
+        onUpload={handleFileUpload}
+        onCheckStatus={handleCloseUploadModal}
+      />
       </View>
     </SafeAreaView>
   );

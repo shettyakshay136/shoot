@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './LocationPreferenceScreen.styles';
 import type { RootStackParamList } from '@/navigation/types';
 import BackButton from '@/assets/svg/back.svg';
-import { SimpleModal } from '@/components';
+import { SimpleModal } from '@/components/layout';
 import BoomSvg from '@/assets/svg/boom.svg';
 import { updateCreatorProfile } from '@/services';
 import { useToast } from '@/contexts';
@@ -98,16 +98,16 @@ const LocationPreferenceScreen = (): JSX.Element => {
       }
 
       // Send coordinates in GeoJSON Point format
-      await updateCreatorProfile(
-        {
-          primaryLocation: selectedCity,
-          primaryLocationCoordinates: {
-            type: 'Point',
-            coordinates: [coordinates.longitude, coordinates.latitude],
-          },
-        },
-        accessToken,
-      );
+      // await updateCreatorProfile(
+      //   {
+      //     primaryLocation: selectedCity,
+      //     primaryLocationCoordinates: {
+      //       type: 'Point',
+      //       coordinates: [coordinates.longitude, coordinates.latitude],
+      //     },
+      //   },
+      //   accessToken,
+      // );
 
       // Show success modal
       setIsModalVisible(true);
@@ -142,6 +142,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{paddingHorizontal:23 , flex:1 , gap:20}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <BackButton />
@@ -301,6 +302,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
           </TouchableOpacity>
         </View>
       </SimpleModal>
+      </View>
     </SafeAreaView>
   );
 };

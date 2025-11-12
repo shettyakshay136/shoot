@@ -98,6 +98,7 @@ const SignupScreen = (): JSX.Element => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{paddingHorizontal:23 ,     flex: 1, gap:20}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
           <BackButton />
@@ -109,7 +110,7 @@ const SignupScreen = (): JSX.Element => {
       <View style={styles.content}>
         <Text style={styles.title}>Tell us a bit about yourself</Text>
       </View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView style={styles.scrollView} showsHorizontalScrollIndicator={false}>
         <View style={styles.inputsContainer}>
           {/* Name Input */}
           <View style={styles.inputContainer}>
@@ -319,6 +320,7 @@ const SignupScreen = (): JSX.Element => {
             )}
           </LinearGradient>
         </TouchableOpacity>
+      </View>
       </View>
     </SafeAreaView>
   );
