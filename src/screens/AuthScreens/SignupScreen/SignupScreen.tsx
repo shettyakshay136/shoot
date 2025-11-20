@@ -19,6 +19,7 @@ import BackButton from '@/assets/svg/back.svg';
 import { initiateSignup } from '@/services';
 import { useToast } from '@/contexts';
 import { IOSPicker } from '@/components/features';
+import Dropdownicon from '@/assets/svg/dropdown.svg'
 type SignupScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   'SignupScreen'
@@ -192,21 +193,93 @@ const SignupScreen = (): JSX.Element => {
             />
           </View>
 
-          <IOSPicker
-            label="iPhone Model"
-            selectedValue={selectedIphoneModel}
-            onValueChange={setSelectedIphoneModel}
-            items={IPHONE_MODELS}
-            placeholder="Select iPhone model"
-          />
+          <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>iPhone Model</Text>
+              <TouchableOpacity
+                style={[
+                  styles.dropdownButton,
+                  focusedField === 'iphone' && styles.textInputFocused
+                ]}
+                onPress={() => setFocusedField(focusedField === 'iphone' ? null : 'iphone')}
+              >
+                <Text style={[
+                  styles.dropdownText,
+                  !selectedIphoneModel && styles.placeholderText
+                ]}>
+                  {selectedIphoneModel || 'Select iPhone model'}
+                </Text>
+                <Dropdownicon />
+              </TouchableOpacity>
+              {focusedField === 'iphone' && (
+                <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                  {IPHONE_MODELS.map((model, index) => {
+                    const isSelected = model === selectedIphoneModel;
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.dropdownItem,
+                          isSelected && styles.dropdownItemSelected,
+                        ]}
+                        onPress={() => {
+                          setSelectedIphoneModel(model);
+                          setFocusedField(null);
+                        }}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          isSelected && styles.dropdownItemTextSelected,
+                        ]}>{model}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+            </View>
 
-          <IOSPicker
-              label="Gender"
-              selectedValue={selectedGender}
-              onValueChange={setSelectedGender}
-              items={GENDER_OPTIONS}
-              placeholder="Select gender"
-          />
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Gender</Text>
+              <TouchableOpacity
+                style={[
+                  styles.dropdownButton,
+                  focusedField === 'gender' && styles.textInputFocused
+                ]}
+                onPress={() => setFocusedField(focusedField === 'gender' ? null : 'gender')}
+              >
+                <Text style={[
+                  styles.dropdownText,
+                  !selectedGender && styles.placeholderText
+                ]}>
+                  {selectedGender || 'Select gender'}
+                </Text>
+                <Dropdownicon />
+              </TouchableOpacity>
+              {focusedField === 'gender' && (
+                <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                  {GENDER_OPTIONS.map((option, index) => {
+                    const isSelected = option === selectedGender;
+                    return (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.dropdownItem,
+                          isSelected && styles.dropdownItemSelected,
+                        ]}
+                        onPress={() => {
+                          setSelectedGender(option);
+                          setFocusedField(null);
+                        }}
+                      >
+                        <Text style={[
+                          styles.dropdownItemText,
+                          isSelected && styles.dropdownItemTextSelected,
+                        ]}>{option}</Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+            </View>
 
 
           {/* Location Input */}

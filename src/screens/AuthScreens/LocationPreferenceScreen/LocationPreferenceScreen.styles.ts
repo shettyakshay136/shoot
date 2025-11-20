@@ -1,4 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet , Dimensions } from 'react-native';
+
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
   container: {
@@ -89,7 +92,13 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1D5DB',
     overflow:'hidden',
-    maxHeight:600
+    maxHeight:SCREEN_HEIGHT * 0.5,
+    zIndex: 1000,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   dropdownItem: {
     paddingHorizontal: 16,
@@ -122,6 +131,12 @@ export const styles = StyleSheet.create({
   verifyButtonTouchable: {
     borderRadius: 100,
     overflow:'hidden'
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FEEDD6',
+  },
+  dropdownItemTextSelected: {
+    color: '#983614',
   },
   verifyButton: {
     borderRadius: 100,

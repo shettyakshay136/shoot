@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -182,18 +183,27 @@ const LocationPreferenceScreen = (): JSX.Element => {
             </TouchableOpacity>
 
             {isDropdownOpen && (
-              <View style={styles.dropdownList}>
-                {cities.map((city, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.dropdownItem}
-                    onPress={() => handleCitySelect(city)}
-                  >
-                    <Text style={styles.dropdownItemText}>{city}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
+                  <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                    {cities.map((city, index) => {
+                      const isSelected = city === selectedCity;
+                      return (
+                        <TouchableOpacity
+                          key={index}
+                          style={[
+                            styles.dropdownItem,
+                            isSelected && styles.dropdownItemSelected,
+                          ]}
+                          onPress={() => handleCitySelect(city)}
+                        >
+                          <Text style={[
+                            styles.dropdownItemText,
+                            isSelected && styles.dropdownItemTextSelected,
+                          ]}>{city}</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </ScrollView>
+                )}
           </View>
         </View>
       </View>

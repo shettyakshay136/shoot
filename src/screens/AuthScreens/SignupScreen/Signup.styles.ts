@@ -127,7 +127,7 @@ export const styles = StyleSheet.create({
   },
   dropdownList: {
     position: 'absolute',
-    top: 54,
+    bottom: 55,
     left: 0,
     right: 0,
     backgroundColor: '#FFFFFF',
@@ -166,6 +166,12 @@ export const styles = StyleSheet.create({
     // left: 0,
     // right: 0,
     gap:14
+  },
+  dropdownItemSelected: {
+    backgroundColor: '#FEEDD6',
+  },
+  dropdownItemTextSelected: {
+    color: '#983614',
   },
   verifyButtonTouchable: {
     borderRadius: 100,
