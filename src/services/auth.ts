@@ -1,30 +1,68 @@
 import rogApi from './axiosInstance';
 
-// Types
-export interface SendOtpResponse {
+export interface CreatorLoginInitiatePayload {
+  phone_number: string;
+}
+
+export interface CreatorLoginInitiateResponse {
+  data: number;
   message: string;
+  statusCode: number;
   success: boolean;
 }
 
-export interface CompleteLoginResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  redirectTo?: string;
-  token?: string;
-  data?: {
+export const creatorLoginInitiate = async (
+  payload: CreatorLoginInitiatePayload,
+): Promise<CreatorLoginInitiateResponse> => {
+  try {
+    const response = await rogApi.post<CreatorLoginInitiateResponse>(
+      '/creator/auth/login/initiate',
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to initiate login. Please try again.';
+    throw new Error(errorMessage);
+  }
+};
+
+export interface CreatorLoginCompletePayload {
+  phone_number: string;
+  otp: string;
+}
+
+export interface CreatorLoginCompleteResponse {
+  data: {
     redirectTo: string;
     token: string;
   };
-  user?: any;
-}
-
-export interface ResendOtpResponse {
   message: string;
+  statusCode: number;
   success: boolean;
 }
 
-export interface InitiateSignupRequest {
+export const creatorLoginComplete = async (
+  payload: CreatorLoginCompletePayload,
+): Promise<CreatorLoginCompleteResponse> => {
+  try {
+    const response = await rogApi.post<CreatorLoginCompleteResponse>(
+      '/creator/auth/login/complete',
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to complete login. Please try again.';
+    throw new Error(errorMessage);
+  }
+};
+
+export interface CreatorSignupInitiatePayload {
   creatorName: string;
   contactNumber: string;
   email: string;
@@ -34,7 +72,35 @@ export interface InitiateSignupRequest {
   location: string;
 }
 
-export interface CompleteSignupRequest {
+export interface CreatorSignupInitiateResponse {
+  data: {
+    creatorId: string;
+    otp: number;
+  };
+  message: string;
+  statusCode: number;
+  success: boolean;
+}
+
+export const creatorSignupInitiate = async (
+  payload: CreatorSignupInitiatePayload,
+): Promise<CreatorSignupInitiateResponse> => {
+  try {
+    const response = await rogApi.post<CreatorSignupInitiateResponse>(
+      '/creator/auth/signup/initiate',
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to initiate signup. Please try again.';
+    throw new Error(errorMessage);
+  }
+};
+
+export interface CreatorSignupCompletePayload {
   contactNumber: string;
   otp: string;
   email?: string;
@@ -60,134 +126,67 @@ export interface CompleteSignupRequest {
   };
 }
 
-export interface CompleteSignupResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  redirectTo?: string;
-  token?: string;
-  data?: {
+export interface CreatorSignupCompleteResponse {
+  data: {
     redirectTo: string;
     token: string;
+    creator: any;
   };
-  creator?: any;
+  message: string;
+  statusCode: number;
+  success: boolean;
 }
 
-/**
- * Login Flow - Request OTP
- * POST /creator/auth/otp/request
- */
-export const apiRequestOtp = async (
-  phoneNumber: string
-): Promise<SendOtpResponse> => {
+export const creatorSignupComplete = async (
+  payload: CreatorSignupCompletePayload,
+): Promise<CreatorSignupCompleteResponse> => {
   try {
-    const response = await rogApi.post<SendOtpResponse>(
-      '/creator/auth/login/initiate',
-      { phone_number: phoneNumber }
-    );
-    console.log(response.data,'repsoe')
-    return response.data;
-  } catch (error: any) {
-    console.error('requestOtp error:', error);
-    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to send OTP';
-    throw new Error(errorMessage);
-  }
-};
-
-
-
-/**
- * Login Flow - Complete Login
- * POST /creator/auth/login/complete
- */
-export const apiCompleteLogin = async (
-  phoneNumber: string,
-  otp: string
-): Promise<CompleteLoginResponse> => {
-  try {
-    const response = await rogApi.post<CompleteLoginResponse>(
-      '/creator/auth/login/complete',
-      { phone_number: phoneNumber, otp }
-    );
-    console.log(response.data,'resposedatda')
-    return response.data;
-  } catch (error: any) {
-    console.error('completeLogin error:', error);
-    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to complete login';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Login Flow - Resend OTP
- * POST /creator/auth/otp/resend
- */
-export const apiResendOtp = async (
-  contactNumber: string
-): Promise<ResendOtpResponse> => {
-  try {
-    const response = await rogApi.post<ResendOtpResponse>(
-      '/creator/auth/otp/resend',
-      { contactNumber }
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('resendOtp error:', error);
-    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to resend OTP';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Signup Flow - Initiate Signup
- * Validates name, phone, email, portfolio, iPhone model, gender, location
- * POST /creator/auth/signup/initiate
- */
-export const apiInitiateSignup = async (
-  data: InitiateSignupRequest
-): Promise<any> => {
-  try {
-    const response = await rogApi.post('/creator/auth/signup/initiate', data);
-    console.log(response.data,'cehckdata')
-    return response.data;
-  } catch (error: any) {
-    console.error('initiateSignup error:', error);
-    const errorMessage = error?.response?.data?.message || error?.message || 'Initiate Signup Failed';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Signup Flow - Complete Signup
- * POST /creator/auth/signup/complete
- */
-export const apiCompleteSignup = async (
-  data: CompleteSignupRequest
-): Promise<CompleteSignupResponse> => {
-  try {
-    const response = await rogApi.post<CompleteSignupResponse>(
+    const response = await rogApi.post<CreatorSignupCompleteResponse>(
       '/creator/auth/signup/complete',
-      data
+      payload,
     );
     return response.data;
   } catch (error: any) {
-    console.error('completeSignup error:', error);
-    const errorMessage = error?.response?.data?.message || error?.message || 'Failed to complete signup';
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to complete signup. Please try again.';
     throw new Error(errorMessage);
   }
 };
 
-export async function apiValidateUser(accessToken: string) {
-  return rogApi.get('/creator/auth/validate', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+export interface ResendOTPPayload {
+  contactNumber: string;
 }
 
-// Profile Management Types
+export interface ResendOTPResponse {
+  message?: string;
+  data?: {
+    [key: string]: any;
+  };
+  statusCode?: number;
+  success?: boolean;
+}
+
+export const resendOTP = async (
+  payload: ResendOTPPayload,
+): Promise<ResendOTPResponse> => {
+  try {
+    const response = await rogApi.post<ResendOTPResponse>(
+      '/creator/auth/otp/resend',
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to resend OTP. Please try again.';
+    throw new Error(errorMessage);
+  }
+};
+
 export interface CreatorProfileUpdatePayload {
-  onboarded?: boolean;
   kycVerified?: boolean;
   creatorName?: string;
   email?: string;
@@ -209,351 +208,83 @@ export interface CreatorProfileUpdatePayload {
   };
 }
 
-export interface GetProfileResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
-    redirectTo?: string;
-    token?: string;
-    creator?: any;
-  };
-}
-
-export interface UpdateProfileResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
+export interface CreatorProfileUpdateResponse {
+  data: {
     status?: string;
-    creator?: any;
+    [key: string]: any;
   };
+  message?: string;
+  statusCode?: number;
+  success?: boolean;
 }
 
-// KYC Types
+export const updateCreatorProfile = async (
+  payload: CreatorProfileUpdatePayload,
+): Promise<CreatorProfileUpdateResponse> => {
+  try {
+    // The axios interceptor will automatically add the token from AsyncStorage
+    const response = await rogApi.put<CreatorProfileUpdateResponse>(
+      '/creator/auth/profile',
+      payload,
+    );
+    return response.data;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to update profile. Please try again.';
+    throw new Error(errorMessage);
+  }
+};
+
+// DigiLocker KYC Interfaces
 export interface DigiLockerAuthUrlResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
-    authorizationUrl: string;
-    state?: string;
-    code?: string;
-  };
-}
-
-export interface KYCVerifyResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
-    kycVerified: boolean;
-    kycDetails?: {
-      digilockerid: string;
-      name: string;
-      dob: string;
-      gender: string;
-      verifiedAt: string;
-    };
-  };
-}
-
-export interface KYCUserDetailsResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
-    digilockerid: string;
-    name: string;
-    dob: string;
-    gender: string;
-    aadhaarxml?: string | null;
-  };
+  authorizationUrl: string;
+  state?: string;
+  code?: string;
 }
 
 export interface DigiLockerCallbackResponse {
-  success?: boolean;
-  message?: string;
-  statusCode?: number;
-  data?: {
+  data: {
     message: string;
     creatorId: string;
   };
+  message: string;
+  statusCode: number;
+  success: boolean;
 }
 
-/**
- * Profile Management - Get Creator Profile
- * GET /creator/auth/profile
- */
-export const apiGetCreatorProfile = async (
-  accessToken: string,
-): Promise<GetProfileResponse> => {
+// Get DigiLocker Authorization URL
+export const getDigiLockerAuthUrl = async (): Promise<DigiLockerAuthUrlResponse> => {
   try {
-    const response = await rogApi.get<GetProfileResponse>(
-      '/creator/auth/profile',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('getCreatorProfile error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to get profile';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Profile Management - Update Creator Profile
- * PUT /creator/auth/profile
- */
-export const apiUpdateCreatorProfile = async (
-  payload: CreatorProfileUpdatePayload,
-  accessToken: string,
-): Promise<UpdateProfileResponse> => {
-  try {
-    const response = await rogApi.put<UpdateProfileResponse>(
-      '/creator/auth/profile',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('updateCreatorProfile error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to update profile';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * KYC - Get DigiLocker Auth URL
- * GET /creator/auth/digilocker/auth
- */
-export const apiGetDigiLockerAuthUrl = async (
-  accessToken: string,
-): Promise<DigiLockerAuthUrlResponse> => {
-  try {
-    const response = await rogApi.get<DigiLockerAuthUrlResponse>(
+    const response = await rogApi.get<{ data: DigiLockerAuthUrlResponse }>(
       '/creator/auth/digilocker/auth',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
     );
-    return response.data;
+    return response.data.data;
   } catch (error: any) {
-    console.error('getDigiLockerAuthUrl error:', error);
     const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to get DigiLocker auth URL';
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to get DigiLocker authorization URL. Please try again.';
     throw new Error(errorMessage);
   }
 };
 
-/**
- * KYC - DigiLocker Callback
- * GET /creator/auth/digilocker/callback
- */
-export const apiDigiLockerCallback = async (
+// Process DigiLocker Callback
+export const callDigiLockerCallback = async (
   code: string,
   state: string,
 ): Promise<DigiLockerCallbackResponse> => {
   try {
     const response = await rogApi.get<DigiLockerCallbackResponse>(
-      '/creator/auth/digilocker/callback',
-      {
-        params: { code, state },
-      },
+      `/creator/auth/digilocker/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`,
     );
     return response.data;
   } catch (error: any) {
-    console.error('digiLockerCallback error:', error);
     const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'DigiLocker callback failed';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * KYC - Get KYC Verification Status
- * GET /creator/auth/digilocker/verify
- */
-export const apiGetKYCVerificationStatus = async (
-  accessToken: string,
-): Promise<KYCVerifyResponse> => {
-  try {
-    const response = await rogApi.get<KYCVerifyResponse>(
-      '/creator/auth/digilocker/verify',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('getKYCVerificationStatus error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to get KYC verification status';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * KYC - Get DigiLocker User Details
- * GET /creator/auth/digilocker/user
- */
-export const apiGetDigiLockerUserDetails = async (
-  accessToken: string,
-): Promise<KYCUserDetailsResponse> => {
-  try {
-    const response = await rogApi.get<KYCUserDetailsResponse>(
-      '/creator/auth/digilocker/user',
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('getDigiLockerUserDetails error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to get DigiLocker user details';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Logout
- * POST /creator/auth/logout
- */
-export const apiLogout = async (accessToken: string): Promise<any> => {
-  try {
-    const response = await rogApi.post(
-      '/creator/auth/logout',
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('logout error:', error);
-    const errorMessage =
-      error?.response?.data?.message || error?.message || 'Logout failed';
-    throw new Error(errorMessage);
-  }
-};
-
-// Phone Number Change Types
-export interface InitiatePhoneChangeRequest {
-  newPhoneNumber: string;
-}
-
-export interface InitiatePhoneChangeResponse {
-  success?: boolean;
-  message?: string;
-  status?: number;
-  data?: {
-    otp?: string; // For development
-  };
-}
-
-export interface CompletePhoneChangeRequest {
-  newPhoneNumber: string;
-  otp: string;
-  whatsappPreference?: boolean;
-}
-
-export interface CompletePhoneChangeResponse {
-  success?: boolean;
-  message?: string;
-  status?: number;
-  data?: {
-    creator?: any;
-    token?: string;
-    oldPhoneNumber?: string;
-    newPhoneNumber?: string;
-  };
-}
-
-/**
- * Phone Number Change - Initiate
- * POST /creator/auth/change-phone-number/initiate
- */
-export const apiInitiatePhoneChange = async (
-  payload: InitiatePhoneChangeRequest,
-  accessToken: string,
-): Promise<InitiatePhoneChangeResponse> => {
-  try {
-    const response = await rogApi.post<InitiatePhoneChangeResponse>(
-      '/creator/auth/change-phone-number/initiate',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('initiatePhoneChange error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to initiate phone number change';
-    throw new Error(errorMessage);
-  }
-};
-
-/**
- * Phone Number Change - Complete
- * POST /creator/auth/change-phone-number/complete
- */
-export const apiCompletePhoneChange = async (
-  payload: CompletePhoneChangeRequest,
-  accessToken: string,
-): Promise<CompletePhoneChangeResponse> => {
-  try {
-    const response = await rogApi.post<CompletePhoneChangeResponse>(
-      '/creator/auth/change-phone-number/complete',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error('completePhoneChange error:', error);
-    const errorMessage =
-      error?.response?.data?.message ||
-      error?.message ||
-      'Failed to complete phone number change';
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to process DigiLocker callback. Please try again.';
     throw new Error(errorMessage);
   }
 };

@@ -1,15 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-// import { Platform } from 'react-native'; // Commented out - was used with react-native-document-picker
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Platform } from 'react-native';
 import Modal from 'react-native-modal';
 import LinearGradient from 'react-native-linear-gradient';
 import FileSvg from '@/assets/svg/file.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
 import rogApi from '@/services/axiosInstance';
 
-// Commented out react-native-document-picker related code
 // Safely import DocumentPicker with error handling
-/*
 let DocumentPicker: any;
 let isInProgress: any;
 let DocumentTypes: any;
@@ -22,10 +19,6 @@ try {
 } catch (error) {
   console.error('Failed to import react-native-document-picker:', error);
 }
-*/
-// let DocumentPicker: any;
-// let isInProgress: any;
-// let DocumentTypes: any;
 
 // Define DocumentPickerResponse type manually since we're using dynamic import
 interface DocumentPickerResponse {
@@ -261,11 +254,9 @@ const UploadModal: React.FC<UploadModalProps> = ({
 
   // Handle file selection and upload
   const handleFileUpload = async () => {
-    // Commented out react-native-document-picker related code
-    /*
     try {
       // Check if DocumentPicker is available
-      if (!DocumentPicker || typeof DocumentPicker.pick !== 'function') {
+      if (!DocumentPicker || (typeof DocumentPicker.pick !== 'function' && typeof DocumentPicker.pickMultiple !== 'function')) {
         Alert.alert(
           'Setup Required',
           'Document picker native module is not available. Please:\n\n' +
@@ -284,9 +275,13 @@ const UploadModal: React.FC<UploadModalProps> = ({
         presentationStyle: 'fullScreen',
       };
 
-      // Add type if DocumentTypes is available
-      if (DocumentTypes && DocumentTypes.allFiles) {
-        pickerOptions.type = [DocumentTypes.allFiles];
+      // Configure for video files - prioritize video types but allow all files as fallback
+      if (DocumentTypes) {
+        if (DocumentTypes.video) {
+          pickerOptions.type = [DocumentTypes.video, DocumentTypes.allFiles];
+        } else if (DocumentTypes.allFiles) {
+          pickerOptions.type = [DocumentTypes.allFiles];
+        }
       }
 
       // Add copyTo for proper file handling
@@ -296,11 +291,10 @@ const UploadModal: React.FC<UploadModalProps> = ({
         pickerOptions.copyTo = 'documentDirectory';
       }
 
-      const results = await DocumentPicker.pick(pickerOptions);
-    */
-    try {
-      // DocumentPicker code commented out
-      const results: any[] = [];
+      // Use pickMultiple if available, otherwise use pick
+      const results = DocumentPicker.pickMultiple 
+        ? await DocumentPicker.pickMultiple(pickerOptions)
+        : await DocumentPicker.pick(pickerOptions);
 
       if (!results || results.length === 0) {
         return;
@@ -338,10 +332,8 @@ const UploadModal: React.FC<UploadModalProps> = ({
       setIsUploading(false);
       setUploadProgress(null);
       
-      // Commented out react-native-document-picker related code
-      /*
       if (DocumentPicker && DocumentPicker.isCancel && DocumentPicker.isCancel(error)) {
-        // User cancelled
+        // User cancelled - no need to show error
         return;
       } else if (isInProgress && isInProgress(error)) {
         Alert.alert('Error', 'Multiple file pickers opened');
@@ -361,9 +353,6 @@ const UploadModal: React.FC<UploadModalProps> = ({
           Alert.alert('Error', errorMessage);
         }
       }
-      */
-      console.error('File picking error:', error);
-      Alert.alert('Error', error?.message || 'Failed to pick files');
     }
   };
 

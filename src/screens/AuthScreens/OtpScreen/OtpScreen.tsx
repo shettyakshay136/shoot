@@ -13,9 +13,13 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './OtpScreen.styles';
 import BackButton from '@/assets/svg/back.svg';
-import { completeLogin, completeSignup, resendOtp } from '@/services';
-import { useAuth, useToast } from '@/contexts';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
+import {
+  creatorLoginComplete,
+  creatorSignupComplete,
+  resendOTP,
+} from '@/services/auth';
+import { useAuth, useToast } from '@/contexts';
 
 // Local route params shape so this screen can live under multiple stacks
 type OtpParams = { phoneNumber: string; flow?: 'login' | 'signup' };
@@ -26,12 +30,12 @@ const OtpScreen = (): JSX.Element => {
   const inputRefs = useRef<(TextInput | null)[]>([]);
   const route = useRoute<OtpRoute>();
   const navigation = useNavigation<OtpNavigationProp>();
+  const { login } = useAuth();
+  const { showToast } = useToast();
   const [otp, setOtp] = useState(['', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const { phoneNumber, flow = 'login' } = route.params;
-  const { login } = useAuth();
-  const { showToast } = useToast();
 
   // Mask phone number like 9******987
   const maskedPhone = phoneNumber.replace(/(\d)\d{6}(\d{3})/, '$1******$2');
@@ -51,16 +55,15 @@ const OtpScreen = (): JSX.Element => {
   const handleResend = async () => {
     setResending(true);
     try {
-      await resendOtp(phoneNumber);
-      showToast('Success', 'success', 'OTP has been resent');
+      await resendOTP({ contactNumber: phoneNumber });
       setOtp(['', '', '', '']);
-    } catch (error) {
+      showToast('OTP resent to your phone number', 'success');
+    } catch (error: any) {
       console.error('Resend OTP Error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to resend OTP. Please try again.';
-      showToast('Error', 'error', errorMessage);
+      showToast(
+        error?.message || 'Failed to resend OTP. Please try again.',
+        'error',
+      );
     } finally {
       setResending(false);
     }
@@ -69,60 +72,59 @@ const OtpScreen = (): JSX.Element => {
   const handleVerify = async () => {
     const otpCode = otp.join('');
     if (otpCode.length !== 4) {
-      showToast('Error', 'error', 'Please enter a valid 4-digit OTP');
       return;
     }
 
     setLoading(true);
     try {
       if (flow === 'login') {
-        const result = await completeLogin(phoneNumber, otpCode);
-        console.log(result, 'result');
+        const response = await creatorLoginComplete({
+          phone_number: phoneNumber,
+          otp: otpCode,
+        });
+        console.log('Login Complete Response:', JSON.stringify(response, null, 2));
 
-        // Handle the case where token is in result.data
-        const token = result.token || result.data?.token;
+        await login(response.data.token);
 
-        if (!token) {
-          throw new Error('No token received from server');
+        if (response.data.redirectTo) {
+          if (response.data.redirectTo === 'LocationPreferenceScreen') {
+            navigation.navigate('LocationPreferenceScreen', { phoneNumber });
+          } else if (response.data.redirectTo === 'WhatsappPreferenceScreen') {
+            navigation.navigate('WhatsappPreferenceScreen', { phoneNumber });
+          } else {
+            showToast(response.message || 'Please complete onboarding', 'info');
+          }
+        } else {
+          showToast('Login successful', 'success');
         }
-
-        await login(token, result.user || undefined);
       } else {
-        // Signup flow - complete signup with OTP
-        const result = await completeSignup({
+        // Signup flow
+        const response = await creatorSignupComplete({
           contactNumber: phoneNumber,
           otp: otpCode,
         });
 
-        console.log('Signup complete result:', result);
+        await login(response.data.token, response.data.creator);
 
-        // Handle the case where token is in result.data
-        const token = result.token || result.data?.token;
-        const creator = result.creator || result.data?.creator;
-
-        if (!token) {
-          throw new Error('No token received from server');
+        // Navigate based on redirectTo
+        if (response.data.redirectTo) {
+          if (response.data.redirectTo === 'WhatsappPreferenceScreen') {
+            navigation.navigate('WhatsappPreferenceScreen', { phoneNumber });
+          } else if (response.data.redirectTo === 'LocationPreferenceScreen') {
+            navigation.navigate('LocationPreferenceScreen', { phoneNumber });
+          } else {
+            showToast(response.message || 'Signup successful', 'success');
+          }
+        } else {
+          showToast('Signup verified successfully!', 'success');
         }
-
-        showToast(
-          'Success',
-          'success',
-          result.message || 'Signup successful! Welcome aboard.',
-        );
-
-        // Store token for authenticated API calls during onboarding
-        await login(token, creator || undefined);
-
-        // Navigate to LocationPreferenceScreen to complete profile
-        navigation.navigate('WhatsappPreferenceScreen', { phoneNumber });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Verify OTP Error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Invalid OTP. Please try again.';
-      showToast('Error', 'error', errorMessage);
+      showToast(
+        error?.message || 'Invalid OTP. Please try again.',
+        'error',
+      );
     } finally {
       setLoading(false);
     }
@@ -159,7 +161,9 @@ const OtpScreen = (): JSX.Element => {
           {otp.map((digit, index) => (
             <TextInput
               key={index}
-              ref={ref => (inputRefs.current[index] = ref)}
+              ref={ref => {
+                inputRefs.current[index] = ref;
+              }}
               style={styles.otpInput}
               value={digit}
               onChangeText={value => handleOtpChange(index, value)}

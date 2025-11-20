@@ -14,8 +14,8 @@ import { styles } from './LoginScreen.styles';
 import MyLoginSvg from '@/assets/svg/Signup.svg';
 import LogoIcon from '@/assets/svg/logo.svg';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import { loginOtp } from '@/services';
-import { useToast } from '@/contexts';
+import { creatorLoginInitiate } from '@/services/auth';
+import { useToast } from '@/contexts/ToastContext';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -25,31 +25,29 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<
 const LoginScreen = (): JSX.Element => {
   const { width, height } = Dimensions.get('window');
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const { showToast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
-  const { showToast } = useToast();
 
-  const handleSignIn = () => {
+  const handleSignIn = async () => {
     if (phoneNumber.length !== 10) {
-      showToast('Error', 'error', 'Please enter a valid 10-digit phone number');
+      showToast('Please enter a valid 10-digit phone number', 'error');
       return;
     }
-
     setLoading(true);
-    loginOtp(phoneNumber) 
-      .then(() => {
-        navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Login Error:', error);
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'Failed to send OTP. Please try again.';
-        showToast('Error', 'error', errorMessage);
-        setLoading(false);
-      });
+    try {
+      const response = await creatorLoginInitiate({ phone_number: phoneNumber });
+      showToast(`OTP sent to your phone: ${response.data}`, 'success');
+      navigation.navigate('OtpScreen', { phoneNumber, flow: 'login' });
+    } catch (error: any) {
+      console.error('Login Error:', error);
+      showToast(
+        error?.message || 'Failed to initiate login. Please try again.',
+        'error',
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -10,15 +10,16 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RouteProp } from '@react-navigation/native';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './WhatsappPreferenceScreen.styles';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import GiftSvg from '@/assets/svg/gift.svg';
-import { updateCreatorProfile } from '@/services';
-import { useToast } from '@/contexts';
-import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
+// import { updateCreatorProfile } from '@/services/auth';
+// import { useToast } from '@/contexts';
+import { useAuth } from '@/contexts';
+// import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
 
 type WhatsappPreferenceScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -32,13 +33,17 @@ type WhatsappPreferenceScreenRouteProp = RouteProp<
 const WhatsappPreferenceScreen = (): JSX.Element => {
   const navigation = useNavigation<WhatsappPreferenceScreenNavigationProp>();
   const route = useRoute<WhatsappPreferenceScreenRouteProp>();
-  const { showToast } = useToast();
+  // const { showToast } = useToast();
+  const { user } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [receiveWhatsAppUpdates, setReceiveWhatsAppUpdates] = useState(false);
   const [referralCode, setReferralCode] = useState('');
   const [isValidReferralCode, setIsValidReferralCode] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, _setLoading] = useState(false);
+
+  // Get creator name from user data
+  const creatorName = user?.creatorName || user?.name || '';
 
   // Get phone number from route params
   useEffect(() => {
@@ -69,38 +74,41 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
   const handleVerify = async () => {
     if (!isFormValid()) return;
 
-    setLoading(true);
-    try {
-      // Get access token from AsyncStorage
-      // const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+    // Temporarily commented out - navigate directly
+    navigation.navigate('LocationPreferenceScreen', { phoneNumber });
 
-      // if (!accessToken) {
-      //   showToast('Authentication required. Please login again.', 'error');
-      //   navigation.navigate('LoginScreen');
-      //   return;
-      // }
+    // setLoading(true);
+    // try {
+    //   // Check if user is authenticated
+    //   const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
 
-      // Update WhatsApp notification preference
-      // await updateCreatorProfile(
-      //   {
-      //     whatsappNotification: receiveWhatsAppUpdates,
-      //     // TODO: Add referral code to API call if backend supports it
-      //     // referralCode: referralCode || undefined,
-      //   },
-      //   accessToken,
-      // );
+    //   if (!accessToken) {
+    //     showToast('Authentication token not found. Please login again.', 'error');
+    //     return;
+    //   }
 
-      // Navigate to LocationPreferenceScreen with phone number
-      navigation.navigate('LocationPreferenceScreen', { phoneNumber });
-    } catch (error: any) {
-      console.error('Error updating profile:', error);
-      showToast(
-        error?.message || 'Failed to update preferences. Please try again.',
-        'error',
-      );
-    } finally {
-      setLoading(false);
-    }
+    //   // Update profile with WhatsApp notification preference
+    //   // The axios interceptor will automatically add the token from AsyncStorage
+    //   const response = await updateCreatorProfile({
+    //     whatsappNotification: receiveWhatsAppUpdates,
+    //   });
+
+    //   console.log('Profile Update Response:', JSON.stringify(response, null, 2));
+
+    //   showToast('WhatsApp notification updated successfully!', 'success');
+
+    //   // Navigate to LocationPreferenceScreen with phone number
+    //   navigation.navigate('LocationPreferenceScreen', { phoneNumber });
+    // } catch (error: any) {
+    //   console.error('Error updating profile:', error);
+    //   const errorMessage =
+    //     error?.response?.data?.message ||
+    //     error?.message ||
+    //     'Failed to update profile. Please try again.';
+    //   showToast(errorMessage, 'error');
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const handleBack = () => {
@@ -124,7 +132,9 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <Text style={styles.title}>Hello, Satya!</Text>
+        <Text style={styles.title}>
+          Hello{creatorName ? `, ${creatorName}` : ''}!
+        </Text>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Phone Number</Text>
           <View
@@ -137,11 +147,9 @@ const WhatsappPreferenceScreen = (): JSX.Element => {
               <Text style={styles.phonePrefixText}>+91</Text>
             </View>
             <TextInput
-              style={styles.phoneTextInput}
+              style={[styles.phoneTextInput, { opacity: 0.5 }]}
               value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              onFocus={() => setFocusedField('phone')}
-              onBlur={() => setFocusedField(null)}
+              editable={false}
               placeholder="Enter your phone number"
               placeholderTextColor="#9CA3AF"
               keyboardType="phone-pad"

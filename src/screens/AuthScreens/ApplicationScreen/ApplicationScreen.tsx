@@ -4,7 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationScreen.styles';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
-import { UploadModal } from '@/components/ui';
+import { UploadModal, DigiLockerKYCModal } from '@/components/ui';
 
 interface Step {
   id: number;
@@ -23,6 +23,7 @@ interface Step {
 const ApplicationStatusScreen = (): JSX.Element => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
+  const [isKYCModalVisible, setIsKYCModalVisible] = useState(false);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -101,37 +102,13 @@ const ApplicationStatusScreen = (): JSX.Element => {
   };
 
   const handleVerifyKYC = () => {
-    // Handle KYC verification logic here
-    console.log('KYC verification initiated');
-    
-    // Update steps: mark current active step as completed and next step as active
-    setSteps(prevSteps => {
-      const updatedSteps = [...prevSteps];
-      const currentActiveIndex = updatedSteps.findIndex(step => step.status === 'active');
-      
-      if (currentActiveIndex !== -1) {
-        // Mark current step as completed
-        updatedSteps[currentActiveIndex] = {
-          ...updatedSteps[currentActiveIndex],
-          status: 'completed',
-          timeAgo: updatedSteps[currentActiveIndex].id === 1 ? 'Just now' : undefined,
-          actionButton: undefined, // Remove action button for completed step
-        };
-        
-        // Mark next step as active and completed (Onboarded step)
-        const nextStepIndex = currentActiveIndex + 1;
-        if (nextStepIndex < updatedSteps.length) {
-          updatedSteps[nextStepIndex] = {
-            ...updatedSteps[nextStepIndex],
-            status: 'completed',
-            timeAgo: updatedSteps[nextStepIndex].id === 1 ? 'Just now' : undefined,
-            description: 'onboarded_message', // Special identifier for onboarded message
-          };
-        }
-      }
-      
-      return updatedSteps;
-    });
+    // Open KYC verification modal
+    console.log('KYC verification initiated - opening modal');
+    setIsKYCModalVisible(true);
+  };
+
+  const handleCloseKYCModal = () => {
+    setIsKYCModalVisible(false);
   };
 
   const [steps, setSteps] = useState<Step[]>([
@@ -328,6 +305,12 @@ const ApplicationStatusScreen = (): JSX.Element => {
         onClose={handleCloseUploadModal}
         onUpload={handleFileUpload}
         onCheckStatus={handleCloseUploadModal}
+      />
+
+      {/* KYC Modal */}
+      <DigiLockerKYCModal
+        isVisible={isKYCModalVisible}
+        onClose={handleCloseKYCModal}
       />
       </View>
     </SafeAreaView>

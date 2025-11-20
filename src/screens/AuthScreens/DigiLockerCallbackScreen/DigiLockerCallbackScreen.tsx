@@ -1,19 +1,18 @@
 import { useEffect, useState, useCallback, type FC } from 'react';
-import { View, Text, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, ActivityIndicator, Linking, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
-import { AUTH_TOKEN_KEY, useToast } from '@/contexts';
-import {
-  callDigiLockerCallback,
-  updateCreatorProfile,
-} from '@/services/authUtils';
 import {
   DigiLockerCallbackScreenProps,
   CallbackStatus,
 } from './DigiLockerCallbackScreen.types';
 import { styles } from './DigiLockerCallbackScreen.styles';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  callDigiLockerCallback,
+  updateCreatorProfile,
+} from '@/services/auth';
 
 type NavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
@@ -24,7 +23,6 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
   route,
 }) => {
   const navigation = useNavigation<NavigationProp>();
-  const { showToast } = useToast();
   const [status, setStatus] = useState<CallbackStatus>(CallbackStatus.LOADING);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -46,35 +44,74 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
 
         setStatus(CallbackStatus.LOADING);
 
-        // Call the service function which handles AsyncStorage fallback
-        const response = await callDigiLockerCallback(code || '', state || '');
+        // Get code and state from params or AsyncStorage
+        let callCode = code;
+        let callState = state;
+
+        if (!callCode || !callState) {
+          console.log(
+            '[DigiLockerCallback] Retrieving stored credentials from AsyncStorage',
+          );
+          const storedCode = await AsyncStorage.getItem('@DIGILOCKER_CODE');
+          const storedState = await AsyncStorage.getItem('@DIGILOCKER_STATE');
+
+          if (storedCode) callCode = storedCode;
+          if (storedState) callState = storedState;
+
+          console.log('[DigiLockerCallback] Retrieved from storage:', {
+            hasCode: !!callCode,
+            hasState: !!callState,
+          });
+        }
+
+        if (!callCode || !callState) {
+          throw new Error(
+            'Missing authorization code or state parameter. Please try again.',
+          );
+        }
+
+        // Step 1: Call DigiLocker callback API
+        console.log('[DigiLockerCallback] Calling callback API');
+        const callbackResponse = await callDigiLockerCallback(
+          callCode,
+          callState,
+        );
 
         console.log('[DigiLockerCallback] Callback response:', {
-          success: response.success,
-          statusCode: response.statusCode,
+          success: callbackResponse.success,
+          creatorId: callbackResponse.data?.creatorId,
         });
 
-        if (response.success) {
-          setStatus(CallbackStatus.SUCCESS);
-          showToast('KYC verification initiated successfully', 'success');
-          // Update the status
-          const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-          if (!accessToken) {
-            throw new Error('Access token not found');
-          }
-          await updateCreatorProfile(
-            {
-              kycVerified: true,
-            },
-            accessToken,
-          );
+        if (!callbackResponse.success || !callbackResponse.data) {
+          throw new Error('Callback verification failed');
+        }
 
-          // Navigate to application screen after a short delay
+        // Clear stored credentials on success
+        await AsyncStorage.removeItem('@DIGILOCKER_CODE');
+        await AsyncStorage.removeItem('@DIGILOCKER_STATE');
+
+        // Step 2: Update creator profile with kycVerified: true
+        console.log('[DigiLockerCallback] Updating creator profile');
+        const profileResponse = await updateCreatorProfile({
+          kycVerified: true,
+        });
+
+        console.log('[DigiLockerCallback] Profile update response:', {
+          status: profileResponse.data?.status,
+          success: profileResponse.success,
+        });
+
+        // Check if status is ONBOARDED
+        if (profileResponse.data?.status === 'ONBOARDED') {
+          setStatus(CallbackStatus.SUCCESS);
+          console.log('[DigiLockerCallback] KYC verification complete!');
+
+          // Navigate to application screen after success
           setTimeout(() => {
             navigation.replace('ApplicationScreen');
-          }, 1500);
+          }, 2000);
         } else {
-          throw new Error(response.message || 'DigiLocker callback failed');
+          throw new Error('KYC verification completed but status not updated');
         }
       } catch (error: any) {
         console.error('[DigiLockerCallback] Error:', error);
@@ -82,15 +119,23 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
         const message =
           error.message || 'Failed to process DigiLocker callback';
         setErrorMessage(message);
-        showToast(message, 'error');
 
-        // Navigate back to application screen after error
-        setTimeout(() => {
-          navigation.replace('ApplicationScreen');
-        }, 3000);
+        Alert.alert(
+          'Verification Failed',
+          message,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Navigate back to application screen after error
+                navigation.replace('ApplicationScreen');
+              },
+            },
+          ],
+        );
       }
     },
-    [navigation, showToast],
+    [navigation],
   );
 
   /**

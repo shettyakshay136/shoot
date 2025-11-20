@@ -12,4 +12,5 @@ export type { Category } from './ChooseCategoryModal';
 export { RateCustomerModal } from './RateCustomerModal';
 export { CompleteShootModal } from './CompleteShootModal';
 export { default as UploadModal } from './UploadModal';
+export { DigiLockerKYCModal } from './DigiLockerKYCModal';
 

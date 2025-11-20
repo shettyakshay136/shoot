@@ -1,30 +1,40 @@
-import React, { useState, type JSX } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  SafeAreaView,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native';
+import React, { useMemo, useState, useEffect, type JSX } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './LocationPreferenceScreen.styles';
 import type { RootStackParamList } from '@/navigation/types';
 import BackButton from '@/assets/svg/back.svg';
 import { SimpleModal } from '@/components/layout';
 import BoomSvg from '@/assets/svg/boom.svg';
-import { updateCreatorProfile } from '@/services';
+import Infoicon from '@/assets/svg/info.svg';
+import Dropdownicon from '@/assets/svg/dropdown.svg';
+import ArrowUp from '@/assets/svg/arrow-up-right.svg';
+import { updateCreatorProfile } from '@/services/auth';
 import { useToast } from '@/contexts';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
-import { getCoordinatesForCity } from '@/utils/geolocation';
+import { useCitySearch } from '@/utils/hooks/useCitySearch';
+import { reverseGeocode } from '@/utils/services/geocoding';
+
+// Conditionally import Geolocation to handle cases where native module isn't linked
+let Geolocation: any = null;
+try {
+  Geolocation = require('react-native-geolocation-service');
+} catch (error) {
+  console.warn('react-native-geolocation-service not available:', error);
+}
 
 type LocationPreferenceScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'App'
 >;
+
+interface LocationCoordinates {
+  latitude: number;
+  longitude: number;
+}
 
 const LocationPreferenceScreen = (): JSX.Element => {
   const navigation = useNavigation<LocationPreferenceScreenNavigationProp>();
@@ -33,36 +43,107 @@ const LocationPreferenceScreen = (): JSX.Element => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [locationCoordinates, setLocationCoordinates] = useState<LocationCoordinates | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [query, setQuery] = useState('');
 
-  // List of cities
-  const cities = [
-    'Mumbai',
-    'Delhi',
-    'Bangalore',
-    'Hyderabad',
-    'Chennai',
-    'Kolkata',
-    'Pune',
-    'Ahmedabad',
-    'Jaipur',
-    'Surat',
-    'Lucknow',
-    'Kanpur',
-    'Nagpur',
-    'Indore',
-    'Thane',
-    'Bhopal',
-    'Visakhapatnam',
-    'Pimpri-Chinchwad',
-    'Patna',
-    'Vadodara',
-    'Ghaziabad',
-    'Ludhiana',
-    'Agra',
-    'Nashik',
-    'Faridabad',
-  ];
+  // Use city search hook for dynamic city search
+  const { results, loading: searchLoading } = useCitySearch(query, isDropdownOpen && query.length >= 2);
+
+  // Fallback cities list
+  const fallbackCities = useMemo(
+    () => [
+      'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata',
+      'Pune', 'Ahmedabad', 'Jaipur', 'Surat', 'Lucknow', 'Kanpur',
+      'Nagpur', 'Indore', 'Thane', 'Bhopal', 'Visakhapatnam', 'Pimpri-Chinchwad',
+      'Patna', 'Vadodara', 'Ghaziabad', 'Ludhiana', 'Agra', 'Nashik', 'Faridabad'
+    ],
+    [],
+  );
+
+  // Combine search results with fallback cities
+  const cities = useMemo(() => {
+    if (query && query.length >= 2 && results.length > 0) {
+      return results.map(r => r.name);
+    }
+    return fallbackCities;
+  }, [query, results, fallbackCities]);
+
+  useEffect(() => {
+    requestLocationPermissionAndFetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const requestLocationPermissionAndFetch = async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const hasPermission = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+
+        if (!hasPermission) {
+          const result = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Location Permission',
+              message: 'We need your location to suggest the best city for you.',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'Allow',
+            },
+          );
+
+          if (result !== PermissionsAndroid.RESULTS.GRANTED) {
+            return;
+          }
+        }
+      }
+
+      await fetchCurrentLocation();
+    } catch (error) {
+      console.error('Permission error:', error);
+    }
+  };
+
+  const fetchCurrentLocation = async () => {
+    if (!Geolocation) {
+      console.warn('Geolocation service not available');
+      setIsLoadingLocation(false);
+      return;
+    }
+
+    setIsLoadingLocation(true);
+    try {
+      Geolocation.getCurrentPosition(
+        async (position: any) => {
+          const { latitude, longitude } = position.coords;
+          setLocationCoordinates({ latitude, longitude });
+
+          try {
+            const cityResult = await reverseGeocode(latitude, longitude);
+            if (cityResult) {
+              setSelectedCity(cityResult.name);
+            }
+          } catch (geocodeError) {
+            console.error('Geocoding error:', geocodeError);
+          }
+        },
+        (error: any) => {
+          console.warn('Location fetch error:', error.code, error.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 10000,
+        },
+      );
+    } catch (error) {
+      console.error('Geolocation error:', error);
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
 
   // Validation logic
   const isFormValid = () => {
@@ -72,54 +153,77 @@ const LocationPreferenceScreen = (): JSX.Element => {
   const handleCitySelect = (city: string) => {
     setSelectedCity(city);
     setIsDropdownOpen(false);
+    setQuery('');
+
+    // Find coordinates for selected city
+    const cityResult = results.find(r => r.name === city);
+    if (cityResult) {
+      setLocationCoordinates({
+        latitude: cityResult.latitude,
+        longitude: cityResult.longitude,
+      });
+    } else {
+      // If not in search results, try to get from fallback or set null
+      // The API will handle this when submitting
+      setLocationCoordinates(null);
+    }
   };
 
   const handleContinue = async () => {
-    if (!isFormValid()) return;
+    if (!isFormValid()) {
+      showToast('Please select a city', 'error');
+      return;
+    }
 
-    setLoading(true);
+    setIsSubmitting(true);
+
     try {
-      // Get access token from AsyncStorage
-      const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      // const accessToken = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+      // if (!accessToken) {
+      //   showToast('Authentication token not found', 'error');
+      //   setIsSubmitting(false);
+      //   return;
+      // }
 
-      if (!accessToken) {
-        showToast('Authentication required. Please login again.', 'error');
-        return;
-      }
+      // // Get coordinates from selected city or use null (API will handle)
+      // let coords = locationCoordinates;
+      // if (!coords) {
+      //   // Try to find in results
+      //   const cityResult = results.find(r => r.name === selectedCity);
+      //   if (cityResult) {
+      //     coords = {
+      //       latitude: cityResult.latitude,
+      //       longitude: cityResult.longitude,
+      //     };
+      //   }
+      // }
 
-      // Get coordinates for the selected city
-      const coordinates = getCoordinatesForCity(selectedCity);
+      // const payload: any = {
+      //   primaryLocation: selectedCity,
+      // };
 
-      if (!coordinates) {
-        showToast(
-          'Unable to fetch coordinates for the selected city.',
-          'error',
-        );
-        return;
-      }
+      // if (coords) {
+      //   payload.primaryLocationCoordinates = {
+      //     type: 'Point',
+      //     coordinates: [coords.longitude, coords.latitude],
+      //   };
+      // }
 
-      // Send coordinates in GeoJSON Point format
-      // await updateCreatorProfile(
-      //   {
-      //     primaryLocation: selectedCity,
-      //     primaryLocationCoordinates: {
-      //       type: 'Point',
-      //       coordinates: [coordinates.longitude, coordinates.latitude],
-      //     },
-      //   },
-      //   accessToken,
-      // );
+      // await updateCreatorProfile(payload);
 
-      // Show success modal
+      // console.log('Location Update Response:', JSON.stringify({ success: true }, null, 2));
+
+      // showToast('Location updated successfully!', 'success');
       setIsModalVisible(true);
     } catch (error: any) {
       console.error('Error updating location:', error);
-      showToast(
-        error?.message || 'Failed to update location. Please try again.',
-        'error',
-      );
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to update location. Please try again.';
+      showToast(errorMessage, 'error');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -149,15 +253,20 @@ const LocationPreferenceScreen = (): JSX.Element => {
           <BackButton />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleHelp} style={styles.helpButton}>
+          <Infoicon />
           <Text style={styles.helpButtonText}>Help</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
-        <Text style={styles.title}>
-          Choose the city you want to create magic with content
-        </Text>
+        <Text style={styles.title}>Choose the city you want to create magic with content</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Select City</Text>
+          {isLoadingLocation && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12, padding: 12, backgroundColor: '#EFF6FF', borderRadius: 8 }}>
+              <ActivityIndicator size="small" color="#61240E" />
+              <Text style={{ color: '#1E40AF', fontSize: 12 }}>Getting your location...</Text>
+            </View>
+          )}
           <View style={styles.dropdownContainer}>
             <TouchableOpacity
               style={[
@@ -177,33 +286,44 @@ const LocationPreferenceScreen = (): JSX.Element => {
               >
                 {selectedCity || 'Select your city'}
               </Text>
-              <Text style={styles.dropdownArrow}>
-                {isDropdownOpen ? '▲' : '▼'}
-              </Text>
+              {isDropdownOpen ? (
+                <Dropdownicon />
+              ) : (
+                <Dropdownicon style={{ transform: [{ rotate: '180deg' }] }} />
+              )}
             </TouchableOpacity>
 
             {isDropdownOpen && (
-                  <ScrollView style={styles.dropdownList} nestedScrollEnabled>
-                    {cities.map((city, index) => {
-                      const isSelected = city === selectedCity;
-                      return (
-                        <TouchableOpacity
-                          key={index}
-                          style={[
-                            styles.dropdownItem,
-                            isSelected && styles.dropdownItemSelected,
-                          ]}
-                          onPress={() => handleCitySelect(city)}
-                        >
-                          <Text style={[
-                            styles.dropdownItemText,
-                            isSelected && styles.dropdownItemTextSelected,
-                          ]}>{city}</Text>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </ScrollView>
+              <ScrollView style={styles.dropdownList} nestedScrollEnabled>
+                {searchLoading && (
+                  <View style={{ padding: 16, alignItems: 'center' }}>
+                    <ActivityIndicator size="small" color="#61240E" />
+                  </View>
                 )}
+                {cities.map((city, index) => {
+                  const isSelected = city === selectedCity;
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.dropdownItem,
+                        isSelected && styles.dropdownItemSelected,
+                      ]}
+                      onPress={() => handleCitySelect(city)}
+                    >
+                      <Text
+                        style={[
+                          styles.dropdownItemText,
+                          isSelected && styles.dropdownItemTextSelected,
+                        ]}
+                      >
+                        {city}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            )}
           </View>
         </View>
       </View>
@@ -211,7 +331,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
       <View style={styles.bottomContainer}>
         <TouchableOpacity
           onPress={handleContinue}
-          disabled={!isFormValid() || loading}
+          disabled={!isFormValid() || isSubmitting}
           style={styles.verifyButtonTouchable}
         >
           <LinearGradient
@@ -220,21 +340,18 @@ const LocationPreferenceScreen = (): JSX.Element => {
             end={{ x: 1, y: 0 }}
             style={[
               styles.verifyButton,
-              (!isFormValid() || loading) && styles.verifyButtonDisabled,
+              (!isFormValid() || isSubmitting) && styles.verifyButtonDisabled,
             ]}
           >
-            {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text
-                style={[
-                  styles.verifyButtonText,
-                  !isFormValid() && styles.verifyButtonTextDisabled,
-                ]}
-              >
-                Confirm City
-              </Text>
-            )}
+            {isSubmitting && <ActivityIndicator size="small" color="white" style={{ marginRight: 8 }} />}
+            <Text
+              style={[
+                styles.verifyButtonText,
+                !isFormValid() && styles.verifyButtonTextDisabled,
+              ]}
+            >
+              {isSubmitting ? 'Saving Location...' : 'Confirm City'}
+            </Text>
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -248,8 +365,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
           <View style={styles.titleContainer}>
             <Text style={styles.successTitle}>You're All Set!</Text>
             <Text style={styles.successSubtitle}>
-              Your application has been successfully submitted and is now under
-              review.
+              Your application has been successfully submitted and is now under review.
             </Text>
           </View>
           <View>
@@ -297,10 +413,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
             </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.confirmButton}
-            onPress={handleCheckStatus}
-          >
+          <TouchableOpacity style={styles.confirmButton} onPress={handleCheckStatus}>
             <LinearGradient
               colors={['#000000', '#61240E']}
               start={{ x: 0, y: 0 }}
@@ -308,6 +421,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
               style={styles.confirmButtonGradient}
             >
               <Text style={styles.confirmButtonText}>Check Status</Text>
+              <ArrowUp />
             </LinearGradient>
           </TouchableOpacity>
         </View>

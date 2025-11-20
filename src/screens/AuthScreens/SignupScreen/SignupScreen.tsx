@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   ScrollView,
   TextInput,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -16,10 +15,9 @@ import { styles } from './Signup.styles';
 import { IPHONE_MODELS, GENDER_OPTIONS } from './Signup.constants';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
-import { initiateSignup } from '@/services';
+import Dropdownicon from '@/assets/svg/dropdown.svg';
+import { creatorSignupInitiate } from '@/services/auth';
 import { useToast } from '@/contexts';
-import { IOSPicker } from '@/components/features';
-import Dropdownicon from '@/assets/svg/dropdown.svg'
 type SignupScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   'SignupScreen'
@@ -40,10 +38,14 @@ const SignupScreen = (): JSX.Element => {
 
   // Validation logic
   const isFormValid = () => {
+    const phoneDigits = phoneNumber.replace(/\D/g, '');
+    const phoneOk = /^\d{10}$/.test(phoneDigits);
+    const emailOk = email.length === 0 || /.+@.+\..+/.test(email);
+    
     return (
       name.trim() !== '' &&
-      phoneNumber.trim() !== '' &&
-      email.trim() !== '' &&
+      phoneOk &&
+      emailOk &&
       selectedIphoneModel !== '' &&
       selectedGender !== '' &&
       location.trim() !== ''
@@ -52,37 +54,45 @@ const SignupScreen = (): JSX.Element => {
 
   const handleVerify = async () => {
     if (!isFormValid()) {
-      Alert.alert('Error', 'Please fill all required fields');
+      const phoneDigits = phoneNumber.replace(/\D/g, '');
+      if (!/^\d{10}$/.test(phoneDigits)) {
+        showToast('Please enter a valid 10-digit phone number', 'error');
+      } else if (email && !/.+@.+\..+/.test(email)) {
+        showToast('Please enter a valid email address', 'error');
+      } else {
+        showToast('Please fill all required fields', 'error');
+      }
       return;
     }
 
     setLoading(true);
     try {
-      const result = await initiateSignup({
-        creatorName: name,
-        contactNumber: phoneNumber,
-        email: email,
-        portfolio: portfolioLink,
+      const phoneDigits = phoneNumber.replace(/\D/g, '');
+      
+      const response = await creatorSignupInitiate({
+        creatorName: name.trim(),
+        contactNumber: phoneDigits,
+        email: email.trim(),
+        portfolio: portfolioLink.trim(),
         iphoneModel: selectedIphoneModel,
         gender: selectedGender,
-        location: location,
+        location: location.trim(),
       });
       
-      // Show OTP in toast if available
-      const otp = result?.otp || result?.data?.otp;
-      if (otp) {
-        showToast('OTP', 'success', `Your OTP is: ${otp}`);
-      }
+      console.log('Signup Initiate Response:', JSON.stringify(response, null, 2));
       
-      // Navigate to OTP screen with phone number
-      navigation.navigate('OtpScreen', { phoneNumber, flow: 'signup' });
-    } catch (error) {
+      showToast(`Verification code sent to your phone: ${response.data.otp}`, 'success');
+
+      navigation.navigate('OtpScreen', {
+        phoneNumber: phoneDigits,
+        flow: 'signup',
+      });
+    } catch (error: any) {
       console.error('Initiate Signup Error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'Failed to initiate signup. Please try again.';
-      Alert.alert('Error', errorMessage);
+      showToast(
+        error?.message || 'Failed to initiate signup. Please try again.',
+        'error',
+      );
     } finally {
       setLoading(false);
     }

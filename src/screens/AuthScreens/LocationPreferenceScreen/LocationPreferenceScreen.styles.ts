@@ -30,7 +30,9 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical:10,
-    paddingHorizontal:16
+    paddingHorizontal:16,
+    flexDirection:'row',
+    gap:4
   },
   helpButtonText: {
     fontSize: 16,
@@ -245,6 +247,8 @@ export const styles = StyleSheet.create({
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection:'row',
+    gap:4
   },
   confirmButtonText: {
     fontSize: 16,
