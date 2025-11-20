@@ -1,4 +1,4 @@
-import React, { useState, type JSX } from 'react';
+import React, { useState, useRef, type JSX } from 'react';
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ type OtpRoute = RouteProp<Record<string, OtpParams>, string>;
 type OtpNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
 const OtpScreen = (): JSX.Element => {
+  const inputRefs = useRef<(TextInput | null)[]>([]);
   const route = useRoute<OtpRoute>();
   const navigation = useNavigation<OtpNavigationProp>();
   const [otp, setOtp] = useState(['', '', '', '']);
@@ -40,6 +41,10 @@ const OtpScreen = (): JSX.Element => {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
+
+      if (value && index < otp.length - 1) {
+        inputRefs.current[index + 1]?.focus();
+      }
     }
   };
 
@@ -154,6 +159,7 @@ const OtpScreen = (): JSX.Element => {
           {otp.map((digit, index) => (
             <TextInput
               key={index}
+              ref={ref => (inputRefs.current[index] = ref)}
               style={styles.otpInput}
               value={digit}
               onChangeText={value => handleOtpChange(index, value)}

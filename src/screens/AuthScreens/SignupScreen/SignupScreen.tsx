@@ -18,7 +18,7 @@ import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigato
 import BackButton from '@/assets/svg/back.svg';
 import { initiateSignup } from '@/services';
 import { useToast } from '@/contexts';
-
+import { IOSPicker } from '@/components/features';
 type SignupScreenNavigationProp = NativeStackNavigationProp<
   AuthStackParamList,
   'SignupScreen'
@@ -192,85 +192,22 @@ const SignupScreen = (): JSX.Element => {
             />
           </View>
 
-          {/* iPhone Model Dropdown */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>iPhone Model</Text>
-            <TouchableOpacity
-              style={[
-                styles.dropdownButton,
-                focusedField === 'iphone' && styles.textInputFocused,
-              ]}
-              onPress={() =>
-                setFocusedField(focusedField === 'iphone' ? null : 'iphone')
-              }
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !selectedIphoneModel && styles.placeholderText,
-                ]}
-              >
-                {selectedIphoneModel || 'Select iPhone model'}
-              </Text>
-              <Text style={styles.dropdownArrow}>▼</Text>
-            </TouchableOpacity>
-            {focusedField === 'iphone' && (
-              <View style={styles.dropdownList}>
-                {IPHONE_MODELS.map((model, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedIphoneModel(model);
-                      setFocusedField(null);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{model}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
+          <IOSPicker
+            label="iPhone Model"
+            selectedValue={selectedIphoneModel}
+            onValueChange={setSelectedIphoneModel}
+            items={IPHONE_MODELS}
+            placeholder="Select iPhone model"
+          />
 
-          {/* Gender Dropdown */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Gender</Text>
-            <TouchableOpacity
-              style={[
-                styles.dropdownButton,
-                focusedField === 'gender' && styles.textInputFocused,
-              ]}
-              onPress={() =>
-                setFocusedField(focusedField === 'gender' ? null : 'gender')
-              }
-            >
-              <Text
-                style={[
-                  styles.dropdownText,
-                  !selectedGender && styles.placeholderText,
-                ]}
-              >
-                {selectedGender || 'Select gender'}
-              </Text>
-              <Text style={styles.dropdownArrow}>▼</Text>
-            </TouchableOpacity>
-            {focusedField === 'gender' && (
-              <View style={styles.dropdownList}>
-                {GENDER_OPTIONS.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setSelectedGender(option);
-                      setFocusedField(null);
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-          </View>
+          <IOSPicker
+              label="Gender"
+              selectedValue={selectedGender}
+              onValueChange={setSelectedGender}
+              items={GENDER_OPTIONS}
+              placeholder="Select gender"
+          />
+
 
           {/* Location Input */}
           <View style={styles.inputContainer}>
