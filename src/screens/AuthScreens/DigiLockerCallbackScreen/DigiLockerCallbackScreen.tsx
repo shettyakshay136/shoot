@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, type FC } from 'react';
-import { View, Text, ActivityIndicator, Linking, Alert } from 'react-native';
+import { useEffect, useState, useCallback, useRef, type FC } from 'react';
+import { View, Text, ActivityIndicator, Linking, Alert, TouchableOpacity, Platform, AppState, AppStateStatus } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,6 +25,8 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
   const navigation = useNavigation<NavigationProp>();
   const [status, setStatus] = useState<CallbackStatus>(CallbackStatus.LOADING);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const appState = useRef(AppState.currentState);
+  const hasProcessedCallback = useRef(false);
 
   // Extract params from route (for app already open scenario)
   const routeCode = route.params?.code;
@@ -69,6 +71,9 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
             'Missing authorization code or state parameter. Please try again.',
           );
         }
+
+        // Mark that we're processing to prevent duplicate calls
+        hasProcessedCallback.current = true;
 
         // Step 1: Call DigiLocker callback API
         console.log('[DigiLockerCallback] Calling callback API');
@@ -139,18 +144,41 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
   );
 
   /**
+   * Handle navigation to ApplicationScreen
+   */
+  const handleContinue = useCallback(() => {
+    console.log('[DigiLockerCallback] Manual continue pressed');
+    navigation.replace('ApplicationScreen');
+  }, [navigation]);
+
+  /**
    * Handle deep link URL
    * Extracts code and state from deep link URL
+   * Handles both query params (?) and hash fragments (#) for iOS compatibility
    */
   const handleDeepLink = useCallback(
     (url: string) => {
       try {
         console.log('[DigiLockerCallback] Processing deep link:', url);
 
-        // Parse URL manually for React Native compatibility
-        const queryString = url.split('?')[1];
+        // Remove the scheme and path, get query/hash part
+        let queryString = '';
+        
+        // Check for query params first (standard)
+        const queryIndex = url.indexOf('?');
+        const hashIndex = url.indexOf('#');
+        
+        if (queryIndex !== -1) {
+          // Has query params
+          const endIndex = hashIndex !== -1 && hashIndex > queryIndex ? hashIndex : url.length;
+          queryString = url.substring(queryIndex + 1, endIndex);
+        } else if (hashIndex !== -1) {
+          // iOS sometimes uses hash fragments instead of query params
+          queryString = url.substring(hashIndex + 1);
+        }
+
         if (!queryString) {
-          console.log('[DigiLockerCallback] No query params in URL');
+          console.log('[DigiLockerCallback] No query params in URL, trying AsyncStorage');
           handleCallback();
           return;
         }
@@ -160,7 +188,12 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
         queryString.split('&').forEach(param => {
           const [key, value] = param.split('=');
           if (key && value) {
-            params[decodeURIComponent(key)] = decodeURIComponent(value);
+            try {
+              params[decodeURIComponent(key)] = decodeURIComponent(value);
+            } catch (e) {
+              // If decoding fails, use raw value
+              params[key] = value;
+            }
           }
         });
 
@@ -170,12 +203,15 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
         console.log('[DigiLockerCallback] Extracted params:', {
           hasCode: !!code,
           hasState: !!state,
+          codeLength: code?.length,
+          stateLength: state?.length,
         });
 
         if (code || state) {
           handleCallback(code || undefined, state || undefined);
         } else {
           // No params in URL, let callDigiLockerCallback retrieve from AsyncStorage
+          console.log('[DigiLockerCallback] No code/state in URL, using AsyncStorage fallback');
           handleCallback();
         }
       } catch (error) {
@@ -194,14 +230,25 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
   useEffect(() => {
     const handleInitialUrl = async () => {
       try {
+        // On iOS, getInitialURL might not work immediately after app launch
+        // Add a small delay for iOS to ensure URL is available
+        if (Platform.OS === 'ios') {
+          await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
+        }
+        
         const initialUrl = await Linking.getInitialURL();
         console.log('[DigiLockerCallback] Initial URL:', initialUrl);
 
-        if (initialUrl) {
+        if (initialUrl && (initialUrl.includes('digilocker') || initialUrl.includes('callback'))) {
           handleDeepLink(initialUrl);
-        } else {
-          // No deep link URL, try route params or AsyncStorage
+        } else if (routeCode || routeState) {
+          // Try route params if available
+          console.log('[DigiLockerCallback] Using route params');
           handleCallback(routeCode, routeState);
+        } else {
+          // No deep link URL, try AsyncStorage
+          console.log('[DigiLockerCallback] No URL or route params, trying AsyncStorage');
+          handleCallback();
         }
       } catch (error) {
         console.error('[DigiLockerCallback] Error getting initial URL:', error);
@@ -219,14 +266,77 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
    */
   useEffect(() => {
     const subscription = Linking.addEventListener('url', ({ url }) => {
-      console.log('[DigiLockerCallback] Received deep link:', url);
-      handleDeepLink(url);
+      console.log('[DigiLockerCallback] Received deep link event:', url);
+      if (url && (url.includes('digilocker') || url.includes('callback'))) {
+        hasProcessedCallback.current = true;
+        handleDeepLink(url);
+      }
     });
 
     return () => {
       subscription.remove();
     };
   }, [handleDeepLink]);
+
+  /**
+   * Effect: Listen for app state changes
+   * When app comes to foreground after DigiLocker, check for deep link
+   * This is crucial for iOS when redirecting from Safari
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextAppState: AppStateStatus) => {
+      console.log('[DigiLockerCallback] AppState changed:', {
+        previous: appState.current,
+        next: nextAppState,
+        hasProcessed: hasProcessedCallback.current,
+      });
+
+      // When app comes to foreground and we haven't processed callback yet
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        !hasProcessedCallback.current &&
+        status === CallbackStatus.LOADING
+      ) {
+        console.log('[DigiLockerCallback] App returned to foreground, checking for deep link');
+        
+        // Small delay to ensure URL is available
+        setTimeout(async () => {
+          try {
+            // Check for initial URL (might be available now)
+            const url = await Linking.getInitialURL();
+            if (url && (url.includes('digilocker') || url.includes('callback'))) {
+              console.log('[DigiLockerCallback] Found URL on foreground:', url);
+              hasProcessedCallback.current = true;
+              handleDeepLink(url);
+              return;
+            }
+
+            // Also check current URL (for when app was backgrounded)
+            // On iOS, getInitialURL might return null if app was backgrounded
+            // So we also try route params or AsyncStorage
+            if (routeCode || routeState) {
+              console.log('[DigiLockerCallback] Using route params on foreground');
+              hasProcessedCallback.current = true;
+              handleCallback(routeCode, routeState);
+            } else {
+              // Last resort: try AsyncStorage
+              console.log('[DigiLockerCallback] Trying AsyncStorage on foreground');
+              handleCallback();
+            }
+          } catch (error) {
+            console.error('[DigiLockerCallback] Error checking URL on foreground:', error);
+          }
+        }, 300);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [handleCallback, handleDeepLink, routeCode, routeState, status]);
 
   /**
    * Render loading state
@@ -252,8 +362,15 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
         <Text style={styles.successIcon}>✓</Text>
         <Text style={styles.successText}>Success!</Text>
         <Text style={styles.subText}>
-          KYC verification initiated. Redirecting...
+          KYC verification completed successfully.
         </Text>
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleContinue}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.continueButtonText}>Continue</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -266,7 +383,13 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
       <Text style={styles.errorIcon}>✕</Text>
       <Text style={styles.errorText}>Something went wrong</Text>
       <Text style={styles.errorMessage}>{errorMessage}</Text>
-      <Text style={styles.subText}>Redirecting back...</Text>
+      <TouchableOpacity
+        style={styles.continueButton}
+        onPress={handleContinue}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.continueButtonText}>Continue</Text>
+      </TouchableOpacity>
     </View>
   );
 };

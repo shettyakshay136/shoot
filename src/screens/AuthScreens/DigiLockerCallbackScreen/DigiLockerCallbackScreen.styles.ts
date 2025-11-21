@@ -50,4 +50,19 @@ export const styles = StyleSheet.create({
     marginBottom: 8,
     paddingHorizontal: 16,
   },
+  continueButton: {
+    marginTop: 24,
+    backgroundColor: '#DC2626',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    minWidth: 120,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  continueButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
