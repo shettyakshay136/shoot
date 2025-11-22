@@ -26,17 +26,18 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
       backdropOpacity={0.5}
       animationIn="slideInUp"
       animationOut="slideOutDown"
-      animationInTiming={300}
-      animationOutTiming={300}
-      backdropTransitionInTiming={300}
-      backdropTransitionOutTiming={300}
+      animationInTiming={200}
+      animationOutTiming={200}
+      backdropTransitionInTiming={200}
+      backdropTransitionOutTiming={200}
       avoidKeyboard={true}
       useNativeDriver={true}
       useNativeDriverForBackdrop={true}
-      hideModalContentWhileAnimating={false}
+      hideModalContentWhileAnimating={true}
       propagateSwipe={true}
+      hasBackdrop={true}
     >
-      <View style={styles.container}>
+      <View style={styles.container} removeClippedSubviews={true}>
         {title && (
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
@@ -47,7 +48,7 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
             )}
           </View>
         )}
-        <View style={styles.content}>
+        <View style={styles.content} removeClippedSubviews={true}>
           {children}
         </View>
       </View>
