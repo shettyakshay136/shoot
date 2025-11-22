@@ -1,10 +1,14 @@
-import React, { useState, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo, type JSX } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationScreen.styles';
 import BackButton from '@/assets/svg/backButtonPdp.svg';
 import BoomSvg from '@/assets/svg/boom.svg';
 import { UploadModal, DigiLockerKYCModal } from '@/components/ui';
+import { useAuth } from '@/contexts';
+import { useToast } from '@/contexts';
 
 interface Step {
   id: number;
@@ -20,10 +24,19 @@ interface Step {
   };
 }
 
-const ApplicationStatusScreen = (): JSX.Element => {
+type ApplicationScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'ApplicationScreen'
+>;
+
+const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element => {
+  const { user, updateUser } = useAuth();
+  const { showToast } = useToast();
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [isKYCModalVisible, setIsKYCModalVisible] = useState(false);
+  const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [isOnboarding, setIsOnboarding] = useState(false);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -111,6 +124,38 @@ const ApplicationStatusScreen = (): JSX.Element => {
     setIsKYCModalVisible(false);
   };
 
+  const handleKYCCompleted = useCallback(() => {
+    // Update steps: mark KYC step (step 4) as completed and Onboarded step (step 5) as active
+    setSteps(prevSteps => {
+      const updatedSteps = [...prevSteps];
+      
+      // Find and mark step 4 (Digital KYC) as completed
+      const kycStepIndex = updatedSteps.findIndex(step => step.id === 4);
+      if (kycStepIndex !== -1) {
+        updatedSteps[kycStepIndex] = {
+          ...updatedSteps[kycStepIndex],
+          status: 'completed',
+          timeAgo: 'Just now',
+          actionButton: undefined, // Remove action button for completed step
+        };
+      }
+      
+      // Find and mark step 5 (Onboarded) as active
+      const onboardedStepIndex = updatedSteps.findIndex(step => step.id === 5);
+      if (onboardedStepIndex !== -1) {
+        updatedSteps[onboardedStepIndex] = {
+          ...updatedSteps[onboardedStepIndex],
+          status: 'active',
+          isExpanded: true,
+        };
+        // Expand step 5
+        setExpandedSteps(prev => new Set([...prev, 5]));
+      }
+      
+      return updatedSteps;
+    });
+  }, []);
+
   const [steps, setSteps] = useState<Step[]>([
     {
       id: 1,
@@ -161,6 +206,53 @@ const ApplicationStatusScreen = (): JSX.Element => {
       description: 'Create your first content piece with our guidance.',
     },
   ]);
+
+  // Handle KYC completion from route params
+  useEffect(() => {
+    if (route.params?.kycCompleted) {
+      handleKYCCompleted();
+    }
+  }, [route.params?.kycCompleted, handleKYCCompleted]);
+
+  // Check if all steps are completed (step 5 "Onboarded" is active or completed)
+  const isAllStepsComplete = useMemo(() => {
+    const onboardedStep = steps.find(step => step.id === 5);
+    return onboardedStep?.status === 'active' || onboardedStep?.status === 'completed';
+  }, [steps]);
+
+  // Handle "Let's Capture" button press
+  const handleLetsCapture = async () => {
+    if (!isAllStepsComplete) {
+      showToast('Please complete all steps before proceeding', 'error');
+      return;
+    }
+
+    if (!isTermsAccepted) {
+      showToast('Please accept the Terms & Conditions and Privacy Policy', 'error');
+      return;
+    }
+
+    try {
+      setIsOnboarding(true);
+      
+      // Update user to mark as onboarded
+      const updatedUser = {
+        ...user,
+        onboarded: true,
+      };
+      
+      await updateUser(updatedUser);
+      
+      showToast('Welcome! You are now onboarded.', 'success');
+      
+      // Navigation will happen automatically via RootNavigator since user.onboarded is now true
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+      showToast('Failed to complete onboarding. Please try again.', 'error');
+    } finally {
+      setIsOnboarding(false);
+    }
+  };
 
   const toggleStepExpansion = (stepId: number) => {
     const newExpanded = new Set(expandedSteps);
@@ -263,7 +355,7 @@ const ApplicationStatusScreen = (): JSX.Element => {
         </TouchableOpacity> */}
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.timelineContainer}>
           {steps.map((step, index) => (
             <View key={step.id} style={styles.stepWrapper}>
@@ -275,29 +367,53 @@ const ApplicationStatusScreen = (): JSX.Element => {
       </ScrollView>
 
       {/* Footer with Buttons */}
-      <View style={styles.footer}>
-        <View style={styles.termsContainer}>
-          <TouchableOpacity style={styles.checkboxContainer}>
-            <View style={styles.checkbox}>
-              <Text style={styles.checkboxCheckmark}>✓</Text>
-            </View>
-          </TouchableOpacity>
-          <Text style={styles.termsText}>
-            I accept the <Text style={styles.termsLink}>Terms & Conditions</Text> and <Text style={styles.privacyLink}>Privacy Policy</Text>
-          </Text>
-        </View>
-        
-        <TouchableOpacity style={styles.submitButton}>
-          <LinearGradient
-            colors={['#000000', '#61240E']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.submitButtonGradient}
+      {isAllStepsComplete && (
+        <View style={styles.footer}>
+          <View style={styles.termsContainer}>
+            <TouchableOpacity 
+              style={styles.checkboxContainer}
+              onPress={() => setIsTermsAccepted(!isTermsAccepted)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
+                {isTermsAccepted && <Text style={styles.checkboxCheckmark}>✓</Text>}
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.termsText}>
+              I accept the <Text style={styles.termsLink}>Terms & Conditions</Text> and <Text style={styles.privacyLink}>Privacy Policy</Text>
+            </Text>
+          </View>
+          
+          <TouchableOpacity 
+            style={styles.submitButton}
+            onPress={handleLetsCapture}
+            disabled={!isTermsAccepted || isOnboarding}
+            activeOpacity={0.8}
           >
-            <Text style={styles.submitButtonText}>Let's Capture</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+            <LinearGradient
+              colors={
+                isTermsAccepted && !isOnboarding
+                  ? ['#000000', '#61240E']
+                  : ['#E5E7EB', '#D1D5DB']
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.submitButtonGradient}
+            >
+              {isOnboarding ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text style={[
+                  styles.submitButtonText,
+                  (!isTermsAccepted || isOnboarding) && styles.submitButtonTextDisabled
+                ]}>
+                  Let's Capture
+                </Text>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Upload Modal */}
       <UploadModal
@@ -305,6 +421,11 @@ const ApplicationStatusScreen = (): JSX.Element => {
         onClose={handleCloseUploadModal}
         onUpload={handleFileUpload}
         onCheckStatus={handleCloseUploadModal}
+        eventCode=""
+        eventName=""
+        eventDate=""
+        creatorCode=""
+        fileType="raw"
       />
 
       {/* KYC Modal */}

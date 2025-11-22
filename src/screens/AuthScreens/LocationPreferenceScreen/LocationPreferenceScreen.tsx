@@ -47,7 +47,6 @@ const LocationPreferenceScreen = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [query, setQuery] = useState('');
-  const [shouldRenderAnimations, setShouldRenderAnimations] = useState(false);
   const lottieRef = useRef<LottieView>(null);
   const miniLottieRef = useRef<LottieView>(null);
 
@@ -236,11 +235,6 @@ const LocationPreferenceScreen = (): JSX.Element => {
 
   useEffect(() => {
     if (isModalVisible) {
-      // Render animations after a short delay to allow modal to start animating smoothly
-      const renderTimeout = setTimeout(() => {
-        setShouldRenderAnimations(true);
-      }, 50);
-
       // Delay animation playback until after modal animation completes (200ms)
       // This prevents performance issues and ensures smooth modal opening
       const playTimeout = setTimeout(() => {
@@ -251,12 +245,10 @@ const LocationPreferenceScreen = (): JSX.Element => {
       }, 250); // Slightly longer than modal animation (200ms) to ensure it's fully visible
 
       return () => {
-        clearTimeout(renderTimeout);
         clearTimeout(playTimeout);
       };
     } else {
-      // Reset and hide animations when modal closes
-      setShouldRenderAnimations(false);
+      // Reset animations when modal closes
       lottieRef.current?.reset();
       miniLottieRef.current?.reset();
     }
@@ -392,38 +384,32 @@ const LocationPreferenceScreen = (): JSX.Element => {
         <View style={styles.bottomSheetContent}>
           <View style={styles.iconContainer}>
             <View style={styles.iconWrapper}>
-              {/* Main Lottie animation overlay - only render when ready */}
-              {shouldRenderAnimations && (
-                <View style={styles.lottieOverlay} pointerEvents="none">
-                  <LottieView
-                    ref={lottieRef}
-                    source={CelebrationAnimation}
-                    autoPlay={false}
-                    loop={false}
-                    style={styles.lottieAnimation}
-                    renderMode="HARDWARE"
-                  />
-                </View>
-              )}
+              {/* Main Lottie animation overlay */}
+              <View style={styles.lottieOverlay} pointerEvents="none">
+                <LottieView
+                  ref={lottieRef}
+                  source={CelebrationAnimation}
+                  autoPlay={false}
+                  loop={false}
+                  style={styles.lottieAnimation}
+                  renderMode="HARDWARE"
+                />
+              </View>
               {/* Boom SVG */}
-              {shouldRenderAnimations && (
-                <View style={styles.boomSvgContainer} pointerEvents="none">
-                  <BoomSvg />
-                </View>
-              )}
-              {/* Mini Lottie animation overlay - only render when ready */}
-              {shouldRenderAnimations && (
-                <View style={styles.miniLottieOverlay} pointerEvents="none">
-                  <LottieView
-                    ref={miniLottieRef}
-                    source={MiniCelebrationAnimation}
-                    autoPlay={false}
-                    loop={false}
-                    style={styles.miniLottieAnimation}
-                    renderMode="HARDWARE"
-                  />
-                </View>
-              )}
+              <View style={styles.boomSvgContainer} pointerEvents="none">
+                <BoomSvg />
+              </View>
+              {/* Mini Lottie animation overlay */}
+              <View style={styles.miniLottieOverlay} pointerEvents="none">
+                <LottieView
+                  ref={miniLottieRef}
+                  source={MiniCelebrationAnimation}
+                  autoPlay={false}
+                  loop={false}
+                  style={styles.miniLottieAnimation}
+                  renderMode="HARDWARE"
+                />
+              </View>
             </View>
           </View>
           <View style={styles.titleContainer}>

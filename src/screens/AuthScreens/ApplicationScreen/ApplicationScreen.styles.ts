@@ -268,6 +268,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  checkboxChecked: {
+    backgroundColor: '#983614',
+    borderColor: '#983614',
+  },
   checkboxCheckmark: {
     color: '#FFFFFF',
     fontSize: 12,
@@ -316,6 +320,12 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+    fontFamily: 'Saans TRIAL',
+  },
+  submitButtonTextDisabled: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#6B7280',
     fontFamily: 'Saans TRIAL',
   },
 

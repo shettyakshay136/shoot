@@ -111,9 +111,9 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
           setStatus(CallbackStatus.SUCCESS);
           console.log('[DigiLockerCallback] KYC verification complete!');
 
-          // Navigate to application screen after success
+          // Navigate to application screen after success with kycCompleted flag
           setTimeout(() => {
-            navigation.replace('ApplicationScreen');
+            navigation.replace('ApplicationScreen', { kycCompleted: true });
           }, 2000);
         } else {
           throw new Error('KYC verification completed but status not updated');
@@ -133,7 +133,7 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
               text: 'OK',
               onPress: () => {
                 // Navigate back to application screen after error
-                navigation.replace('ApplicationScreen');
+                navigation.replace('ApplicationScreen', { kycCompleted: false });
               },
             },
           ],
@@ -148,8 +148,8 @@ const DigiLockerCallbackScreen: FC<DigiLockerCallbackScreenProps> = ({
    */
   const handleContinue = useCallback(() => {
     console.log('[DigiLockerCallback] Manual continue pressed');
-    navigation.replace('ApplicationScreen');
-  }, [navigation]);
+    navigation.replace('ApplicationScreen', { kycCompleted: status === CallbackStatus.SUCCESS });
+  }, [navigation, status]);
 
   /**
    * Handle deep link URL

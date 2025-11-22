@@ -53,8 +53,17 @@ const RootNavigator = (): JSX.Element => {
           initialRouteName={shouldShowApp ? 'App' : 'Auth'}
           screenOptions={COMMON_SCREEN_OPTIONS}
         >
-          <Stack.Screen name="Auth" component={AuthNavigator} />
-          <Stack.Screen name="App" component={AppNavigator} />
+          {shouldShowApp ? (
+            <>
+              <Stack.Screen name="App" component={AppNavigator} />
+              <Stack.Screen name="Auth" component={AuthNavigator} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Auth" component={AuthNavigator} />
+              <Stack.Screen name="App" component={AppNavigator} />
+            </>
+          )}
         </Stack.Navigator>
       </NavigationContainer>
     </View>

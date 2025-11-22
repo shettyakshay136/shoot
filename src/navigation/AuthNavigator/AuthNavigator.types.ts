@@ -11,7 +11,9 @@ export type AuthStackParamList = {
   LocationPreferenceScreen: {
     phoneNumber?: string;
   };
-  ApplicationScreen: undefined;
+  ApplicationScreen: {
+    kycCompleted?: boolean;
+  };
   DigiLockerCallbackScreen: {
     code?: string;
     state?: string;
