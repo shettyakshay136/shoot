@@ -61,6 +61,14 @@
 				<string>rogcreator</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>DigiLockerCallback</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rog</string>
+			</array>
+		</dict>
 	</array>
 	<key>UIAppFonts</key>
 	<array>
