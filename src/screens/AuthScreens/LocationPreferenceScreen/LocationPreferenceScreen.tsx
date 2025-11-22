@@ -393,6 +393,7 @@ const LocationPreferenceScreen = (): JSX.Element => {
                   loop={false}
                   style={styles.lottieAnimation}
                   renderMode="HARDWARE"
+                  resizeMode='cover'
                 />
               </View>
               {/* Boom SVG */}

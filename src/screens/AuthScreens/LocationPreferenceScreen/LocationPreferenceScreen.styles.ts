@@ -164,6 +164,7 @@ export const styles = StyleSheet.create({
   bottomSheetContent: {
     paddingVertical: 20,
     gap: 24,
+    overflow: 'visible',
   },
   successTitle: {
     fontFamily: 'Saans TRIAL',
@@ -258,6 +259,7 @@ export const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
+    overflow: 'visible',
   },
   iconWrapper: {
     position: 'relative',
@@ -265,19 +267,21 @@ export const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'visible',
   },
   lottieOverlay: {
     position: 'absolute',
-    // top: -12,
-    // left: -12,
-    // right: -12,
-    // bottom: -12,
+    top: -50,
+    left: -93,
+    right: -93,
+    bottom: -50,
     width: 250,
-    height: 150,
+    overflow: 'visible',
   },
   lottieAnimation: {
     width: '100%',
-    height: '100%',
+    height: undefined,
+    flex: 1,
   },
   boomSvgContainer: {
     position: 'absolute',
@@ -288,16 +292,18 @@ export const styles = StyleSheet.create({
   },
   miniLottieOverlay: {
     position: 'absolute',
-    // top: -8,
-    // left: -8,
-    // right: -8,
-    // bottom: -8,
+    top: -50,
+    left: -93,
+    right: -93,
+    bottom: -50,
     width: 250,
-    height: 150,
+    height: undefined,
+    overflow: 'visible',
   },
   miniLottieAnimation: {
     width: '100%',
-    height: '100%',
+    height: undefined,
+    flex: 1,
   },
   titleContainer: {
     gap: 8,

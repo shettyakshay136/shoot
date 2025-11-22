@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     margin: 0,
     padding: 0,
+    overflow: 'visible',
   },
   container: {
     backgroundColor: '#FFFFFF',
@@ -70,6 +71,7 @@ const styles = StyleSheet.create({
     maxHeight: '90%',
     minHeight: '40%',
     width: '100%',
+    overflow: 'visible',
   },
   header: {
     flexDirection: 'row',
@@ -102,6 +104,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 20,
     paddingVertical: 20,
+    overflow: 'visible',
   },
 });
 
