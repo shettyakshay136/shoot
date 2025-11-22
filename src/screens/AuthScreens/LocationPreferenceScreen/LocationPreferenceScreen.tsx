@@ -1,8 +1,9 @@
-import React, { useMemo, useState, useEffect, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
+import React, { useMemo, useState, useEffect, useRef, type JSX } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator, Platform, PermissionsAndroid, InteractionManager } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
+import LottieView from 'lottie-react-native';
 import { styles } from './LocationPreferenceScreen.styles';
 import type { RootStackParamList } from '@/navigation/types';
 import BackButton from '@/assets/svg/back.svg';
@@ -11,12 +12,11 @@ import BoomSvg from '@/assets/svg/boom.svg';
 import Infoicon from '@/assets/svg/info.svg';
 import Dropdownicon from '@/assets/svg/dropdown.svg';
 import ArrowUp from '@/assets/svg/arrow-up-right.svg';
-import { updateCreatorProfile } from '@/services/auth';
 import { useToast } from '@/contexts';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AUTH_TOKEN_KEY } from '@/contexts/AuthContext';
 import { useCitySearch } from '@/utils/hooks/useCitySearch';
 import { reverseGeocode } from '@/utils/services/geocoding';
+import CelebrationAnimation from '@/assets/animation/celebration.json'
+import MiniCelebrationAnimation from '@/assets/animation/mini_celebration.json'
 
 // Conditionally import Geolocation to handle cases where native module isn't linked
 let Geolocation: any = null;
@@ -47,6 +47,8 @@ const LocationPreferenceScreen = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [query, setQuery] = useState('');
+  const lottieRef = useRef<LottieView>(null);
+  const miniLottieRef = useRef<LottieView>(null);
 
   // Use city search hook for dynamic city search
   const { results, loading: searchLoading } = useCitySearch(query, isDropdownOpen && query.length >= 2);
@@ -231,6 +233,27 @@ const LocationPreferenceScreen = (): JSX.Element => {
     setIsModalVisible(false);
   };
 
+  useEffect(() => {
+    if (isModalVisible) {
+      // Delay animation playback until after modal animation completes (300ms)
+      // This prevents performance issues and ensures smooth modal opening
+      const timeoutId = setTimeout(() => {
+        InteractionManager.runAfterInteractions(() => {
+          lottieRef.current?.play();
+          miniLottieRef.current?.play();
+        });
+      }, 350); // Slightly longer than modal animation (300ms) to ensure it's fully visible
+
+      return () => {
+        clearTimeout(timeoutId);
+      };
+    } else {
+      // Reset animations when modal closes
+      lottieRef.current?.reset();
+      miniLottieRef.current?.reset();
+    }
+  }, [isModalVisible]);
+
   const handleCheckStatus = () => {
     setIsModalVisible(false);
     navigation.navigate('Auth', { screen: 'ApplicationScreen' });
@@ -360,7 +383,34 @@ const LocationPreferenceScreen = (): JSX.Element => {
       <SimpleModal isVisible={isModalVisible} onClose={handleCloseModal}>
         <View style={styles.bottomSheetContent}>
           <View style={styles.iconContainer}>
-            <BoomSvg />
+            <View style={styles.iconWrapper}>
+              {/* Main Lottie animation overlay */}
+              <View style={styles.lottieOverlay} pointerEvents="none">
+                <LottieView
+                  ref={lottieRef}
+                  source={CelebrationAnimation}
+                  autoPlay={false}
+                  loop={false}
+                  style={styles.lottieAnimation}
+                  renderMode="HARDWARE"
+                />
+              </View>
+              {/* Boom SVG */}
+              <View style={styles.boomSvgContainer} pointerEvents="none">
+                <BoomSvg />
+              </View>
+              {/* Mini Lottie animation overlay */}
+              <View style={styles.miniLottieOverlay} pointerEvents="none">
+                <LottieView
+                  ref={miniLottieRef}
+                  source={MiniCelebrationAnimation}
+                  autoPlay={false}
+                  loop={false}
+                  style={styles.miniLottieAnimation}
+                  renderMode="HARDWARE"
+                />
+              </View>
+            </View>
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.successTitle}>You're All Set!</Text>

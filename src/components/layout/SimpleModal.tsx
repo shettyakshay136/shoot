@@ -32,6 +32,7 @@ const SimpleModal: React.FC<SimpleModalProps> = ({
       backdropTransitionOutTiming={300}
       avoidKeyboard={true}
       useNativeDriver={true}
+      useNativeDriverForBackdrop={true}
       hideModalContentWhileAnimating={false}
       propagateSwipe={true}
     >

@@ -259,6 +259,46 @@ export const styles = StyleSheet.create({
   iconContainer: {
     alignItems: 'center',
   },
+  iconWrapper: {
+    position: 'relative',
+    width: 64,
+    height: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lottieOverlay: {
+    position: 'absolute',
+    // top: -12,
+    // left: -12,
+    // right: -12,
+    // bottom: -12,
+    width: 250,
+    height: 150,
+  },
+  lottieAnimation: {
+    width: '100%',
+    height: '100%',
+  },
+  boomSvgContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 64,
+    height: 64,
+  },
+  miniLottieOverlay: {
+    position: 'absolute',
+    // top: -8,
+    // left: -8,
+    // right: -8,
+    // bottom: -8,
+    width: 250,
+    height: 150,
+  },
+  miniLottieAnimation: {
+    width: '100%',
+    height: '100%',
+  },
   titleContainer: {
     gap: 8,
   },
