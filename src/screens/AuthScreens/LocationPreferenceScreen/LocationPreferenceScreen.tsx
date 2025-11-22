@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
 import LottieView from 'lottie-react-native';
 import { styles } from './LocationPreferenceScreen.styles';
-import type { RootStackParamList } from '@/navigation/types';
+import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import BackButton from '@/assets/svg/back.svg';
 import { SimpleModal } from '@/components/layout';
 import BoomSvg from '@/assets/svg/boom.svg';
@@ -27,8 +27,8 @@ try {
 }
 
 type LocationPreferenceScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'App'
+  AuthStackParamList,
+  'LocationPreferenceScreen'
 >;
 
 interface LocationCoordinates {
@@ -255,8 +255,8 @@ const LocationPreferenceScreen = (): JSX.Element => {
   }, [isModalVisible]);
 
   const handleCheckStatus = () => {
+    navigation.replace('ApplicationScreen', {});
     setIsModalVisible(false);
-    navigation.navigate('Auth', { screen: 'ApplicationScreen' });
   };
 
   const handleBack = () => {
