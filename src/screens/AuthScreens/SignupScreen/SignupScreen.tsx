@@ -155,12 +155,17 @@ const SignupScreen = (): JSX.Element => {
               <TextInput
                 style={styles.phoneTextInput}
                 value={phoneNumber}
-                onChangeText={setPhoneNumber}
+                onChangeText={(text) => {
+                  // Remove any non-digit characters and limit to 10 digits
+                  const digitsOnly = text.replace(/\D/g, '').slice(0, 10);
+                  setPhoneNumber(digitsOnly);
+                }}
                 onFocus={() => setFocusedField('phone')}
                 onBlur={() => setFocusedField(null)}
                 placeholder="Enter your phone number"
                 placeholderTextColor="#9CA3AF"
                 keyboardType="phone-pad"
+                maxLength={10}
               />
             </View>
           </View>

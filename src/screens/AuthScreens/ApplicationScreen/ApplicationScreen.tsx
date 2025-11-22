@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback, useMemo, type JSX } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo, useRef, type JSX } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator, AppState, AppStateStatus } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import type { AuthStackParamList } from '@/navigation/AuthNavigator/AuthNavigator.types';
 import LinearGradient from 'react-native-linear-gradient';
 import { styles } from './ApplicationScreen.styles';
@@ -29,7 +30,7 @@ type ApplicationScreenProps = NativeStackScreenProps<
   'ApplicationScreen'
 >;
 
-const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element => {
+const ApplicationStatusScreen = ({ route, navigation }: ApplicationScreenProps): JSX.Element => {
   const { user, updateUser } = useAuth();
   const { showToast } = useToast();
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([2])); // Step 2 is expanded by default
@@ -37,6 +38,8 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
   const [isKYCModalVisible, setIsKYCModalVisible] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isOnboarding, setIsOnboarding] = useState(false);
+  const hasProcessedKYC = useRef(false);
+  const appState = useRef(AppState.currentState);
 
   const handleUploadAssignment = () => {
     setIsUploadModalVisible(true);
@@ -125,12 +128,39 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
   };
 
   const handleKYCCompleted = useCallback(() => {
-    // Update steps: mark KYC step (step 4) as completed and Onboarded step (step 5) as active
+    console.log('[ApplicationScreen] ========== HANDLING KYC COMPLETED ==========');
+    // Update steps: mark steps 2, 3, 4, and 5 as completed
     setSteps(prevSteps => {
+      console.log('[ApplicationScreen] Current steps before update:', prevSteps.map(s => ({ id: s.id, status: s.status })));
       const updatedSteps = [...prevSteps];
+      
+      // Find and mark step 2 (Workshop + Assignment) as completed
+      const step2Index = updatedSteps.findIndex(step => step.id === 2);
+      if (step2Index !== -1) {
+        updatedSteps[step2Index] = {
+          ...updatedSteps[step2Index],
+          status: 'completed',
+          timeAgo: undefined,
+          actionButton: undefined,
+        };
+        console.log('[ApplicationScreen] ✅ Step 2 marked as completed');
+      }
+      
+      // Find and mark step 3 (Demo Shoot) as completed
+      const step3Index = updatedSteps.findIndex(step => step.id === 3);
+      if (step3Index !== -1) {
+        updatedSteps[step3Index] = {
+          ...updatedSteps[step3Index],
+          status: 'completed',
+          timeAgo: undefined,
+          actionButton: undefined,
+        };
+        console.log('[ApplicationScreen] ✅ Step 3 marked as completed');
+      }
       
       // Find and mark step 4 (Digital KYC) as completed
       const kycStepIndex = updatedSteps.findIndex(step => step.id === 4);
+      console.log('[ApplicationScreen] Step 4 (KYC) index:', kycStepIndex);
       if (kycStepIndex !== -1) {
         updatedSteps[kycStepIndex] = {
           ...updatedSteps[kycStepIndex],
@@ -138,20 +168,25 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
           timeAgo: 'Just now',
           actionButton: undefined, // Remove action button for completed step
         };
+        console.log('[ApplicationScreen] ✅ Step 4 marked as completed');
       }
       
-      // Find and mark step 5 (Onboarded) as active
+      // Find and mark step 5 (Onboarded) as completed
       const onboardedStepIndex = updatedSteps.findIndex(step => step.id === 5);
+      console.log('[ApplicationScreen] Step 5 (Onboarded) index:', onboardedStepIndex);
       if (onboardedStepIndex !== -1) {
         updatedSteps[onboardedStepIndex] = {
           ...updatedSteps[onboardedStepIndex],
-          status: 'active',
+          status: 'completed',
+          timeAgo: 'Just now',
           isExpanded: true,
         };
         // Expand step 5
         setExpandedSteps(prev => new Set([...prev, 5]));
+        console.log('[ApplicationScreen] ✅ Step 5 marked as completed');
       }
       
+      console.log('[ApplicationScreen] Updated steps:', updatedSteps.map(s => ({ id: s.id, status: s.status })));
       return updatedSteps;
     });
   }, []);
@@ -207,12 +242,111 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
     },
   ]);
 
-  // Handle KYC completion from route params
-  useEffect(() => {
-    if (route.params?.kycCompleted) {
-      handleKYCCompleted();
+  // Check KYC status when user returns from web page
+  const checkKYCStatusOnReturn = useCallback(async () => {
+    try {
+      // Check if we've already processed KYC
+      if (hasProcessedKYC.current) {
+        console.log('[ApplicationScreen] KYC already processed, skipping check');
+        return;
+      }
+
+      // Check current step status - if step 4 is already completed, skip
+      const kycStep = steps.find(step => step.id === 4);
+      if (kycStep?.status === 'completed') {
+        console.log('[ApplicationScreen] Step 4 already completed, skipping check');
+        return;
+      }
+
+      console.log('[ApplicationScreen] Checking KYC status');
+      console.log('[ApplicationScreen] User status:', user?.status);
+      
+      // Check if user status is ONBOARDED (means KYC is completed)
+      if (user?.status === 'ONBOARDED') {
+        console.log('[ApplicationScreen] ✅ User status is ONBOARDED, marking KYC as completed');
+        hasProcessedKYC.current = true;
+        handleKYCCompleted();
+        return;
+      }
+    } catch (error) {
+      console.error('[ApplicationScreen] Error checking KYC status:', error);
     }
-  }, [route.params?.kycCompleted, handleKYCCompleted]);
+  }, [user, steps, handleKYCCompleted]);
+
+  // Handle KYC completion from route params
+  // Use useEffect to listen for route param changes (works even when screen is already mounted)
+  useEffect(() => {
+    console.log('[ApplicationScreen] ========== ROUTE PARAMS CHANGED ==========');
+    console.log('[ApplicationScreen] Route params:', route.params);
+    console.log('[ApplicationScreen] kycCompleted value:', route.params?.kycCompleted);
+    console.log('[ApplicationScreen] hasProcessedKYC:', hasProcessedKYC.current);
+    
+    if (route.params?.kycCompleted === true && !hasProcessedKYC.current) {
+      console.log('[ApplicationScreen] ✅ KYC completed detected, updating steps');
+      hasProcessedKYC.current = true;
+      handleKYCCompleted();
+      // Clear the param to prevent re-triggering
+      navigation.setParams({ kycCompleted: undefined });
+      console.log('[ApplicationScreen] Steps updated, navigation params cleared');
+    } else {
+      console.log('[ApplicationScreen] Skipping KYC update:', {
+        kycCompleted: route.params?.kycCompleted,
+        hasProcessed: hasProcessedKYC.current,
+      });
+    }
+  }, [route.params, handleKYCCompleted, navigation]);
+
+  // Also use useFocusEffect as a backup to catch cases where params might be set before component mounts
+  useFocusEffect(
+    useCallback(() => {
+      console.log('[ApplicationScreen] ========== FOCUS EFFECT TRIGGERED ==========');
+      console.log('[ApplicationScreen] Route params on focus:', route.params);
+      console.log('[ApplicationScreen] kycCompleted value on focus:', route.params?.kycCompleted);
+      
+      if (route.params?.kycCompleted === true && !hasProcessedKYC.current) {
+        console.log('[ApplicationScreen] ✅ KYC completed detected on focus, updating steps');
+        hasProcessedKYC.current = true;
+        handleKYCCompleted();
+        navigation.setParams({ kycCompleted: undefined });
+      } else {
+        // Check if user returned from DigiLocker web page
+        // Use setTimeout to avoid dependency issues
+        setTimeout(() => {
+          checkKYCStatusOnReturn();
+        }, 300);
+      }
+    }, [route.params, handleKYCCompleted, navigation, checkKYCStatusOnReturn])
+  );
+
+  // Listen for app state changes to detect when user returns from web page
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextAppState: AppStateStatus) => {
+      console.log('[ApplicationScreen] AppState changed:', {
+        previous: appState.current,
+        next: nextAppState,
+        hasProcessedKYC: hasProcessedKYC.current,
+      });
+
+      // When app comes to foreground and we haven't processed KYC yet
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active' &&
+        !hasProcessedKYC.current
+      ) {
+        console.log('[ApplicationScreen] App returned to foreground, checking KYC status');
+        // Small delay to ensure everything is ready
+        setTimeout(() => {
+          checkKYCStatusOnReturn();
+        }, 500);
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [checkKYCStatusOnReturn]);
 
   // Check if all steps are completed (step 5 "Onboarded" is active or completed)
   const isAllStepsComplete = useMemo(() => {
@@ -366,8 +500,6 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
         </View>
       </ScrollView>
 
-      {/* Footer with Buttons */}
-      {isAllStepsComplete && (
         <View style={styles.footer}>
           <View style={styles.termsContainer}>
             <TouchableOpacity 
@@ -413,7 +545,6 @@ const ApplicationStatusScreen = ({ route }: ApplicationScreenProps): JSX.Element
             </LinearGradient>
           </TouchableOpacity>
         </View>
-      )}
 
       {/* Upload Modal */}
       <UploadModal
