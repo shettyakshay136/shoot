@@ -24,6 +24,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { HomeStackParamList } from '@/navigation/stacks/HomeStack/HomeStack.types';
 import CardIcon from '@/assets/svg/card.svg';
 import StarIcon from '@/assets/svg/star.svg'
+import { UpcomingShootModal, ROGDressModal } from '@/components/ui';
+import type { Shoot } from '@/components/ui/UpcomingShootModal';
 
 type HomeNav = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
 
@@ -31,9 +33,47 @@ const HomeScreen = (): JSX.Element => {
   const navigation = useNavigation<HomeNav>();
   const [isOnline, setIsOnline] = useState(false);
   const [activeTab, setActiveTab] = useState('Available');
+  const [isUpcomingModalVisible, setIsUpcomingModalVisible] = useState(false);
+  const [selectedShoot, setSelectedShoot] = useState<Shoot | null>(null);
+  const [isROGDressModalVisible, setIsROGDressModalVisible] = useState(false);
+  const [selectedShootDetails, setSelectedShootDetails] = useState<any>(null);
 
   const toggleOnlineStatus = () => {
     setIsOnline(!isOnline);
+  };
+
+  const handleStartButtonPress = () => {
+    console.log(
+      'Start button pressed - closing upcoming modal and opening ROG dress modal',
+    );
+    setIsUpcomingModalVisible(false);
+    // Add a small delay to ensure smooth modal transition
+    setTimeout(() => {
+      setIsROGDressModalVisible(true);
+    }, 400);
+  };
+
+  const handleROGDressConfirm = () => {
+    // Handle "Yes" confirmation - close modal and navigate to ShootDetailsScreen
+    setIsROGDressModalVisible(false);
+    if (selectedShootDetails) {
+      // Wait for modal to close before navigating
+      setTimeout(() => {
+        // Navigate to ShootStack tab first, then to ShootDetails
+        navigation.getParent()?.navigate('ShootStack', {
+          screen: 'ShootDetails',
+          params: {
+            shootData: selectedShootDetails,
+          },
+        });
+      }, 300); // Small delay to allow modal to close smoothly
+    }
+  };
+
+  const handleROGDressDecline = () => {
+    // Handle "Not today" decline - close modal
+    setIsROGDressModalVisible(false);
+    console.log('User declined wearing ROG apparel');
   };
 
 
@@ -60,7 +100,56 @@ const HomeScreen = (): JSX.Element => {
         return (
           <View style={styles.tabContent}>
             {UPCOMING_SHOOTS.map((shoot) => (
-              <View key={shoot.id} style={styles.upcomingContent}>
+              <TouchableOpacity
+                key={shoot.id}
+                style={styles.upcomingContent}
+                onPress={() => {
+                  setSelectedShoot({
+                    title: shoot.title,
+                    client: 'Keshav Dubey',
+                    location: shoot.location,
+                    date: shoot.date,
+                    time: '7:00 PM',
+                    niche: 'Niche',
+                    distance: '1.5 km',
+                    eta: '32 mins',
+                  });
+                  // Store full details for navigation to ShootDetailsScreen
+                  setSelectedShootDetails({
+                    title: shoot.title,
+                    location: shoot.location,
+                    date: shoot.date,
+                    time: '7:00 PM',
+                    category: shoot.type,
+                    earnings: shoot.pay,
+                    distance: '1.5 km',
+                    eta: '32 mins',
+                    shootHours: shoot.duration,
+                    reelsRequired: '2 reels',
+                    instantDelivery: 'Within 30 minutes',
+                    addons: ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
+                    description: `${
+                      shoot.title
+                    } is a ${shoot.type.toLowerCase()} shoot located in ${
+                      shoot.location
+                    }. ${shoot.duration} of professional content creation.`,
+                    songs: [
+                      {
+                        title: 'Boujee',
+                        artist: 'Wowashwow (via Soundstripe)',
+                        thumbnail: '#FF6E9C',
+                      },
+                      {
+                        title: "L'amour Au Café",
+                        artist: 'Rêves Français (via Soundstripe)',
+                        thumbnail: '#FFD700',
+                      },
+                    ],
+                    isFromUpcoming: true,
+                  });
+                  setIsUpcomingModalVisible(true);
+                }}
+              >
                 <Text style={styles.contentText}>{shoot.title}</Text>
                 <Text style={styles.contentSubtext}>{shoot.location}</Text>
                 <View style={styles.cardFooter}>
@@ -69,7 +158,7 @@ const HomeScreen = (): JSX.Element => {
                     <Text>{shoot.daysLeft} days</Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         );
@@ -113,6 +202,7 @@ const HomeScreen = (): JSX.Element => {
   };
 
   return (
+    <>
     <ScrollView style={styles.scrollContainer}>
     <View style={styles.container}>
       <LinearGradient
@@ -185,7 +275,15 @@ const HomeScreen = (): JSX.Element => {
        <View style={styles.sectionContainer}>
          <View style={styles.sectionHeader}>
            <Text style={styles.sectionTitle}>Shoot</Text>
-           <Text style={styles.sectionall}>See all</Text>
+           <TouchableOpacity onPress={() => {
+             // Navigate to ShootStack tab - same pattern as navigating to ShootDetails
+             // Navigate to ShootStack tab, which will show the default Shoot screen
+             navigation.getParent()?.navigate('ShootStack', {
+               screen: 'Shoot',
+             });
+           }}>
+             <Text style={styles.sectionall}>See all</Text>
+           </TouchableOpacity>
          </View>
          <TabSwitcher 
            tabs={TABS} 
@@ -234,6 +332,20 @@ const HomeScreen = (): JSX.Element => {
       </View>
     </View>
     </ScrollView>
+    <UpcomingShootModal
+      isVisible={isUpcomingModalVisible}
+      onClose={() => setIsUpcomingModalVisible(false)}
+      shoot={selectedShoot}
+      onStartButtonPress={handleStartButtonPress}
+    />
+
+    <ROGDressModal
+      isVisible={isROGDressModalVisible}
+      onClose={() => setIsROGDressModalVisible(false)}
+      onConfirm={handleROGDressConfirm}
+      onDecline={handleROGDressDecline}
+    />
+    </>
   );
 };
 

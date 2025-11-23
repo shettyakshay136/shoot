@@ -20,6 +20,9 @@ const DeliveryDeadlineScreen = (): JSX.Element => {
   const [isCompleteShootModalVisible, setIsCompleteShootModalVisible] = useState(false);
   const [isRateCustomerModalVisible, setIsRateCustomerModalVisible] = useState(false);
   
+  // Track if we should open RateCustomerModal after CompleteShootModal closes
+  const shouldOpenRateModal = useRef(false);
+  
   // Animations
   const countdownOpacity = useRef(new Animated.Value(1)).current;
   const countdownTranslateY = useRef(new Animated.Value(0)).current;
@@ -138,15 +141,31 @@ const DeliveryDeadlineScreen = (): JSX.Element => {
     // Handle complete shoot action
     console.log('Shoot marked as complete');
     // TODO: Implement complete shoot logic
-    // Close CompleteShootModal and open RateCustomerModal
+    // Set flag to open RateCustomerModal when modal closes
+    shouldOpenRateModal.current = true;
+    // Close CompleteShootModal - onModalHide will be called when animation completes
     setIsCompleteShootModalVisible(false);
-    setIsRateCustomerModalVisible(true);
+  };
+
+  const handleCompleteShootModalHide = () => {
+    // This is called when CompleteShootModal animation is fully complete
+    // Only open RateCustomerModal if the user clicked "Mark as complete"
+    if (shouldOpenRateModal.current) {
+      console.log('CompleteShootModal fully closed, opening RateCustomerModal');
+      shouldOpenRateModal.current = false; // Reset flag
+      setIsRateCustomerModalVisible(true);
+    }
   };
 
   const handleRateCustomerHome = () => {
     // Handle home navigation from rate customer modal
     setIsRateCustomerModalVisible(false);
-    navigation.goBack();
+    // Navigate to HomeStack tab using the parent tab navigator
+    const parentNavigator = navigation.getParent();
+    if (parentNavigator) {
+      // Navigate to HomeStack tab
+      (parentNavigator as any).navigate('HomeStack');
+    }
   };
 
   return (
@@ -314,8 +333,12 @@ const DeliveryDeadlineScreen = (): JSX.Element => {
       {/* Complete Shoot Modal */}
       <CompleteShootModal
         isVisible={isCompleteShootModalVisible}
-        onClose={() => setIsCompleteShootModalVisible(false)}
+        onClose={() => {
+          shouldOpenRateModal.current = false; // Reset flag if user cancels
+          setIsCompleteShootModalVisible(false);
+        }}
         onComplete={handleCompleteShoot}
+        onModalHide={handleCompleteShootModalHide}
       />
 
       {/* Rate Customer Modal */}

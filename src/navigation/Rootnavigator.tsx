@@ -260,7 +260,7 @@ const RootNavigator = (): JSX.Element => {
         }}
       >
         <Stack.Navigator
-          initialRouteName={shouldShowApp ? 'App' : 'Auth'}
+          initialRouteName={!shouldShowApp ? 'App' : 'Auth'}
           screenOptions={COMMON_SCREEN_OPTIONS}
         >
           {shouldShowApp ? (

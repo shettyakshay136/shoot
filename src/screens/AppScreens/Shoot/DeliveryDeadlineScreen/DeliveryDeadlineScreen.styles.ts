@@ -167,7 +167,7 @@ export const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 18,
-    paddingTop: 16,
+    paddingVertical: 16,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E9EAEB',

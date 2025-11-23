@@ -212,7 +212,8 @@ export const styles = StyleSheet.create({
     marginBottom: 24,
   },
   dateRangeContainer: {
-    gap:6
+    gap: 6,
+    position: 'relative',
   },
   dateRangeLabel: {
     fontFamily: 'Saans TRIAL',
@@ -235,9 +236,16 @@ export const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    justifyContent: 'center',
+    minHeight: 40,
+  },
+  dateInputText: {
     fontSize: 16,
     fontFamily: 'Saans TRIAL',
     color: '#000',
+  },
+  dateInputPlaceholder: {
+    color: '#717680',
   },
   dateConnector: {
     width: 30,

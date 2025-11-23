@@ -13,4 +13,7 @@ export { RateCustomerModal } from './RateCustomerModal';
 export { CompleteShootModal } from './CompleteShootModal';
 export { default as UploadModal } from './UploadModal';
 export { DigiLockerKYCModal } from './DigiLockerKYCModal';
+export { CalendarModal } from './CalendarModal';
+export type { CalendarModalProps } from './CalendarModal';
+export { default as DroppedShootPenaltyModal } from './DroppedShootPenaltyModal';
 

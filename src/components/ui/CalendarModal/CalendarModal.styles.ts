@@ -1,0 +1,106 @@
+import { StyleSheet } from 'react-native';
+import { NEUTRAL_COLORS } from '@/theme/colors';
+
+export const styles = StyleSheet.create({
+  dropdownContainer: {
+    // position: 'absolute',
+    // bottom: '100%',
+    // left: 0,
+    // right: 0,
+    marginBottom: 8,
+    zIndex: 1000,
+    elevation: 5,
+  },
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 20,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+    marginBottom: 20,
+  },
+  calendarContainer: {
+    marginBottom: 24,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    width: '100%',
+  },
+  clearButton: {
+    flex: 1,
+    borderRadius: 100,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: NEUTRAL_COLORS[100],
+    borderWidth: 1,
+    borderColor: NEUTRAL_COLORS[200],
+  },
+  clearButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Saans TRIAL',
+    color: NEUTRAL_COLORS[700],
+  },
+  applyButtonTouchable: {
+    flex: 1,
+    borderRadius: 100,
+  },
+  applyButton: {
+    borderRadius: 100,
+    height: 56,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  applyButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Saans TRIAL',
+    color: '#FFFFFF',
+  },
+  dateRangeInfo: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: NEUTRAL_COLORS[50],
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+  dateInfoText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: NEUTRAL_COLORS[600],
+    fontFamily: 'Saans TRIAL',
+  },
+  dateInfoValue: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111827',
+    fontFamily: 'Saans TRIAL',
+  },
+});
+

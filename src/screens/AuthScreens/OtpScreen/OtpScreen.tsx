@@ -98,6 +98,7 @@ const OtpScreen = (): JSX.Element => {
           showToast('Login successful', 'success');
         }
       } else {
+        console.log('signup flow')
         // Signup flow
         const response = await creatorSignupComplete({
           contactNumber: phoneNumber,

@@ -10,19 +10,21 @@ const CompleteShootModal: React.FC<CompleteShootModalProps> = ({
   isVisible,
   onClose,
   onComplete,
+  onModalHide,
   title = 'Complete shoot?',
   completeButtonText = 'Mark as complete',
   cancelButtonText = 'Cancel',
 }) => {
   const handleComplete = () => {
     onComplete();
-    onClose();
+    // Don't call onClose here - let the parent handle modal state transitions
   };
 
   return (
     <BaseModal
       isVisible={isVisible}
       onClose={onClose}
+      onModalHide={onModalHide}
       showCloseButton={false}
       showHeader={false}
       modalStyle={styles.modal}

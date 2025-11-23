@@ -28,9 +28,94 @@ const WalletScreen = (): JSX.Element => {
   const [isOnline, setIsOnline] = useState(false);
   const [activeFilter, setActiveFilter] = useState('Daily');
   const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const toggleOnlineStatus = () => {
     setIsOnline(!isOnline);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    setCurrentDate(new Date()); // Reset to current date when filter changes
+  };
+
+  const moveDateBack = () => {
+    const newDate = new Date(currentDate);
+    switch (activeFilter) {
+      case 'Daily':
+        newDate.setDate(newDate.getDate() - 1);
+        break;
+      case 'Weekly':
+        newDate.setDate(newDate.getDate() - 7);
+        break;
+      case 'Monthly':
+        newDate.setMonth(newDate.getMonth() - 1);
+        break;
+    }
+    setCurrentDate(newDate);
+  };
+
+  const moveDateForward = () => {
+    const newDate = new Date(currentDate);
+    switch (activeFilter) {
+      case 'Daily':
+        newDate.setDate(newDate.getDate() + 1);
+        break;
+      case 'Weekly':
+        newDate.setDate(newDate.getDate() + 7);
+        break;
+      case 'Monthly':
+        newDate.setMonth(newDate.getMonth() + 1);
+        break;
+    }
+    setCurrentDate(newDate);
+  };
+
+  const getFormattedDate = () => {
+    const now = currentDate;
+    
+    switch (activeFilter) {
+      case 'Daily':
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        return `${day}.${month}.${year}`;
+      
+      case 'Weekly':
+        const startOfWeek = new Date(now);
+        const dayOfWeek = startOfWeek.getDay();
+        const diff = startOfWeek.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust to Monday
+        startOfWeek.setDate(diff);
+        
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        
+        const formatDate = (date: Date) => {
+          const d = String(date.getDate()).padStart(2, '0');
+          const m = String(date.getMonth() + 1).padStart(2, '0');
+          const y = date.getFullYear();
+          return `${d}.${m}.${y}`;
+        };
+        
+        return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+      
+      case 'Monthly':
+        const currentMonth = now.toLocaleString('default', { month: 'short' });
+        const currentYear = now.getFullYear();
+        
+        const previousMonthDate = new Date(now);
+        previousMonthDate.setMonth(now.getMonth() - 1);
+        const previousMonth = previousMonthDate.toLocaleString('default', { month: 'short' });
+        const previousYear = previousMonthDate.getFullYear();
+        
+        return `${previousMonth} ${previousYear} - ${currentMonth} ${currentYear}`;
+      
+      default:
+        const defaultDay = String(now.getDate()).padStart(2, '0');
+        const defaultMonth = String(now.getMonth() + 1).padStart(2, '0');
+        const defaultYear = now.getFullYear();
+        return `${defaultDay}.${defaultMonth}.${defaultYear}`;
+    }
   };
 
   const handleItemPress = (item: typeof EARNINGS_DATA[0] | typeof PAYOUTS_DATA[0]) => {
@@ -63,7 +148,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Daily' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Daily')}
+                onPress={() => handleFilterChange('Daily')}
               >
                 <Text style={[
                   styles.filterText,
@@ -77,7 +162,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Weekly' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Weekly')}
+                onPress={() => handleFilterChange('Weekly')}
               >
                 <Text style={[
                   styles.filterText,
@@ -91,7 +176,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Monthly' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Monthly')}
+                onPress={() => handleFilterChange('Monthly')}
               >
                 <Text style={[
                   styles.filterText,
@@ -102,13 +187,13 @@ const WalletScreen = (): JSX.Element => {
               </TouchableOpacity>
             </View>
             <View style={styles.datePickerContainer}>
-              <TouchableOpacity style={styles.datePickerButton}>
+              <TouchableOpacity style={styles.datePickerButton} onPress={moveDateBack}>
                 <BackButton/>
               </TouchableOpacity>
               <View>
-                <Text style={styles.datePickerText}>25.08.2025</Text>
+                <Text style={styles.datePickerText}>{getFormattedDate()}</Text>
               </View>
-              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]}>
+              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]} onPress={moveDateForward}>
                 <BackButton/>
               </TouchableOpacity>
             </View>
@@ -176,7 +261,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Daily' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Daily')}
+                onPress={() => handleFilterChange('Daily')}
               >
                 <Text style={[
                   styles.filterText,
@@ -190,7 +275,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Weekly' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Weekly')}
+                onPress={() => handleFilterChange('Weekly')}
               >
                 <Text style={[
                   styles.filterText,
@@ -204,7 +289,7 @@ const WalletScreen = (): JSX.Element => {
                   styles.filterButton,
                   activeFilter === 'Monthly' && styles.filterButtonActive
                 ]}
-                onPress={() => setActiveFilter('Monthly')}
+                onPress={() => handleFilterChange('Monthly')}
               >
                 <Text style={[
                   styles.filterText,
@@ -215,13 +300,13 @@ const WalletScreen = (): JSX.Element => {
               </TouchableOpacity>
             </View>
             <View style={styles.datePickerContainer}>
-              <TouchableOpacity style={styles.datePickerButton}>
+              <TouchableOpacity style={styles.datePickerButton} onPress={moveDateBack}>
                 <BackButton/>
               </TouchableOpacity>
               <View>
-                <Text style={styles.datePickerText}>25.08.2025</Text>
+                <Text style={styles.datePickerText}>{getFormattedDate()}</Text>
               </View>
-              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]}>
+              <TouchableOpacity style={[styles.datePickerButton, styles.datePickerButtonRotated]} onPress={moveDateForward}>
                 <BackButton/>
               </TouchableOpacity>
             </View>

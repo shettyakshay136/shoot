@@ -170,13 +170,13 @@ const ProfileScreen = (): JSX.Element => {
         contentContainerStyle={styles.scrollBody}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header gradient */}
         <LinearGradient
           colors={['#000000', PRIMARY_COLORS[900]]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 1 }}
           style={styles.headerGradient}
         >
+          <View style={{paddingHorizontal:18 , paddingBottom:27}}>
           <View style={styles.headerTopRow}>
             <Text style={styles.headerTitle}>Profile</Text>
             <TouchableOpacity
@@ -212,6 +212,7 @@ const ProfileScreen = (): JSX.Element => {
 
               <Badge text="Not verified" tone="warning" />
             </View>
+          </View>
           </View>
         </LinearGradient>
 

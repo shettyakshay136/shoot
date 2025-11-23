@@ -20,7 +20,7 @@ import {
 } from './ShootsScreen.constants';
 import TabSwitcher from '@/components/TabSwitcher';
 import { BaseModal } from '@/components/layout';
-import { UpcomingShootModal, ROGDressModal } from '@/components/ui';
+import { UpcomingShootModal, ROGDressModal, CalendarModal, DroppedShootPenaltyModal } from '@/components/ui';
 import MagnifyingGlassIcon from '@/assets/svg/magnifyingglass.svg';
 import RightArrow from '@/assets/svg/backButtonPdp.svg';
 import LocationIcon from '@/assets/svg/location.svg';
@@ -41,6 +41,10 @@ const ShootsScreen = (): JSX.Element => {
   const [selectedShoot, setSelectedShoot] = useState<any>(null);
   const [isROGDressModalVisible, setIsROGDressModalVisible] = useState(false);
   const [selectedShootDetails, setSelectedShootDetails] = useState<any>(null);
+  const [startDate, setStartDate] = useState<string | null>(null);
+  const [endDate, setEndDate] = useState<string | null>(null);
+  const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
+  const [isDroppedShootPenaltyModalVisible, setIsDroppedShootPenaltyModalVisible] = useState(false);
   const sliderWidth = Dimensions.get('window').width - 76; // Subtracting modal padding
   const { current: position } = useRef({ x: 0 });
 
@@ -350,9 +354,11 @@ const ShootsScreen = (): JSX.Element => {
         return (
           <View style={styles.tabContent}>
             {REJECTED_SHOOTS.map(shoot => (
-              <View
+              <TouchableOpacity
                 key={shoot.id}
                 style={[styles.upcomingContent, { gap: 10 }]}
+                onPress={() => setIsDroppedShootPenaltyModalVisible(true)}
+                activeOpacity={0.7}
               >
                 <View>
                   <Text style={styles.contentText}>{shoot.title}</Text>
@@ -404,7 +410,7 @@ const ShootsScreen = (): JSX.Element => {
                     </Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
         );
@@ -414,6 +420,7 @@ const ShootsScreen = (): JSX.Element => {
   };
 
   return (
+    <>
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         <View style={styles.header}>
@@ -488,22 +495,65 @@ const ShootsScreen = (): JSX.Element => {
             <View style={styles.dateRangeContainer}>
               <Text style={styles.dateRangeLabel}>Date Range</Text>
               <View style={styles.dateInputsRow}>
-                <View style={styles.dateInputWrapper}>
-                  <TextInput
-                    style={styles.dateInput}
-                    placeholder="Start Date"
-                    placeholderTextColor="#717680"
-                  />
-                </View>
+                <TouchableOpacity
+                  style={styles.dateInputWrapper}
+                  onPress={() => setIsCalendarModalVisible(!isCalendarModalVisible)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.dateInput}>
+                    <Text
+                      style={[
+                        styles.dateInputText,
+                        !startDate && styles.dateInputPlaceholder,
+                      ]}
+                    >
+                      {startDate
+                        ? new Date(startDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : 'Start Date'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
                 <View style={styles.dateConnector} />
-                <View style={styles.dateInputWrapper}>
-                  <TextInput
-                    style={styles.dateInput}
-                    placeholder="End Date"
-                    placeholderTextColor="#717680"
-                  />
-                </View>
+                <TouchableOpacity
+                  style={styles.dateInputWrapper}
+                  onPress={() => setIsCalendarModalVisible(!isCalendarModalVisible)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.dateInput}>
+                    <Text
+                      style={[
+                        styles.dateInputText,
+                        !endDate && styles.dateInputPlaceholder,
+                      ]}
+                    >
+                      {endDate
+                        ? new Date(endDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : 'End Date'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
+              {isCalendarModalVisible && (
+                <CalendarModal
+                  isVisible={isCalendarModalVisible}
+                  onClose={() => setIsCalendarModalVisible(false)}
+                  onDateSelect={(start, end) => {
+                    setStartDate(start);
+                    setEndDate(end);
+                  }}
+                  startDate={startDate}
+                  endDate={endDate}
+                  mode="range"
+                />
+              )}
             </View>
 
             <View style={styles.dropdownContainer}>
@@ -625,7 +675,13 @@ const ShootsScreen = (): JSX.Element => {
         onConfirm={handleROGDressConfirm}
         onDecline={handleROGDressDecline}
       />
+
+      <DroppedShootPenaltyModal
+        isVisible={isDroppedShootPenaltyModalVisible}
+        onClose={() => setIsDroppedShootPenaltyModalVisible(false)}
+      />
     </ScrollView>
+    </>
   );
 };
 

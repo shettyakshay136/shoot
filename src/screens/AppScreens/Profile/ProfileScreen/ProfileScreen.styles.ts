@@ -15,19 +15,17 @@ const styles = StyleSheet.create({
 
   // Header
   headerGradient: {
-    paddingTop: 56,
+    // paddingTop: 56,
     paddingBottom: 20,
-    paddingHorizontal: 16,
     borderBottomLeftRadius: RADIUS,
     borderBottomRightRadius: RADIUS,
     overflow: 'hidden',
-    marginBottom: 16,
   },
   headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    paddingTop:56,
   },
   headerTitle: {
     color: '#FFFFFF',

@@ -13,5 +13,6 @@ export interface BaseModalProps {
   animationType?: 'slideInUp' | 'slideInDown' | 'fadeIn' | 'zoomIn';
   animationOut?: 'slideOutUp' | 'slideOutDown' | 'fadeOut' | 'zoomOut';
   backdropOpacity?: number;
+  onModalHide?: () => void;
 }
 

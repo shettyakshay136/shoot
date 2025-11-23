@@ -17,12 +17,14 @@ const BaseModal = ({
   animationType = 'slideInUp',
   animationOut = 'slideOutDown',
   backdropOpacity = 0.5,
+  onModalHide,
 }: BaseModalProps): JSX.Element => {
   return (
     <Modal
       isVisible={isVisible}
       onBackdropPress={onClose}
       onBackButtonPress={onClose}
+      onModalHide={onModalHide}
       style={[styles.modal, modalStyle]}
       backdropOpacity={backdropOpacity}
       animationIn={animationType}

@@ -24,4 +24,5 @@ const HomeStack = (): JSX.Element => {
 };
 
 export default HomeStack;
+export type { HomeStackParamList } from './HomeStack.types';
 
