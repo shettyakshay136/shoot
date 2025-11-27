@@ -15,7 +15,12 @@ import { styles } from './ShootsScreen.styles';
 import { TABS } from './ShootsScreen.constants';
 import TabSwitcher from '@/components/TabSwitcher';
 import { BaseModal } from '@/components/layout';
-import { UpcomingShootModal, ROGDressModal, CalendarModal, DroppedShootPenaltyModal } from '@/components/ui';
+import {
+  UpcomingShootModal,
+  ROGDressModal,
+  CalendarModal,
+  DroppedShootPenaltyModal,
+} from '@/components/ui';
 import OfflineBanner from '@/components/features/OfflineBanner';
 import MagnifyingGlassIcon from '@/assets/svg/magnifyingglass.svg';
 import RightArrow from '@/assets/svg/backButtonPdp.svg';
@@ -45,7 +50,10 @@ const ShootsScreen = (): JSX.Element => {
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
-  const [isDroppedShootPenaltyModalVisible, setIsDroppedShootPenaltyModalVisible] = useState(false);
+  const [
+    isDroppedShootPenaltyModalVisible,
+    setIsDroppedShootPenaltyModalVisible,
+  ] = useState(false);
 
   // Data state
   const [availableShoots, setAvailableShoots] = useState<ShootData[]>([]);
@@ -61,13 +69,24 @@ const ShootsScreen = (): JSX.Element => {
   useEffect(() => {
     const initializeDatabase = async () => {
       try {
+        console.log(
+          '\n📸 [ShootsScreen] ========== INITIALIZING DATABASE ==========',
+        );
         const shouldSeed = await needsSeeding();
         if (shouldSeed) {
-          console.log('[ShootsScreen] Database is empty, seeding...');
+          console.log('📸 [ShootsScreen] Database is empty, starting seed...');
           await seedDatabase();
+          console.log('📸 [ShootsScreen] Database seeding completed!');
+        } else {
+          console.log(
+            '📸 [ShootsScreen] Database already has data, skipping seed',
+          );
         }
       } catch (error) {
-        console.error('[ShootsScreen] Failed to initialize database:', error);
+        console.error(
+          '❌ [ShootsScreen] Failed to initialize database:',
+          error,
+        );
       }
     };
 
@@ -77,6 +96,10 @@ const ShootsScreen = (): JSX.Element => {
   // Fetch shoots data based on active tab and network status
   useEffect(() => {
     const loadShoots = async () => {
+      console.log(
+        '\n📸 [ShootsScreen] ========== LOADING SHOOTS DATA ==========',
+      );
+      console.log(`📸 [ShootsScreen] Offline mode: ${isOfflineMode}`);
       setIsLoading(true);
       try {
         const [available, upcoming, completed, rejected] = await Promise.all([
@@ -85,6 +108,12 @@ const ShootsScreen = (): JSX.Element => {
           fetchShootsByStatus('completed', isOfflineMode),
           fetchShootsByStatus('rejected', isOfflineMode),
         ]);
+
+        console.log('\n📸 [ShootsScreen] Data loaded successfully:');
+        console.log(`   🟢 Available: ${available.length}`);
+        console.log(`   🟡 Upcoming: ${upcoming.length}`);
+        console.log(`   🟣 Completed: ${completed.length}`);
+        console.log(`   🔴 Rejected: ${rejected.length}`);
 
         setAvailableShoots(available);
         setUpcomingShoots(upcoming);
@@ -182,7 +211,16 @@ const ShootsScreen = (): JSX.Element => {
   const renderTabContent = () => {
     if (isLoading) {
       return (
-        <View style={[styles.tabContent, { justifyContent: 'center', alignItems: 'center', paddingVertical: 40 }]}>
+        <View
+          style={[
+            styles.tabContent,
+            {
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 40,
+            },
+          ]}
+        >
           <ActivityIndicator size="large" color="#000000" />
           <Text style={{ marginTop: 16, color: '#717680' }}>
             Loading shoots...
@@ -226,9 +264,22 @@ const ShootsScreen = (): JSX.Element => {
                         eta: shoot.eta || '32 mins',
                         shootHours: shoot.shootHours || shoot.duration,
                         reelsRequired: shoot.reelsRequired || '2 reels',
-                        instantDelivery: shoot.instantDelivery || 'Within 30 minutes',
-                        addons: shoot.addons || ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
-                        description: shoot.description || `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
+                        instantDelivery:
+                          shoot.instantDelivery || 'Within 30 minutes',
+                        addons: shoot.addons || [
+                          'Pictures (Up to 20)',
+                          'Raw data required',
+                          'Mic',
+                        ],
+                        description:
+                          shoot.description ||
+                          `${
+                            shoot.title
+                          } is a ${shoot.type.toLowerCase()} shoot located in ${
+                            shoot.location
+                          }. ${
+                            shoot.duration
+                          } of professional content creation.`,
                         songs: shoot.songs || [],
                       },
                     })
@@ -244,7 +295,9 @@ const ShootsScreen = (): JSX.Element => {
                       }}
                     >
                       <LocationIcon width={15} height={15} />
-                      <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                      <Text style={styles.contentSubtext}>
+                        {shoot.location}
+                      </Text>
                     </View>
                     <View style={styles.cardFooter}>
                       <Timer width={15} height={15} />
@@ -296,9 +349,20 @@ const ShootsScreen = (): JSX.Element => {
                       eta: shoot.eta || '32 mins',
                       shootHours: shoot.shootHours || shoot.duration,
                       reelsRequired: shoot.reelsRequired || '2 reels',
-                      instantDelivery: shoot.instantDelivery || 'Within 30 minutes',
-                      addons: shoot.addons || ['Pictures (Up to 20)', 'Raw data required', 'Mic'],
-                      description: shoot.description || `${shoot.title} is a ${shoot.type.toLowerCase()} shoot located in ${shoot.location}. ${shoot.duration} of professional content creation.`,
+                      instantDelivery:
+                        shoot.instantDelivery || 'Within 30 minutes',
+                      addons: shoot.addons || [
+                        'Pictures (Up to 20)',
+                        'Raw data required',
+                        'Mic',
+                      ],
+                      description:
+                        shoot.description ||
+                        `${
+                          shoot.title
+                        } is a ${shoot.type.toLowerCase()} shoot located in ${
+                          shoot.location
+                        }. ${shoot.duration} of professional content creation.`,
                       songs: shoot.songs || [],
                       isFromUpcoming: true,
                     });
@@ -307,7 +371,11 @@ const ShootsScreen = (): JSX.Element => {
                 >
                   <Text style={styles.contentText}>{shoot.title}</Text>
                   <View
-                    style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 5,
+                    }}
                   >
                     <LocationIcon width={15} height={15} />
                     <Text style={styles.contentSubtext}>{shoot.location}</Text>
@@ -359,7 +427,9 @@ const ShootsScreen = (): JSX.Element => {
                       }}
                     >
                       <LocationIcon width={15} height={15} />
-                      <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                      <Text style={styles.contentSubtext}>
+                        {shoot.location}
+                      </Text>
                     </View>
                     <View style={styles.cardFooter}>
                       <Timer width={15} height={15} />
@@ -395,7 +465,11 @@ const ShootsScreen = (): JSX.Element => {
                       </Text>
                     </View>
                     <Text
-                      style={{ color: '#000000', fontWeight: 600, fontSize: 18 }}
+                      style={{
+                        color: '#000000',
+                        fontWeight: 600,
+                        fontSize: 18,
+                      }}
                     >
                       {shoot.earnings || shoot.pay}
                     </Text>
@@ -432,7 +506,9 @@ const ShootsScreen = (): JSX.Element => {
                       }}
                     >
                       <LocationIcon width={15} height={15} />
-                      <Text style={styles.contentSubtext}>{shoot.location}</Text>
+                      <Text style={styles.contentSubtext}>
+                        {shoot.location}
+                      </Text>
                     </View>
                     <View style={styles.cardFooter}>
                       <Timer width={15} height={15} />
@@ -487,244 +563,257 @@ const ShootsScreen = (): JSX.Element => {
       <OfflineBanner />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.leftSection}>
-            <Text style={styles.name}>Om Verma</Text>
-            <Text style={styles.address} numberOfLines={1} ellipsizeMode="tail">
-              Professor CR Rao Rd, Gachibowli, Hyderabad, Telangana 500032
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              isOnline
-                ? styles.toggleButtonActive
-                : styles.toggleButtonInactive,
-            ]}
-            onPress={toggleOnlineStatus}
-          >
-            <Text
-              style={[
-                styles.toggleText,
-                isOnline ? styles.toggleTextActive : styles.toggleTextInactive,
-              ]}
-            >
-              {isOnline ? 'Online' : 'Offline'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.searchContainer}>
-          <View style={styles.searchBar}>
-            <MagnifyingGlassIcon
-              width={20}
-              height={20}
-              style={styles.searchIcon}
-            />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search or ask anything"
-              placeholderTextColor="#717680"
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setIsFilterModalVisible(true)}
-          >
-            <Text style={styles.filterText}>Filter</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.sectionContainer}>
-          <TabSwitcher
-            tabs={TABS}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-          />
-
-          {renderTabContent()}
-        </View>
-      </View>
-
-      <BaseModal
-        isVisible={isFilterModalVisible}
-        onClose={() => setIsFilterModalVisible(false)}
-        showCloseButton={false}
-        showHeader={true}
-      >
-        <View>
-          <Text style={styles.modalTitle}>Filter shoots</Text>
-          <View style={{ gap: 16, paddingBottom: 72 }}>
-            <View style={styles.dateRangeContainer}>
-              <Text style={styles.dateRangeLabel}>Date Range</Text>
-              <View style={styles.dateInputsRow}>
-                <TouchableOpacity
-                  style={styles.dateInputWrapper}
-                  onPress={() => setIsCalendarModalVisible(!isCalendarModalVisible)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.dateInput}>
-                    <Text
-                      style={[
-                        styles.dateInputText,
-                        !startDate && styles.dateInputPlaceholder,
-                      ]}
-                    >
-                      {startDate
-                        ? new Date(startDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : 'Start Date'}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                <View style={styles.dateConnector} />
-                <TouchableOpacity
-                  style={styles.dateInputWrapper}
-                  onPress={() => setIsCalendarModalVisible(!isCalendarModalVisible)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.dateInput}>
-                    <Text
-                      style={[
-                        styles.dateInputText,
-                        !endDate && styles.dateInputPlaceholder,
-                      ]}
-                    >
-                      {endDate
-                        ? new Date(endDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })
-                        : 'End Date'}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-              {isCalendarModalVisible && (
-                <CalendarModal
-                  isVisible={isCalendarModalVisible}
-                  onClose={() => setIsCalendarModalVisible(false)}
-                  onDateSelect={(start, end) => {
-                    setStartDate(start);
-                    setEndDate(end);
-                  }}
-                  startDate={startDate}
-                  endDate={endDate}
-                  mode="range"
-                />
-              )}
-            </View>
-
-            <View style={styles.dropdownContainer}>
-              <Text style={styles.dateRangeLabel}>Shoot Hours</Text>
-              <TouchableOpacity
-                style={styles.dropdownButton}
-                onPress={() => setShowHoursDropdown(!showHoursDropdown)}
+          <View style={styles.header}>
+            <View style={styles.leftSection}>
+              <Text style={styles.name}>Om Verma</Text>
+              <Text
+                style={styles.address}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
-                <Text
-                  style={[
-                    styles.dropdownButtonText,
-                    !shootHours && styles.placeholderText,
-                  ]}
-                >
-                  {shootHours || 'Select Hours'}
-                </Text>
-                <View style={{ transform: [{ rotate: '270deg' }] }}>
-                  <RightArrow width={21} height={21} />
-                </View>
-              </TouchableOpacity>
-              {showHoursDropdown && (
-                <View style={styles.dropdownOptions}>
-                  {hoursOptions.map(option => (
-                    <TouchableOpacity
-                      key={option}
-                      style={styles.dropdownOption}
-                      onPress={() => {
-                        setShootHours(option);
-                        setShowHoursDropdown(false);
-                      }}
-                    >
-                      <Text style={styles.dropdownOptionText}>{option}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )}
+                Professor CR Rao Rd, Gachibowli, Hyderabad, Telangana 500032
+              </Text>
             </View>
 
-            <View style={styles.radiusContainer}>
-              <Text style={styles.dateRangeLabel}>Radius</Text>
-              <View style={styles.sliderTrack} {...panResponder.panHandlers}>
-                <TouchableOpacity
-                  style={styles.sliderBackground}
-                  onPress={e => {
-                    const { locationX } = e.nativeEvent;
-                    handleSliderPress(locationX);
-                  }}
-                  activeOpacity={1}
-                >
-                  <View
-                    style={[
-                      styles.sliderProgress,
-                      { width: `${getSliderPosition()}%` },
-                    ]}
-                  />
-                  {radiusOptions.map((radius, index) => {
-                    const dotPosition =
-                      (index / (radiusOptions.length - 1)) * 100;
-                    return (
-                      <TouchableOpacity
-                        key={radius}
-                        style={[styles.sliderDot, { left: `${dotPosition}%` }]}
-                        onPress={() => setSelectedRadius(radius)}
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                isOnline
+                  ? styles.toggleButtonActive
+                  : styles.toggleButtonInactive,
+              ]}
+              onPress={toggleOnlineStatus}
+            >
+              <Text
+                style={[
+                  styles.toggleText,
+                  isOnline
+                    ? styles.toggleTextActive
+                    : styles.toggleTextInactive,
+                ]}
+              >
+                {isOnline ? 'Online' : 'Offline'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.searchContainer}>
+            <View style={styles.searchBar}>
+              <MagnifyingGlassIcon
+                width={20}
+                height={20}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Search or ask anything"
+                placeholderTextColor="#717680"
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setIsFilterModalVisible(true)}
+            >
+              <Text style={styles.filterText}>Filter</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <TabSwitcher
+              tabs={TABS}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+
+            {renderTabContent()}
+          </View>
+        </View>
+
+        <BaseModal
+          isVisible={isFilterModalVisible}
+          onClose={() => setIsFilterModalVisible(false)}
+          showCloseButton={false}
+          showHeader={true}
+        >
+          <View>
+            <Text style={styles.modalTitle}>Filter shoots</Text>
+            <View style={{ gap: 16, paddingBottom: 72 }}>
+              <View style={styles.dateRangeContainer}>
+                <Text style={styles.dateRangeLabel}>Date Range</Text>
+                <View style={styles.dateInputsRow}>
+                  <TouchableOpacity
+                    style={styles.dateInputWrapper}
+                    onPress={() =>
+                      setIsCalendarModalVisible(!isCalendarModalVisible)
+                    }
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.dateInput}>
+                      <Text
+                        style={[
+                          styles.dateInputText,
+                          !startDate && styles.dateInputPlaceholder,
+                        ]}
                       >
-                        <View
-                          style={
-                            index === radiusOptions.indexOf(selectedRadius)
-                              ? styles.activeDot
-                              : styles.inactiveDot
-                          }
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
-                </TouchableOpacity>
+                        {startDate
+                          ? new Date(startDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : 'Start Date'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={styles.dateConnector} />
+                  <TouchableOpacity
+                    style={styles.dateInputWrapper}
+                    onPress={() =>
+                      setIsCalendarModalVisible(!isCalendarModalVisible)
+                    }
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.dateInput}>
+                      <Text
+                        style={[
+                          styles.dateInputText,
+                          !endDate && styles.dateInputPlaceholder,
+                        ]}
+                      >
+                        {endDate
+                          ? new Date(endDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : 'End Date'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                {isCalendarModalVisible && (
+                  <CalendarModal
+                    isVisible={isCalendarModalVisible}
+                    onClose={() => setIsCalendarModalVisible(false)}
+                    onDateSelect={(start, end) => {
+                      setStartDate(start);
+                      setEndDate(end);
+                    }}
+                    startDate={startDate}
+                    endDate={endDate}
+                    mode="range"
+                  />
+                )}
               </View>
-              <View style={styles.radiusLabels}>
-                {radiusOptions.map(radius => (
+
+              <View style={styles.dropdownContainer}>
+                <Text style={styles.dateRangeLabel}>Shoot Hours</Text>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setShowHoursDropdown(!showHoursDropdown)}
+                >
                   <Text
-                    key={radius}
                     style={[
-                      styles.radiusLabel,
-                      selectedRadius === radius && styles.radiusLabelActive,
+                      styles.dropdownButtonText,
+                      !shootHours && styles.placeholderText,
                     ]}
                   >
-                    {radius}km
+                    {shootHours || 'Select Hours'}
                   </Text>
-                ))}
+                  <View style={{ transform: [{ rotate: '270deg' }] }}>
+                    <RightArrow width={21} height={21} />
+                  </View>
+                </TouchableOpacity>
+                {showHoursDropdown && (
+                  <View style={styles.dropdownOptions}>
+                    {hoursOptions.map(option => (
+                      <TouchableOpacity
+                        key={option}
+                        style={styles.dropdownOption}
+                        onPress={() => {
+                          setShootHours(option);
+                          setShowHoursDropdown(false);
+                        }}
+                      >
+                        <Text style={styles.dropdownOptionText}>{option}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.radiusContainer}>
+                <Text style={styles.dateRangeLabel}>Radius</Text>
+                <View style={styles.sliderTrack} {...panResponder.panHandlers}>
+                  <TouchableOpacity
+                    style={styles.sliderBackground}
+                    onPress={e => {
+                      const { locationX } = e.nativeEvent;
+                      handleSliderPress(locationX);
+                    }}
+                    activeOpacity={1}
+                  >
+                    <View
+                      style={[
+                        styles.sliderProgress,
+                        { width: `${getSliderPosition()}%` },
+                      ]}
+                    />
+                    {radiusOptions.map((radius, index) => {
+                      const dotPosition =
+                        (index / (radiusOptions.length - 1)) * 100;
+                      return (
+                        <TouchableOpacity
+                          key={radius}
+                          style={[
+                            styles.sliderDot,
+                            { left: `${dotPosition}%` },
+                          ]}
+                          onPress={() => setSelectedRadius(radius)}
+                        >
+                          <View
+                            style={
+                              index === radiusOptions.indexOf(selectedRadius)
+                                ? styles.activeDot
+                                : styles.inactiveDot
+                            }
+                          />
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.radiusLabels}>
+                  {radiusOptions.map(radius => (
+                    <Text
+                      key={radius}
+                      style={[
+                        styles.radiusLabel,
+                        selectedRadius === radius && styles.radiusLabelActive,
+                      ]}
+                    >
+                      {radius}km
+                    </Text>
+                  ))}
+                </View>
               </View>
             </View>
-          </View>
-          <TouchableOpacity
-            style={styles.applyButtonTouchable}
-            onPress={() => setIsFilterModalVisible(false)}
-          >
-            <LinearGradient
-              colors={['#000000', '#61240E']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.applyButton}
+            <TouchableOpacity
+              style={styles.applyButtonTouchable}
+              onPress={() => setIsFilterModalVisible(false)}
             >
-              <Text style={styles.applyButtonText}>Filter</Text>
-              <ArrowUp />
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      </BaseModal>
+              <LinearGradient
+                colors={['#000000', '#61240E']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.applyButton}
+              >
+                <Text style={styles.applyButtonText}>Filter</Text>
+                <ArrowUp />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </BaseModal>
 
         <UpcomingShootModal
           isVisible={isUpcomingModalVisible}

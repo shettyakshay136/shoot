@@ -1,5 +1,5 @@
 import axiosInstance from './axiosInstance';
-import shootService, {ShootData} from '../database/services/shootService';
+import shootService, { ShootData } from '../database/services/shootService';
 
 /**
  * Shoots API Service
@@ -20,76 +20,125 @@ interface ShootResponse {
 
 /**
  * Fetch shoots by status with offline fallback
- * When online: Fetches from API and caches to Realm
+ * When online: Fetches from API, clears old data, and saves fresh data to Realm
  * When offline: Returns cached data from Realm
+ *
+ * SYNC STRATEGY: Clear and Replace
+ * - Ensures local database always mirrors exactly what API returns
+ * - No stale data or duplicates
+ * - Perfect for production deployment
  */
 export const fetchShootsByStatus = async (
   status: string,
   isOffline: boolean = false,
 ): Promise<ShootData[]> => {
   try {
+    console.log(
+      `\n🌐 [API] ========== FETCH SHOOTS: ${status.toUpperCase()} ==========`,
+    );
+    console.log(
+      `🌐 [API] Network mode: ${isOffline ? '📴 OFFLINE' : '🟢 ONLINE'}`,
+    );
+
     // If offline, return data from Realm
     if (isOffline) {
-      console.log(`[API] Offline mode - fetching ${status} shoots from Realm`);
+      console.log(
+        `🌐 [API] 📴 Offline mode - fetching "${status}" shoots from Realm`,
+      );
       const cachedShoots = await shootService.getShootsByStatus(status);
+      console.log(
+        `🌐 [API] Retrieved ${cachedShoots.length} "${status}" shoots from local database`,
+      );
       return cachedShoots;
     }
 
     // If online, fetch from API
-    console.log(`[API] Online mode - fetching ${status} shoots from server`);
+    console.log(
+      `🌐 [API] 🟢 Online mode - fetching "${status}" shoots from server`,
+    );
     const response = await axiosInstance.get<ShootsResponse>(
       `/creator/shoots?status=${status}`,
     );
 
     if (response.data.success && response.data.data) {
       const shoots = response.data.data;
+      console.log(
+        `🌐 [API] Server returned ${shoots.length} "${status}" shoots`,
+      );
 
-      // Cache the shoots to Realm for offline access
-      await shootService.saveShoots(shoots);
+      // SYNC: Clear old data and save fresh data from API
+      // This ensures local DB always mirrors API exactly
+      console.log('🌐 [API] Syncing to Realm (Clear & Replace strategy)...');
+      await shootService.syncShootsByStatus(status, shoots);
 
       return shoots;
     }
 
-    // If API returns no data, fallback to Realm
-    console.log('[API] No data from server, falling back to Realm');
-    return await shootService.getShootsByStatus(status);
+    // If API returns no data or empty array, clear local data for this status too
+    console.log('🌐 [API] ⚠️ No data from server for this status');
+    console.log('🌐 [API] Clearing local data to mirror empty API response...');
+    await shootService.syncShootsByStatus(status, []);
+    return [];
   } catch (error) {
-    console.error(`[API] Error fetching ${status} shoots:`, error);
+    console.error(`❌ [API] Error fetching ${status} shoots:`, error);
 
     // On error, fallback to cached data from Realm
-    console.log('[API] API error - falling back to Realm');
-    return await shootService.getShootsByStatus(status);
+    console.log('🌐 [API] ⚠️ API error - falling back to Realm cache');
+    const fallbackData = await shootService.getShootsByStatus(status);
+    console.log(
+      `🌐 [API] Fallback returned ${fallbackData.length} "${status}" shoots from Realm`,
+    );
+    return fallbackData;
   }
 };
 
 /**
  * Fetch all shoots with offline fallback
+ * Uses Clear and Replace strategy when online
  */
 export const fetchAllShoots = async (
   isOffline: boolean = false,
 ): Promise<ShootData[]> => {
   try {
     if (isOffline) {
-      console.log('[API] Offline mode - fetching all shoots from Realm');
+      console.log('🌐 [API] 📴 Offline mode - fetching all shoots from Realm');
       const cachedShoots = await shootService.getAllShoots();
+      console.log(
+        `🌐 [API] Retrieved ${cachedShoots.length} total shoots from local database`,
+      );
       return cachedShoots;
     }
 
-    console.log('[API] Online mode - fetching all shoots from server');
+    console.log('🌐 [API] 🟢 Online mode - fetching all shoots from server');
     const response = await axiosInstance.get<ShootsResponse>('/creator/shoots');
 
     if (response.data.success && response.data.data) {
       const shoots = response.data.data;
+      console.log(`🌐 [API] Server returned ${shoots.length} total shoots`);
 
-      // Cache to Realm
-      await shootService.saveShoots(shoots);
+      // Group shoots by status and sync each group
+      const shootsByStatus: Record<string, ShootData[]> = {};
+      shoots.forEach(shoot => {
+        if (!shootsByStatus[shoot.status]) {
+          shootsByStatus[shoot.status] = [];
+        }
+        shootsByStatus[shoot.status].push(shoot);
+      });
+
+      // Sync each status group using Clear and Replace
+      console.log('🌐 [API] Syncing all shoots by status...');
+      for (const [status, statusShoots] of Object.entries(shootsByStatus)) {
+        await shootService.syncShootsByStatus(status, statusShoots);
+      }
 
       return shoots;
     }
 
+    console.log('🌐 [API] ⚠️ No data from server');
     return await shootService.getAllShoots();
   } catch (error) {
-    console.error('[API] Error fetching all shoots:', error);
+    console.error('❌ [API] Error fetching all shoots:', error);
+    console.log('🌐 [API] ⚠️ Falling back to Realm cache');
     return await shootService.getAllShoots();
   }
 };
@@ -136,7 +185,7 @@ export const fetchShootById = async (
 export const acceptShoot = async (
   id: string,
   isOffline: boolean = false,
-): Promise<{success: boolean; message: string}> => {
+): Promise<{ success: boolean; message: string }> => {
   try {
     if (isOffline) {
       // In offline mode, update local status
@@ -174,7 +223,7 @@ export const acceptShoot = async (
 export const rejectShoot = async (
   id: string,
   isOffline: boolean = false,
-): Promise<{success: boolean; message: string}> => {
+): Promise<{ success: boolean; message: string }> => {
   try {
     if (isOffline) {
       await shootService.updateShootStatus(id, 'rejected');
@@ -209,7 +258,7 @@ export const rejectShoot = async (
 export const completeShoot = async (
   id: string,
   isOffline: boolean = false,
-): Promise<{success: boolean; message: string}> => {
+): Promise<{ success: boolean; message: string }> => {
   try {
     if (isOffline) {
       await shootService.updateShootStatus(id, 'completed');
@@ -266,33 +315,40 @@ export const syncPendingChanges = async (): Promise<void> => {
 export const fetchUserPerformance = async (
   userId: string,
   isOffline: boolean = false,
-): Promise<{shoots: string; ratings: string}> => {
+): Promise<{ shoots: string; ratings: string }> => {
   try {
     if (isOffline) {
-      console.log('[API] Offline mode - fetching performance from Realm');
+      console.log('🌐 [API] 📴 Offline mode - fetching performance from Realm');
       const cached = await shootService.getUserPerformance(userId);
-      return cached || {shoots: '0', ratings: '0'};
+      if (cached) {
+        return { shoots: cached.totalShoots, ratings: cached.ratings };
+      }
+      return { shoots: '0', ratings: '0' };
     }
 
-    console.log('[API] Online mode - fetching performance from server');
-    const response = await axiosInstance.get(
-      `/creator/performance/${userId}`,
-    );
+    console.log('🌐 [API] 🟢 Online mode - fetching performance from server');
+    const response = await axiosInstance.get(`/creator/performance/${userId}`);
 
     if (response.data.success && response.data.data) {
-      const {shoots, ratings} = response.data.data;
+      const { shoots, ratings } = response.data.data;
 
       // Cache to Realm
       await shootService.saveUserPerformance(userId, shoots, ratings);
 
-      return {shoots, ratings};
+      return { shoots, ratings };
     }
 
     const cached = await shootService.getUserPerformance(userId);
-    return cached || {shoots: '0', ratings: '0'};
+    if (cached) {
+      return { shoots: cached.totalShoots, ratings: cached.ratings };
+    }
+    return { shoots: '0', ratings: '0' };
   } catch (error) {
-    console.error('[API] Error fetching performance:', error);
+    console.error('❌ [API] Error fetching performance:', error);
     const cached = await shootService.getUserPerformance(userId);
-    return cached || {shoots: '0', ratings: '0'};
+    if (cached) {
+      return { shoots: cached.totalShoots, ratings: cached.ratings };
+    }
+    return { shoots: '0', ratings: '0' };
   }
 };

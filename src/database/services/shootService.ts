@@ -1,6 +1,11 @@
 import Realm from 'realm';
-import {getRealm} from '../realmConfig';
-import {Shoot, ShootAddon, ShootSong, UserPerformance} from '../schemas/ShootSchema';
+import { getRealm } from '../realmConfig';
+import {
+  Shoot,
+  ShootAddon,
+  ShootSong,
+  UserPerformance,
+} from '../schemas/ShootSchema';
 
 /**
  * Interface matching the app's shoot data structure
@@ -88,9 +93,13 @@ class ShootService {
             updatedAt: new Date(),
             syncedAt: new Date(),
           });
+          console.log(`   ✅ [saveShoot] Created shoot: ${shootData.title}`);
 
           // Add addons
           if (shootData.addons && shootData.addons.length > 0) {
+            console.log(
+              `   📎 [saveShoot] Adding ${shootData.addons.length} addons`,
+            );
             shootData.addons.forEach(addonName => {
               const addon = realm.create<ShootAddon>('ShootAddon', {
                 _id: new Realm.BSON.ObjectId(),
@@ -102,6 +111,9 @@ class ShootService {
 
           // Add songs
           if (shootData.songs && shootData.songs.length > 0) {
+            console.log(
+              `   🎵 [saveShoot] Adding ${shootData.songs.length} songs`,
+            );
             shootData.songs.forEach(songData => {
               const song = realm.create<ShootSong>('ShootSong', {
                 _id: new Realm.BSON.ObjectId(),
@@ -115,7 +127,7 @@ class ShootService {
         }
       });
 
-      console.log(`[Realm] Shoot saved: ${shootData.title}`);
+      console.log(`✅ [Realm] Shoot saved successfully: ${shootData.title}`);
     } catch (error) {
       console.error('[Realm] Failed to save shoot:', error);
       throw error;
@@ -127,10 +139,26 @@ class ShootService {
    */
   async saveShoots(shoots: ShootData[]): Promise<void> {
     try {
+      console.log(
+        '\n📦 [Realm] ========== SAVING SHOOTS TO DATABASE ==========',
+      );
+      console.log(`📦 [Realm] Total shoots to save: ${shoots.length}`);
+
       const realm = await getRealm();
+      console.log('📦 [Realm] Database connection established');
 
       realm.write(() => {
-        shoots.forEach(shootData => {
+        shoots.forEach((shootData, index) => {
+          console.log(
+            `\n📦 [Realm] Saving shoot ${index + 1}/${shoots.length}:`,
+          );
+          console.log(`   📌 ID: ${shootData.shootId || shootData.id}`);
+          console.log(`   📌 Title: ${shootData.title}`);
+          console.log(`   📌 Status: ${shootData.status}`);
+          console.log(`   📌 Location: ${shootData.location}`);
+          console.log(`   📌 Date: ${shootData.date}`);
+          console.log(`   📌 Pay: ${shootData.pay}`);
+
           const shoot = realm.create<Shoot>(
             'Shoot',
             {
@@ -163,8 +191,17 @@ class ShootService {
             Realm.UpdateMode.Modified,
           );
 
+          console.log(
+            `   ✅ Shoot "${shootData.title}" saved with ID: ${shoot._id}`,
+          );
+
           // Add addons
           if (shootData.addons && shootData.addons.length > 0) {
+            console.log(
+              `   📎 Adding ${
+                shootData.addons.length
+              } addons: ${shootData.addons.join(', ')}`,
+            );
             shootData.addons.forEach(addonName => {
               const addon = realm.create<ShootAddon>('ShootAddon', {
                 _id: new Realm.BSON.ObjectId(),
@@ -176,6 +213,7 @@ class ShootService {
 
           // Add songs
           if (shootData.songs && shootData.songs.length > 0) {
+            console.log(`   🎵 Adding ${shootData.songs.length} songs`);
             shootData.songs.forEach(songData => {
               const song = realm.create<ShootSong>('ShootSong', {
                 _id: new Realm.BSON.ObjectId(),
@@ -189,7 +227,9 @@ class ShootService {
         });
       });
 
-      console.log(`[Realm] ${shoots.length} shoots saved successfully`);
+      console.log(
+        `\n✅ [Realm] ========== ALL ${shoots.length} SHOOTS SAVED SUCCESSFULLY ==========\n`,
+      );
     } catch (error) {
       console.error('[Realm] Failed to save shoots:', error);
       throw error;
@@ -201,11 +241,19 @@ class ShootService {
    */
   async getShootsByStatus(status: string): Promise<ShootData[]> {
     try {
+      console.log(`\n🔍 [Realm] Fetching shoots with status: "${status}"`);
       const realm = await getRealm();
       const shoots = realm
         .objects<Shoot>('Shoot')
         .filtered('status == $0', status)
         .sorted('date', true);
+
+      console.log(
+        `🔍 [Realm] Found ${shoots.length} shoots with status "${status}"`,
+      );
+      shoots.forEach((shoot, index) => {
+        console.log(`   ${index + 1}. ${shoot.title} (${shoot.shootId})`);
+      });
 
       return shoots.map(shoot => this.mapShootToData(shoot));
     } catch (error) {
@@ -219,8 +267,19 @@ class ShootService {
    */
   async getAllShoots(): Promise<ShootData[]> {
     try {
+      console.log('\n🔍 [Realm] Fetching ALL shoots from database');
       const realm = await getRealm();
       const shoots = realm.objects<Shoot>('Shoot').sorted('date', true);
+
+      console.log(`🔍 [Realm] Total shoots in database: ${shoots.length}`);
+      console.log('🔍 [Realm] Shoots breakdown by status:');
+      const statusCounts: Record<string, number> = {};
+      shoots.forEach(shoot => {
+        statusCounts[shoot.status] = (statusCounts[shoot.status] || 0) + 1;
+      });
+      Object.entries(statusCounts).forEach(([status, count]) => {
+        console.log(`   📊 ${status}: ${count}`);
+      });
 
       return shoots.map(shoot => this.mapShootToData(shoot));
     } catch (error) {
@@ -317,6 +376,158 @@ class ShootService {
       console.log('[Realm] All shoots cleared');
     } catch (error) {
       console.error('[Realm] Failed to clear shoots:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Clear shoots by status - Used for sync strategy
+   * Removes all shoots with a specific status before saving fresh API data
+   */
+  async clearShootsByStatus(status: string): Promise<number> {
+    try {
+      const realm = await getRealm();
+      let deletedCount = 0;
+
+      realm.write(() => {
+        const shootsToDelete = realm
+          .objects<Shoot>('Shoot')
+          .filtered('status == $0', status);
+        deletedCount = shootsToDelete.length;
+
+        // Also delete associated addons and songs
+        shootsToDelete.forEach(shoot => {
+          if (shoot.addons && shoot.addons.length > 0) {
+            realm.delete(shoot.addons);
+          }
+          if (shoot.songs && shoot.songs.length > 0) {
+            realm.delete(shoot.songs);
+          }
+        });
+
+        realm.delete(shootsToDelete);
+      });
+
+      console.log(
+        `🗑️ [Realm] Cleared ${deletedCount} shoots with status "${status}"`,
+      );
+      return deletedCount;
+    } catch (error) {
+      console.error(
+        `[Realm] Failed to clear shoots by status "${status}":`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Sync shoots by status - Clear and Replace strategy
+   * This ensures local database mirrors exactly what API returns
+   */
+  async syncShootsByStatus(status: string, shoots: ShootData[]): Promise<void> {
+    try {
+      console.log(
+        `\n🔄 [Realm] ========== SYNCING "${status.toUpperCase()}" SHOOTS ==========`,
+      );
+      console.log(`🔄 [Realm] Strategy: Clear and Replace`);
+      console.log(`🔄 [Realm] Incoming shoots from API: ${shoots.length}`);
+
+      const realm = await getRealm();
+
+      realm.write(() => {
+        // Step 1: Clear existing shoots with this status
+        const existingShoots = realm
+          .objects<Shoot>('Shoot')
+          .filtered('status == $0', status);
+
+        console.log(
+          `🗑️ [Realm] Removing ${existingShoots.length} existing "${status}" shoots`,
+        );
+
+        // Delete associated addons and songs first
+        existingShoots.forEach(shoot => {
+          if (shoot.addons && shoot.addons.length > 0) {
+            realm.delete(shoot.addons);
+          }
+          if (shoot.songs && shoot.songs.length > 0) {
+            realm.delete(shoot.songs);
+          }
+        });
+        realm.delete(existingShoots);
+
+        // Step 2: Save fresh shoots from API
+        console.log(
+          `📦 [Realm] Saving ${shoots.length} fresh "${status}" shoots from API`,
+        );
+
+        shoots.forEach((shootData, index) => {
+          console.log(
+            `   ${index + 1}. ${shootData.title} (${
+              shootData.shootId || shootData.id
+            })`,
+          );
+
+          const shoot = realm.create<Shoot>('Shoot', {
+            _id: new Realm.BSON.ObjectId(), // Always generate new ObjectId
+            shootId: shootData.shootId || shootData.id || '',
+            title: shootData.title,
+            location: shootData.location,
+            date: shootData.date,
+            time: shootData.time,
+            duration: shootData.duration,
+            pay: shootData.pay,
+            type: shootData.type,
+            status: shootData.status,
+            category: shootData.category,
+            earnings: shootData.earnings,
+            distance: shootData.distance,
+            eta: shootData.eta,
+            shootHours: shootData.shootHours,
+            reelsRequired: shootData.reelsRequired,
+            instantDelivery: shootData.instantDelivery,
+            description: shootData.description,
+            daysLeft: shootData.daysLeft,
+            rating: shootData.rating,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            syncedAt: new Date(),
+          });
+
+          // Add addons
+          if (shootData.addons && shootData.addons.length > 0) {
+            shootData.addons.forEach(addonName => {
+              const addon = realm.create<ShootAddon>('ShootAddon', {
+                _id: new Realm.BSON.ObjectId(),
+                name: addonName,
+              });
+              shoot.addons?.push(addon);
+            });
+          }
+
+          // Add songs
+          if (shootData.songs && shootData.songs.length > 0) {
+            shootData.songs.forEach(songData => {
+              const song = realm.create<ShootSong>('ShootSong', {
+                _id: new Realm.BSON.ObjectId(),
+                title: songData.title,
+                artist: songData.artist,
+                thumbnail: songData.thumbnail,
+              });
+              shoot.songs?.push(song);
+            });
+          }
+        });
+      });
+
+      console.log(
+        `✅ [Realm] Sync complete! "${status}" shoots now mirror API exactly`,
+      );
+    } catch (error) {
+      console.error(
+        `[Realm] Failed to sync shoots by status "${status}":`,
+        error,
+      );
       throw error;
     }
   }

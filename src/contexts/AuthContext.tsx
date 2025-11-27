@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logout as apiLogout } from '@/services/authUtils';
 
@@ -47,7 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       try {
         const token = await AsyncStorage.getItem(AUTH_TOKEN_KEY);
         const userData = await AsyncStorage.getItem(USER_KEY);
-        
+
         setIsAuthenticated(!!token);
         if (userData) {
           setUser(JSON.parse(userData));
@@ -71,14 +77,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error('Invalid token provided to login:', token);
         throw new Error('Invalid token provided');
       }
-      
+
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
-      
+
       if (userData) {
         await AsyncStorage.setItem(USER_KEY, JSON.stringify(userData));
         setUser(userData);
       }
-      
+
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Error storing auth data:', error);
@@ -113,9 +119,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, logout, updateUser }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, isLoading, user, login, logout, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
-

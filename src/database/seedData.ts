@@ -1,4 +1,4 @@
-import shootService, {ShootData} from './services/shootService';
+import shootService, { ShootData } from './services/shootService';
 
 /**
  * Seed Database with Initial Dummy Data
@@ -207,7 +207,8 @@ const REJECTED_SHOOTS: ShootData[] = [
  */
 export const seedDatabase = async (): Promise<void> => {
   try {
-    console.log('[Seed] Starting database seed...');
+    console.log('\n🌱 [Seed] ========== STARTING DATABASE SEED ==========');
+    console.log('🌱 [Seed] Preparing dummy data...');
 
     const allShoots = [
       ...AVAILABLE_SHOOTS,
@@ -216,12 +217,22 @@ export const seedDatabase = async (): Promise<void> => {
       ...REJECTED_SHOOTS,
     ];
 
+    console.log(`🌱 [Seed] Total shoots to seed: ${allShoots.length}`);
+    console.log(`   🟢 Available: ${AVAILABLE_SHOOTS.length}`);
+    console.log(`   🟡 Upcoming: ${UPCOMING_SHOOTS.length}`);
+    console.log(`   🟣 Completed: ${COMPLETED_SHOOTS.length}`);
+    console.log(`   🔴 Rejected: ${REJECTED_SHOOTS.length}`);
+
     await shootService.saveShoots(allShoots);
 
     // Seed user performance data
+    console.log('\n🌱 [Seed] Saving user performance data...');
     await shootService.saveUserPerformance('user-1', '10', '4.8');
+    console.log('🌱 [Seed] User performance: shoots=10, ratings=4.8');
 
-    console.log('[Seed] Database seeded successfully with', allShoots.length, 'shoots');
+    console.log(
+      '\n✅ [Seed] ========== DATABASE SEEDED SUCCESSFULLY ==========\n',
+    );
   } catch (error) {
     console.error('[Seed] Failed to seed database:', error);
     throw error;
@@ -234,10 +245,15 @@ export const seedDatabase = async (): Promise<void> => {
  */
 export const needsSeeding = async (): Promise<boolean> => {
   try {
+    console.log('\n🔍 [Seed] Checking if database needs seeding...');
     const shoots = await shootService.getAllShoots();
-    return shoots.length === 0;
+    const needsSeed = shoots.length === 0;
+    console.log(
+      `🔍 [Seed] Database has ${shoots.length} shoots, needs seeding: ${needsSeed}`,
+    );
+    return needsSeed;
   } catch (error) {
-    console.error('[Seed] Error checking if seeding needed:', error);
+    console.error('❌ [Seed] Error checking if seeding needed:', error);
     return true;
   }
 };

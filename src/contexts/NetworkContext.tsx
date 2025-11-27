@@ -6,8 +6,8 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import NetInfo, {NetInfoState} from '@react-native-community/netinfo';
-import {useToast} from './ToastContext';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import { useToast } from './ToastContext';
 
 interface NetworkContextType {
   isConnected: boolean;
@@ -16,15 +16,15 @@ interface NetworkContextType {
   isOfflineMode: boolean;
 }
 
-const NetworkContext = createContext<NetworkContextType | undefined>(
-  undefined,
-);
+const NetworkContext = createContext<NetworkContextType | undefined>(undefined);
 
 interface NetworkProviderProps {
   children: ReactNode;
 }
 
-export const NetworkProvider: React.FC<NetworkProviderProps> = ({children}) => {
+export const NetworkProvider: React.FC<NetworkProviderProps> = ({
+  children,
+}) => {
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [isInternetReachable, setIsInternetReachable] = useState<
     boolean | null
@@ -33,13 +33,22 @@ export const NetworkProvider: React.FC<NetworkProviderProps> = ({children}) => {
   const [previousConnectionState, setPreviousConnectionState] =
     useState<boolean>(true);
 
-  const {showToast} = useToast();
+  const { showToast } = useToast();
 
   const handleConnectivityChange = useCallback(
     (state: NetInfoState) => {
       const connected = state.isConnected ?? false;
       const reachable = state.isInternetReachable;
       const type = state.type;
+
+      console.log('\n📡 [Network] ========== CONNECTIVITY CHANGE ==========');
+      console.log(`📡 [Network] Connection type: ${type}`);
+      console.log(`📡 [Network] Is connected: ${connected}`);
+      console.log(`📡 [Network] Is internet reachable: ${reachable}`);
+      console.log(`📡 [Network] Previous state: ${previousConnectionState}`);
+      console.log(
+        `📡 [Network] Offline mode: ${!connected || reachable === false}`,
+      );
 
       setIsConnected(connected);
       setIsInternetReachable(reachable);
